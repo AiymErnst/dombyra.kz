@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+:root {
+  --wine: #3a0f1a;
+  --wine-deep: #280a12;
+  --gold: #c9a227;
+  --gold-soft: #e6c96a;
+  --cream: #efe6d3;
+  --ink: #1c1210;
+
+  /* dombyra.kz — палитра лендинга/магазина */
+  --brand-blue: #141e93;
+  --brand-blue-dark: #0f1670;
+  --brand-lime: #aaff00;
+  --brand-teal: #007a94;
+  --brand-ink: #050d1f;
+  --brand-bg: #f0f4ff;
+  --brand-border: #d4dce8;
+}
+
+@theme inline {
+  --color-wine: var(--wine);
+  --color-wine-deep: var(--wine-deep);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-cream: var(--cream);
+  --color-ink: var(--ink);
+
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-dark: var(--brand-blue-dark);
+  --color-brand-lime: var(--brand-lime);
+  --color-brand-teal: var(--brand-teal);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-bg: var(--brand-bg);
+  --color-brand-border: var(--brand-border);
+
+  --font-display: "Marcellus", serif;
+  --font-body: "Manrope", sans-serif;
+  --font-brand: "Montserrat", Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #ffffff;
+  font-family: var(--font-body);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* используется на страницах бренда-магазина (лендинг) */
+.font-brand {
+  font-family: var(--font-brand);
+}
+
+[data-row] {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+[data-row]::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
