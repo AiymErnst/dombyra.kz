@@ -38,9 +38,9 @@
     --bg-normal-2:#051650;
     --bg-normal-3:#00020f;
     --bg-normal-4:#00072d;
-    --light-tint-normal-1:rgba(10,36,114,0.08);  /* лёгкий цветной отблеск на светлой теме */
-    --light-tint-normal-2:rgba(5,22,80,0.05);
-    --light-tint-normal-3:rgba(0,2,15,0.03);
+    --light-normal-bg-1:#FFFFFF;  /* фон обучения на светлой теме — свой цвет, не связан с тёмной темой */
+    --light-normal-bg-2:#FFFFFF;
+    --light-normal-bg-3:#eaf4fc;
 
     /* ===== Фон: режим караоке (тёмно-зелёный градиент) ===== */
     --bg-karaoke-1:#044035;
@@ -48,9 +48,9 @@
     --bg-karaoke-3:#010a08;
     --bg-karaoke-4:#06231D;
     --bg-karaoke-5:#0a2e24;
-    --light-tint-karaoke-1:rgba(4,64,53,0.1);    /* лёгкий отблеск караоке-темы на светлой теме */
-    --light-tint-karaoke-2:rgba(6,35,29,0.07);
-    --light-tint-karaoke-3:rgba(1,10,8,0.04);
+    --light-karaoke-bg-1:#FFFFFF;  /* фон караоке на светлой теме — свой цвет, не связан с тёмной темой */
+    --light-karaoke-bg-2:#FFFFFF;
+    --light-karaoke-bg-3:#ebf5f0;
 
     /* ===== Гриф домбры ===== */
     --neck-wood:#5a3320;              /* цвет дерева грифа */
@@ -60,6 +60,13 @@
     --headstock-line:rgba(220,210,190,0.55);
     --headstock-accent:#ddc979;
     --headstock-shadow:#877361;
+
+    /* ===== Фон карточек (.col-block: выбор мелодии, скорость, таймлайн) =====
+       У каждого режима — свой независимый цвет, друг с другом не связаны.
+       Формат RGB-триплет (без #), чтобы разная прозрачность считалась от одного числа. */
+    --panel-tint-normal-rgb:234,244,252;   /* режим "Обучение" — сейчас золото */
+    --panel-tint-karaoke-rgb:235,245,240;  /* режим "Караоке" — сейчас тоже золото, поменяй на своё */
+    --block-border-rgb:201,162,39;        /* обводка всех трёх блоков (гриф + два нижних) — одна на все темы и режимы */
 
     /* ===== Персонаж режима караоке (лицо-реакция) ===== */
     --char-face:#e8b34a;
@@ -113,6 +120,7 @@
     --light-neck-wood:#613f28;        /* дерево грифа на светлой теме */
     --light-tuning-btn:#5a4a1a;
     --light-needle-gray:#aaa;
+    --light-accent-rgb:180,140,20;    /* тёмно-золотой акцент светлой темы — рамки блоков, выпадающие списки */
     --light-neck-detail:rgba(60,40,20,0.55);
     --light-countdown-bg:rgba(245,240,230,0.6);
     --light-stop-btn-shadow:rgba(42,26,8,0.25);
@@ -295,7 +303,7 @@
   }
   .frame{
     fill:none;
-    stroke:rgba(var(--gold-rgb),0.25);
+    stroke:rgba(var(--block-border-rgb),0.25);
     stroke-width:1;
     opacity:1;
   }
@@ -556,14 +564,17 @@
     }
   }
   .col-block{
-    background:linear-gradient(180deg, rgba(var(--gold-rgb),0.06), rgba(var(--gold-rgb),0.015));
-    border:1px solid rgba(var(--gold-rgb),0.25);
+    background:linear-gradient(180deg, rgba(var(--panel-tint-normal-rgb),0.06), rgba(var(--panel-tint-normal-rgb),0.015));
+    border:1px solid rgba(var(--block-border-rgb),0.25);
     border-radius:20px;
     padding:28px 32px;
     display:flex;
     flex-direction:column;
     min-width:0;
     min-height:340px;
+  }
+  body.karaoke-mode .col-block{
+    background:linear-gradient(180deg, rgba(var(--panel-tint-karaoke-rgb),0.06), rgba(var(--panel-tint-karaoke-rgb),0.015));
   }
   .col-block .song-picker,
   .col-block .scrub-wrap,
@@ -1265,13 +1276,13 @@
   /* ══ СВЕТЛЫЙ РЕЖИМ ══ */
   body.light-mode {
     background:
-      radial-gradient(ellipse at 30% 0%, var(--light-tint-normal-1) 0%, var(--light-tint-normal-2) 50%, var(--light-tint-normal-3) 100%),
+      radial-gradient(ellipse at 30% 0%, var(--light-normal-bg-1) 0%, var(--light-normal-bg-2) 50%, var(--light-normal-bg-3) 100%),
       var(--white);
     color: var(--light-ink);
   }
   body.light-mode.karaoke-mode {
     background:
-      radial-gradient(ellipse at 30% 0%, var(--light-tint-karaoke-1) 0%, var(--light-tint-karaoke-2) 60%, var(--light-tint-karaoke-3) 100%),
+      radial-gradient(ellipse at 30% 0%, var(--light-karaoke-bg-1) 0%, var(--light-karaoke-bg-2) 60%, var(--light-karaoke-bg-3) 100%),
       var(--white);
   }
 
@@ -1295,7 +1306,7 @@
   body.light-mode .sub { color: var(--light-text-muted); }
 
   /* Гриф */
-  body.light-mode .frame { stroke: rgba(var(--light-accent-rgb),0.25); opacity: 1; }
+  body.light-mode .frame { stroke: rgba(var(--block-border-rgb),0.25); opacity: 1; }
   body.light-mode .neck { fill: var(--light-neck-wood); }
   body.light-mode .string-line { stroke: var(--light-string); opacity: 0.5; }
   body.light-mode .fret-line { stroke: var(--gold); }
@@ -1320,8 +1331,12 @@
 
   /* col-block */
   body.light-mode .col-block {
-    background: linear-gradient(180deg, rgba(var(--gold-rgb),0.07), rgba(var(--gold-rgb),0.01));
-    border-color: rgba(var(--gold-rgb),0.3);
+    background: linear-gradient(180deg, rgba(var(--panel-tint-normal-rgb),0.07), rgba(var(--panel-tint-normal-rgb),0.01));
+    border-color: rgba(var(--block-border-rgb),0.25);
+  }
+  body.light-mode.karaoke-mode .col-block {
+    background: linear-gradient(180deg, rgba(var(--panel-tint-karaoke-rgb),0.07), rgba(var(--panel-tint-karaoke-rgb),0.01));
+    border-color: rgba(var(--block-border-rgb),0.25);
   }
 
   /* Выпадающие списки */
