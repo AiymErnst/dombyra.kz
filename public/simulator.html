@@ -1712,7 +1712,15 @@
     .song-modal-header{ padding-top:calc(env(safe-area-inset-top, 0px) + 12px); }
     .song-modal-filters{ position:sticky; top:0; background:inherit; z-index:2; }
   }
-
+.fireworks-canvas{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  z-index:500;
+  pointer-events:none;
+  display:none;
+}
 </style>
 </head>
 <body>
@@ -2058,6 +2066,7 @@
     </div>
   </div>
 
+<canvas id="fireworksCanvas" class="fireworks-canvas"></canvas>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
   // ==== Supabase: подключение и авторизация ====
@@ -3401,9 +3410,13 @@
     karaokeStatus.textContent = t('done');
     karaokeResult.style.display = 'block';
     karaokeResult.innerHTML = `
-      <div class="big-score">${score}%</div>
-      <div class="score-msg">${msg}<br>${t('exact')}: ${great} · ${t('almost')}: ${ok} · ${t('missed')}: ${total-great-ok}</div>
-    `;
+  <div class="big-score">${score}%</div>
+  <div class="score-msg">${msg}<br>${t('exact')}: ${great} · ${t('almost')}: ${ok} · ${t('missed')}: ${total-great-ok}</div>
+`;
+
+    if(score === 100 && typeof launchFireworks === 'function'){
+      launchFireworks();
+    }
   }
 
   function stopKaraoke(){
@@ -4027,11 +4040,92 @@
   });
 
   (async () => {
-    const { data: { session } } = await sb.auth.getSession();
-    currentUser = session?.user || null;
-    renderAuthUI(currentUser);
-    await loadSongs();
-  })();
+  const { data: { session } } = await sb.auth.getSession();
+  currentUser = session?.user || null;
+  renderAuthUI(currentUser);
+  await loadSongs();
+})();
+
+// ==== Салют на весь экран при результате 100% ====
+const fireworksCanvas = document.getElementById('fireworksCanvas');
+const fwCtx = fireworksCanvas ? fireworksCanvas.getContext('2d') : null;
+let fwParticles = [];
+let fwAnimId = null;
+let fwBurstTimers = [];
+
+const FW_COLORS = ['#e6c96a', '#c9a227', '#AAFF00', '#007A94', '#FF3D35', '#ffffff'];
+
+function fwResize(){
+  if(!fireworksCanvas) return;
+  fireworksCanvas.width = window.innerWidth;
+  fireworksCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', fwResize);
+
+function fwBurst(x, y){
+  const count = 55 + Math.floor(Math.random() * 25);
+  const color = FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)];
+  for(let i = 0; i < count; i++){
+    const angle = (Math.PI * 2 * i) / count + Math.random() * 0.2;
+    const speed = 2.5 + Math.random() * 4.5;
+    fwParticles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      color,
+      life: 1,
+      decay: 0.008 + Math.random() * 0.012,
+      size: 2 + Math.random() * 2
+    });
+  }
+}
+
+function fwLoop(){
+  if(!fwCtx) return;
+  fwCtx.clearRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+  fwParticles.forEach(p => {
+    p.vy += 0.045;
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life -= p.decay;
+    if(p.life <= 0) return;
+    fwCtx.globalAlpha = Math.max(p.life, 0);
+    fwCtx.fillStyle = p.color;
+    fwCtx.beginPath();
+    fwCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    fwCtx.fill();
+  });
+  fwCtx.globalAlpha = 1;
+  fwParticles = fwParticles.filter(p => p.life > 0);
+
+  if(fwParticles.length > 0 || fwBurstTimers.length > 0){
+    fwAnimId = requestAnimationFrame(fwLoop);
+  } else {
+    fireworksCanvas.style.display = 'none';
+    fwAnimId = null;
+  }
+}
+
+function launchFireworks(){
+  if(!fireworksCanvas || !fwCtx) return;
+  fwBurstTimers.forEach(id => clearTimeout(id));
+  fwBurstTimers = [];
+  fwResize();
+  fireworksCanvas.style.display = 'block';
+
+  const bursts = 7;
+  for(let i = 0; i < bursts; i++){
+    const id = setTimeout(() => {
+      const x = fireworksCanvas.width * (0.15 + Math.random() * 0.7);
+      const y = fireworksCanvas.height * (0.15 + Math.random() * 0.4);
+      fwBurst(x, y);
+      fwBurstTimers = fwBurstTimers.filter(t => t !== id);
+    }, i * 350);
+    fwBurstTimers.push(id);
+  }
+
+  if(!fwAnimId) fwLoop();
+}
 </script>
 
 </body>
