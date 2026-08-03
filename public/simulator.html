@@ -2893,6 +2893,7 @@
     try{
 
     if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(audioCtx.state === 'suspended'){ await audioCtx.resume(); }
     const micSource = audioCtx.createMediaStreamSource(micStream);
     analyser = audioCtx.createAnalyser();
     analyser.fftSize = 2048;
@@ -3072,7 +3073,8 @@
       try{
         if(!tunerAC || tunerAC.state === 'closed'){
           tunerAC = new (window.AudioContext || window.webkitAudioContext)();
-        } else if(tunerAC.state === 'suspended'){
+        }
+        if(tunerAC.state === 'suspended'){
           await tunerAC.resume();
         }
         tunerAn = tunerAC.createAnalyser(); tunerAn.fftSize = 4096;
