@@ -3256,6 +3256,12 @@
     return best;
   }
 
+  const KARAOKE_EMOJI = {
+    happy: '😊',
+    sad: '😢',
+    listening: '👂',
+    neutral: '😐'
+  };
   const SCORE_EMOJI = {
     bad: '🥹',
     notBad: '😐',
@@ -3264,7 +3270,7 @@
     great: '😉',
     super: '🥳'
   };
-  function setCharState(state){
+function setCharState(state){
     karaokeChar.classList.remove('happy','sad','listening');
     if(state) karaokeChar.classList.add(state);
     karaokeChar.textContent = KARAOKE_EMOJI[state] || KARAOKE_EMOJI.neutral;
