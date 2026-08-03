@@ -228,6 +228,16 @@
     cursor:pointer;
     white-space:nowrap;
   }
+  .auth-btn-premium{
+    background:linear-gradient(180deg, var(--gold-soft), var(--gold));
+    color:var(--wine-deep);
+    box-shadow:0 0 8px rgba(var(--gold-rgb),0.6), 0 0 16px rgba(var(--gold-rgb),0.35);
+    animation:premiumGlow 2.2s ease-in-out infinite;
+  }
+@keyframes premiumGlow{
+  0%, 100% { box-shadow:0 0 8px rgba(var(--gold-rgb),0.6), 0 0 16px rgba(var(--gold-rgb),0.35); }
+  50% { box-shadow:0 0 14px rgba(var(--gold-rgb),0.9), 0 0 28px rgba(var(--gold-rgb),0.55); }
+}
   .auth-btn-ghost{
     background:transparent;
     color:rgba(var(--white-rgb),0.85);
@@ -1733,7 +1743,7 @@
     </div>
     <div class="top-bar-right">
       <div id="authBox" class="auth-box">
-        <button id="loginBtn" class="auth-btn">Войти через Google</button>
+        <button id="loginBtn" class="auth-btn">✨Premium</button>
         <div id="userBox" class="user-box" style="display:none;">
           <span id="userEmail" class="user-email"></span>
           <button id="logoutBtn" class="auth-btn auth-btn-ghost">Выйти</button>
@@ -2151,9 +2161,13 @@
       micIframe: 'Микрофон недоступен: страница открыта во встроенном окне (iframe). Открой файл напрямую в браузере или на сайте — тогда караоке заработает.',
       getReady: 'Приготовься — сейчас начнём',
       playThis: 'Играй',
-      great: 'Отлично! Домбра тебя любит 🎉',
-      ok: 'Неплохо! Ещё немного практики',
-      bad: 'Не расстраивайся — попробуй ещё раз помедленнее',
+      scoreBad: 'Не расстраивайся. Проверь, настроена ли у тебя струна. Попробуй сыграть в медленном темпе.',
+      scoreNotBad: 'Неплохо! Знаю, ты можешь ещё лучше.',
+      scoreBetter: 'Хорошо! Продолжай в том же духе.',
+      scoreGood: 'Очень хорошо! Чувствуется, что ты играешь увереннее.',
+      scoreGreat: 'Отлично! Совсем немного осталось до идеала.',
+      scoreSuper: 'Супер! Почти без единой ошибки!',
+      scorePerfect: 'Безупречно! Ни единой фальши! 🎉',
       done: 'Готово!',
       stopped: 'Остановлено. Нажми «Начать», чтобы попробовать снова.',
       exact: 'Точно', almost: 'Почти', missed: 'Мимо',
@@ -2233,12 +2247,16 @@
       micIframe: 'Микрофон қолжетімсіз: бет ішкі терезеде (iframe) ашылған. Файлды браузерде тікелей немесе сайттан ашсаң, караоке жұмыс істейді.',
       getReady: 'Дайындал — қазір бастаймыз',
       playThis: 'Ойна',
-      great: 'Тамаша! Домбыра сені жақсы көреді 🎉',
-      ok: 'Жаман емес! Тағы да жаттығу керек',
-      bad: 'Ренжіме — баяулатып тағы байқап көр',
+      scoreBad: 'Ренжіме. Ішекті дұрыс баптап па, тексеріп көр. Баяу қарқында ойнап көр.',
+      scoreNotBad: 'Жаман емес! Сен одан да жақсы ойнай аласың, білемін.',
+      scoreBetter: 'Жақсы! Осылай жалғастыр — нәтиже жақсарады.',
+      scoreGood: 'Өте жақсы! Сенімдірек ойнап жатқаның сезіледі.',
+      scoreGreat: 'Тамаша! Идеалға дейін көп қалмады.',
+      scoreSuper: 'Керемет! Дерлік қатесіз ойнадың!',
+      scorePerfect: 'Пай-пай, шіркін-ай, керемет қой! 🎉',
       done: 'Дайын!',
       stopped: 'Тоқтатылды. Қайта көру үшін «Бастау» түймесін бас.',
-      exact: 'Дәл', almost: 'Жақын', missed: 'Өтті',
+      exact: 'Дәл', almost: 'Жақын', missed: 'Ойналған жоқ',
       shortBottom: 'Т', shortTop: 'Ж',
       sectionLabel: 'Бөлім', allSections: 'Толық әуен',
       loopLabel: 'Қайталап ойнату',
@@ -3238,11 +3256,13 @@
     return best;
   }
 
-  const KARAOKE_EMOJI = {
-    happy: '😊',
-    sad: '😢',
-    listening: '👂',
-    neutral: '😐'
+  const SCORE_EMOJI = {
+    bad: '🥹',
+    notBad: '😐',
+    better: '🙂',
+    good: '😀',
+    great: '😉',
+    super: '🥳'
   };
   function setCharState(state){
     karaokeChar.classList.remove('happy','sad','listening');
@@ -3401,12 +3421,19 @@
     const total = results.length || 1;
     const score = Math.round(((great*1 + ok*0.5) / total) * 100);
 
-    let msg, state;
-    if(score >= 85){ msg = t('great'); state = 'happy'; }
-    else if(score >= 60){ msg = t('ok'); state = null; }
-    else { msg = t('bad'); state = 'sad'; }
+    let msg, tier;
+    if(score <= 15){ msg = t('scoreBad'); tier = 'bad'; }
+    else if(score <= 30){ msg = t('scoreNotBad'); tier = 'notBad'; }
+    else if(score <= 50){ msg = t('scoreBetter'); tier = 'better'; }
+    else if(score <= 70){ msg = t('scoreGood'); tier = 'good'; }
+    else if(score <= 94){ msg = t('scoreGreat'); tier = 'great'; }
+    else if(score < 100){ msg = t('scoreSuper'); tier = 'super'; }
+    else { msg = t('scorePerfect'); tier = 'super'; }
 
-    setCharState(state);
+    karaokeChar.classList.remove('happy','sad','listening');
+    karaokeChar.textContent = SCORE_EMOJI[tier];
+    if(tier === 'great' || tier === 'super') karaokeChar.classList.add('happy');
+    if(tier === 'bad' || tier === 'notBad') karaokeChar.classList.add('sad');
     karaokeStatus.textContent = t('done');
     karaokeResult.style.display = 'block';
     karaokeResult.innerHTML = `
