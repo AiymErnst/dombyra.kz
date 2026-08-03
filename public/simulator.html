@@ -1986,10 +1986,9 @@
         </div>
       </div>
 
-      <div id="karaokeChar" class="karaoke-char">😐</div>
-
+      <div id="karaokeRightContent" style="display:none;">
+	    <div id="karaokeChar" class="karaoke-char">😐</div>
         <div class="karaoke-status" id="karaokeStatus" data-i18n="karaokeIntro">Нажми «Начать», разреши доступ к микрофону и играй мелодию на домбре вслед за подсветкой</div>
-
         <div class="tab-legend">
           <span><b data-i18n="shortBottom">Н</b> — <span data-i18n="legendBottom">нижняя струна</span></span>
           <span><b data-i18n="shortTop">В</b> — <span data-i18n="legendTop">верхняя струна</span></span>
@@ -2066,7 +2065,7 @@
   // спокойно хранить прямо в этом файле — доступ к платным мелодиям
   // защищён не этим ключом, а правилами Row Level Security в базе.
   const SUPABASE_URL = "https://xzfllkdpvqzteddigqhx.supabase.co";
-  const SUPABASE_ANON_KEY = "ВСТАВЬ_СЮДА_СВОЙ_PUBLISHABLE_KEY"; // Supabase → Settings → API Keys
+  const SUPABASE_ANON_KEY = "sb_publishable_pIzOMEy3QPARbdql2O8H4w_5T2i3Q9U"; // Supabase → Settings → API Keys
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let currentUser = null;
