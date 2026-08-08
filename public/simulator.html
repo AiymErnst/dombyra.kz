@@ -247,15 +247,9 @@
     white-space:nowrap;
   }
   .auth-btn-premium{
-    background:linear-gradient(180deg, var(--gold-soft), var(--gold));
+    background:linear-gradient(180deg, rgba(var(--gold-soft-rgb),0.95), rgba(var(--gold-rgb),0.95));
     color:var(--wine-deep);
-    box-shadow:0 0 8px rgba(var(--gold-rgb),0.6), 0 0 16px rgba(var(--gold-rgb),0.35);
-    animation:premiumGlow 2.2s ease-in-out infinite;
   }
-@keyframes premiumGlow{
-  0%, 100% { box-shadow:0 0 8px rgba(var(--gold-rgb),0.6), 0 0 16px rgba(var(--gold-rgb),0.35); }
-  50% { box-shadow:0 0 14px rgba(var(--gold-rgb),0.9), 0 0 28px rgba(var(--gold-rgb),0.55); }
-}
   .auth-btn-ghost{
     background:transparent;
     color:rgba(var(--white-rgb),0.85);
@@ -1442,6 +1436,7 @@
   body.light-mode .tab-lane { color: var(--light-text-body); }
   body.light-mode .tab-lane.filled { color: var(--light-text-strong); }
   body.light-mode .tab-stroke { color: var(--gold); }
+  body.light-mode .tab-lyric { color: var(--gold); }
   body.light-mode .tab-labels .tab-lane,
   body.light-mode .tab-labels .tab-stroke { color: var(--gold); }
   body.light-mode .tab-note.selected-start {
@@ -1827,7 +1822,7 @@
     </div>
     <div class="top-bar-right">
       <div id="authBox" class="auth-box">
-        <button id="loginBtn" class="auth-btn">✨Premium</button>
+        <button id="loginBtn" class="auth-btn auth-btn-premium">✨Premium</button>
         <div id="userBox" class="user-box" style="display:none;">
           <span id="userEmail" class="user-email"></span>
           <button id="logoutBtn" class="auth-btn auth-btn-ghost">Выйти</button>
@@ -2033,10 +2028,11 @@
         <select id="sectionSelect"></select>
       </div>
 
-      <div class="speed-row">
+      <div class="speed-row" id="loopRow">
         <label for="loopToggle" data-i18n="loopLabel">Повторять по кругу</label>
         <input type="checkbox" id="loopToggle">
       </div>
+
 
       <div class="speed-row">
         <label for="previewToggle" data-i18n="previewLabel">Показывать следующий лад заранее</label>
@@ -2093,14 +2089,13 @@
       <div id="karaokeRightContent" style="display:none;">
 	    <div id="karaokeChar" class="karaoke-char">😐</div>
         <div class="karaoke-status" id="karaokeStatus" data-i18n="karaokeIntro">Нажми «Начать», разреши доступ к микрофону и играй мелодию на домбре вслед за подсветкой</div>
+        <div class="karaoke-result" id="karaokeResult" style="display:none;"></div>
         <div class="tab-legend">
           <span><b data-i18n="shortBottom">Н</b> — <span data-i18n="legendBottom">нижняя струна</span></span>
           <span><b data-i18n="shortTop">В</b> — <span data-i18n="legendTop">верхняя струна</span></span>
           <span>↓↑ — <span data-i18n="legendStroke">удар</span></span>
         </div>
         <div class="tab-sheet" id="karaokeTrack"></div>
-
-        <div class="karaoke-result" id="karaokeResult" style="display:none;"></div>
       </div>
 
     </div>
@@ -2867,7 +2862,7 @@
     songs = (catalog || []).map(row => {
       const full = playableById.get(row.id);
       const sections = full
-        ? full.sections.map(sec => ({ name: sec.name, steps: sec.steps.map(normStep) }))
+        ? full.sections.map(sec => ({ name: sec.name, repeat: sec.repeatCount ?? sec.repeat, steps: sec.steps.map(normStep) }))
         : null;
       const tags = row.tags || [];
       const stringsTag = tags.find(t => t.category === 'strings') || null;
@@ -2948,20 +2943,39 @@
   // Плоский список нот текущей области (вся мелодия или одна часть)
   // + границы частей, чтобы нотный лист рисовал заголовки.
   function activeScope(){
-    if(!songs.length || !songs[currentSongIndex]) return { steps: [], groups: [] };
+    if(!songs.length || !songs[currentSongIndex]) return { steps: [], groups: [], playback: [] };
     const song = songs[currentSongIndex];
     const secs = currentSectionIndex === -1
       ? song.sections
       : [song.sections[currentSectionIndex]];
     const steps = [];
     const groups = [];
+    // playback — отдельная последовательность ДЛЯ ПРОИГРЫВАНИЯ: если у части
+    // указано repeat > 1, её ноты попадают сюда несколько раз подряд, но на
+    // экране (steps/groups) часть всё равно показана один раз — во время
+    // проигрывания курсор просто возвращается к началу той же строки.
+    const playback = [];
     secs.forEach(sec => {
-      groups.push({ name: sec.name, from: steps.length, count: sec.steps.length });
+      const from = steps.length;
       sec.steps.forEach(st => steps.push(st));
+      groups.push({ name: sec.name, from, count: sec.steps.length });
+
+      const repeatCount = Math.max(1, parseInt(sec.repeat) || 1);
+      for(let r = 0; r < repeatCount; r++){
+        sec.steps.forEach((st, k) => playback.push({ step: st, displayIndex: from + k }));
+      }
     });
-    return { steps, groups };
+    return { steps, groups, playback };
   }
   function activeSteps(){ return activeScope().steps; }
+  function activePlayback(){ return activeScope().playback; }
+  // находит, с какого места в playback-последовательности начать, если
+  // пользователь кликнул ноту №startDisplayIndex (в первом её появлении)
+  function playbackOffsetFor(startDisplayIndex){
+    const playback = activePlayback();
+    const idx = playback.findIndex(p => p.displayIndex === startDisplayIndex);
+    return idx >= 0 ? idx : 0;
+  }
 
   const EIGHTH_MS = 190;
   const OPEN_FREQ_BOTTOM = 196;   // соль малой октавы, нижняя открытая струна
@@ -2994,6 +3008,8 @@
   const countdownSelect = document.getElementById('countdownSelect');
   const sectionSelect = document.getElementById('sectionSelect');
   const loopToggle = document.getElementById('loopToggle');
+  // фича "играть звук мелодии в караоке" убрана: микрофон слышит системный
+  // звук из колонок и ошибочно засчитывает его как правильную игру
   const scrubTrack = document.getElementById('scrubTrack');
   const startLabel = document.getElementById('startLabel');
   const songSelect = document.getElementById('songSelect');
@@ -3380,11 +3396,11 @@
       await preloadSamples();
     }
 
-    const slice = activeSteps().slice(startIndex);
+    const slice = activePlayback().slice(playbackOffsetFor(startIndex));
 
     // подсвечиваем первый лад заранее — чтобы успеть подготовиться ещё во время отсчёта
     if(slice.length){
-      highlightStep(slice[0], previewToggle.checked ? (slice[1]||null) : null);
+      highlightStep(slice[0].step, previewToggle.checked ? (slice[1]?.step||null) : null);
     }
 
     const countdownSecs = parseInt(countdownSelect.value) || 0;
@@ -3405,12 +3421,12 @@
     do {
       for(let i=0; i<slice.length; i++){
         if(playToken !== myToken) break; // остановлено
-        const step = slice[i];
-        const nextStep = slice[i+1] || null;
+        const step = slice[i].step;
+        const nextStep = slice[i+1]?.step || null;
         const speed = speedSlider.value/100;
         const durMs = (step.beats * EIGHTH_MS) / speed;
         highlightStep(step, previewToggle.checked ? nextStep : null);
-        setPlayingSeg(startIndex + i);
+        setPlayingSeg(slice[i].displayIndex);
         playNote(step, durMs * 0.9);
         await new Promise(r => setTimeout(r, durMs));
       }
@@ -3480,6 +3496,8 @@
       const ts = document.getElementById('tunerStage'); if(ts) ts.style.display = 'none';
       resetStringHighlight();
       render();
+      // в караоке "повторять по кругу" не имеет смысла — прячем эту строку
+      document.getElementById('loopRow').style.display = 'none';
     } else if(mode === 'tuner'){
       document.body.classList.add('tuner-mode');
       document.getElementById('stage').style.display = 'none';
@@ -3496,6 +3514,7 @@
       const ts = document.getElementById('tunerStage'); if(ts) ts.style.display = 'none';
       resetStringHighlight();
       render();
+      document.getElementById('loopRow').style.display = 'flex';
     }
 
     currentMode = mode;
@@ -3597,6 +3616,28 @@ function setCharState(state){
     return best;
   }
 
+  // Для ударов на ОБЕИХ струнах одновременно autoCorrelate ненадёжен —
+  // это детектор одного чистого тона, а два одновременных звука сбивают его
+  // на случайную частоту. Вместо этого честно проверяем спектр: звучит ли
+  // энергия одновременно рядом с ОБЕИМИ нужными частотами.
+  function hasSpectralPeakNear(freqDataDb, sampleRate, fftSize, targetFreq, toleranceCents, refDb){
+    const binHz = sampleRate / fftSize;
+    const ratio = Math.pow(2, toleranceCents / 1200);
+    const lowBin = Math.max(0, Math.floor((targetFreq / ratio) / binHz));
+    const highBin = Math.min(freqDataDb.length - 1, Math.ceil((targetFreq * ratio) / binHz));
+    let maxDb = -Infinity;
+    for(let b = lowBin; b <= highBin; b++){
+      if(freqDataDb[b] > maxDb) maxDb = freqDataDb[b];
+    }
+    // «присутствует», если пик здесь не сильно тише самого громкого места во всём спектре
+    return maxDb > refDb - 18;
+  }
+  function checkDualPresence(freqBuf, sampleRate, fftSize, targets){
+    let refDb = -Infinity;
+    for(let i=0; i<freqBuf.length; i++){ if(freqBuf[i] > refDb) refDb = freqBuf[i]; }
+    return targets.map(f => hasSpectralPeakNear(freqBuf, sampleRate, fftSize, f, 70, refDb));
+  }
+
   function buildKaraokeTrack(){
     renderTabSheet(karaokeTrack, false);
   }
@@ -3635,12 +3676,12 @@ function setCharState(state){
     setCharState('listening');
     karaokeStatus.textContent = t('getReady');
 
-    const seq = activeSteps();
+    const seq = activePlayback();
     buildKaraokeTrack();
 
     // подсвечиваем первый лад заранее — чтобы успеть подготовиться ещё во время отсчёта
     if(seq.length){
-      highlightStep(seq[0], previewToggle.checked ? (seq[1]||null) : null);
+      highlightStep(seq[0].step, previewToggle.checked ? (seq[1]?.step||null) : null);
     }
 
     const countdownSecs = parseInt(countdownSelect.value) || 0;
@@ -3656,22 +3697,28 @@ function setCharState(state){
     }
 
     const buf = new Float32Array(analyser.fftSize);
+    const freqBuf = new Float32Array(analyser.frequencyBinCount);
     let results = []; // 'great' | 'ok' | 'miss' на каждую ноту
 
     for(let i=0; i<seq.length; i++){
       if(karaokeToken !== myToken) break;
-      const step = seq[i];
-      const nextStep = seq[i+1] || null;
+      const step = seq[i].step;
+      const displayIndex = seq[i].displayIndex;
+      const nextStep = seq[i+1]?.step || null;
       const speed = speedSlider.value/100;
       const durMs = (step.beats * EIGHTH_MS) / Math.max(speed, 0.15);
       const targetFreqs = stepFreqs(step);
+      const isDual = targetFreqs.length > 1; // звучат обе струны одновременно
 
       // подсвечиваем текущий лад на грифе (и следующий, если включено превью) и в караоке-дорожке
       highlightStep(step, previewToggle.checked ? nextStep : null);
       karaokeTrack.querySelectorAll('.tab-note').forEach((s,idx) => {
-        s.classList.toggle('current', idx===i);
-        if(idx===i) scrollNoteIntoView(s);
+        s.classList.toggle('current', idx===displayIndex);
+        if(idx===displayIndex) scrollNoteIntoView(s);
       });
+      // звук самой мелодии в караоке намеренно НЕ проигрывается — микрофон
+      // слышит и его тоже, из-за чего ошибочно засчитывает системный звук
+      // как правильную игру на домбре
       const askParts = stepParts(step).map(p =>
         `${p.name==='bottom'?t('stringBottomShort'):t('stringTopShort')} ${t('stringWord')} ${t('fretWord')} ${p.fret}`);
       karaokeStatus.textContent = `${t('playThis')}: ${askParts.join(' + ')}`;
@@ -3683,27 +3730,48 @@ function setCharState(state){
       const windowEnd = performance.now() + durMs + grace;
       let bestCents = 9999;
       let bestFreq = 0;
+      let bestDualHits = 0; // для двухструнных ударов: сколько из двух целей поймали одновременно
       while(performance.now() < windowEnd){
         if(karaokeToken !== myToken) break;
-        analyser.getFloatTimeDomainData(buf);
-        const freq = autoCorrelate(buf, audioCtx.sampleRate);
-        if(freq > 0){
-          const c = bestCentsFor(freq, targetFreqs);
-          if(c < bestCents){ bestCents = c; bestFreq = freq; }
+        if(isDual){
+          // одна струна не спутает autoCorrelate, а вот две одновременно — легко.
+          // поэтому вместо «угадать одну высоту» честно проверяем спектр на
+          // присутствие энергии сразу у ОБЕИХ нужных частот
+          analyser.getFloatFrequencyData(freqBuf);
+          const hits = checkDualPresence(freqBuf, audioCtx.sampleRate, analyser.fftSize, targetFreqs);
+          const hitCount = hits.filter(Boolean).length;
+          if(hitCount > bestDualHits) bestDualHits = hitCount;
+        } else {
+          analyser.getFloatTimeDomainData(buf);
+          const freq = autoCorrelate(buf, audioCtx.sampleRate);
+          if(freq > 0){
+            const c = bestCentsFor(freq, targetFreqs);
+            if(c < bestCents){ bestCents = c; bestFreq = freq; }
+          }
         }
         await new Promise(r => setTimeout(r, 40));
       }
       if(karaokeToken !== myToken) break;
       // диагностика только в консоли (F12) — обычный игрок это не видит
-      console.log(`[домбра] удар ${stepParts(step).map(p=>p.name+':'+p.fret).join('+')} · цель ${targetFreqs.map(f=>f.toFixed(1)).join('/')} Гц · услышано ${bestFreq.toFixed(1)} Гц · ${bestCents.toFixed(0)} центов`);
+      if(isDual){
+        console.log(`[домбра] удар (2 струны) ${stepParts(step).map(p=>p.name+':'+p.fret).join('+')} · цель ${targetFreqs.map(f=>f.toFixed(1)).join('/')} Гц · поймано целей: ${bestDualHits}/2`);
+      } else {
+        console.log(`[домбра] удар ${stepParts(step).map(p=>p.name+':'+p.fret).join('+')} · цель ${targetFreqs.map(f=>f.toFixed(1)).join('/')} Гц · услышано ${bestFreq.toFixed(1)} Гц · ${bestCents.toFixed(0)} центов`);
+      }
 
       let grade;
-      if(bestCents <= 50) grade = 'great';
-      else if(bestCents <= 200) grade = 'ok';
-      else grade = 'miss';
+      if(isDual){
+        if(bestDualHits >= 2) grade = 'great';
+        else if(bestDualHits === 1) grade = 'ok';
+        else grade = 'miss';
+      } else {
+        if(bestCents <= 50) grade = 'great';
+        else if(bestCents <= 200) grade = 'ok';
+        else grade = 'miss';
+      }
       results.push(grade);
 
-      const seg = karaokeTrack.querySelector(`.tab-note[data-index="${i}"]`);
+      const seg = karaokeTrack.querySelector(`.tab-note[data-index="${displayIndex}"]`);
       if(seg){ seg.classList.remove('current'); seg.classList.add(grade); }
 
       if(grade === 'great'){ setCharState('happy'); }
