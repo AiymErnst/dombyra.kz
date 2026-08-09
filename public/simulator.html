@@ -140,7 +140,7 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    padding:14px 16px 24px;
+    padding:14px 16px calc(100px + env(safe-area-inset-bottom));
     position:relative;
   }
   .top-bar{
@@ -268,6 +268,77 @@
     text-overflow:ellipsis;
     white-space:nowrap;
   }
+  .auth-btn-label{ }
+
+  /* ===== Компактная шапка на мобильных: две плотные строки вместо трёх ===== */
+  @media (max-width:640px){
+    .top-bar{
+      flex-direction:column;
+      align-items:stretch;
+      gap:6px;
+      padding:0 2px 8px;
+    }
+    #modeGroup{
+      width:100%;
+    }
+    #modeGroup .seg{
+      flex:1 1 0;
+      text-align:center;
+      padding:7px 4px;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .top-bar-right{
+      width:100%;
+      flex-wrap:nowrap;
+      justify-content:space-between;
+      gap:6px;
+    }
+    .auth-btn-premium{
+      width:34px;
+      height:34px;
+      padding:0;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:15px;
+      flex:0 0 auto;
+    }
+    .auth-btn-premium .auth-btn-label{
+      display:none;
+    }
+    .user-email{
+      display:none;
+    }
+    .user-box{
+      gap:6px;
+    }
+    .auth-btn-ghost{
+      padding:7px 10px;
+      font-size:11px;
+    }
+    #handGroup{
+      flex:0 0 auto;
+    }
+    #handGroup .seg{
+      padding:6px 9px;
+      font-size:11px;
+    }
+    .lang-select{
+      max-width:60px;
+      font-size:11px;
+      padding:7px 20px 7px 8px;
+      background-position:calc(100% - 10px) center, calc(100% - 6px) center;
+      flex:0 0 auto;
+    }
+    #themeToggle{
+      width:34px;
+      height:34px;
+      flex:0 0 auto;
+    }
+  }
+
   .locked-hint{
     font-size:11.5px;
     color:var(--brand-lime);
@@ -566,17 +637,152 @@
     fill:var(--white);
   }
   .two-col-wrap{
-    display:grid;
-    grid-template-columns:minmax(0, 600px) 1fr;
-    gap:16px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
     width:100%;
     max-width:1500px;
     margin:0;
-    align-items:start;
   }
-  @media (max-width:900px){
-    .two-col-wrap{
-      grid-template-columns:1fr;
+  /* ===== Верхняя полоса: выбор мелодии + кнопка настроек ===== */
+  .song-bar{
+    display:flex;
+    align-items:stretch;
+    gap:10px;
+    width:100%;
+  }
+  .song-bar .song-picker{
+    margin-top:0;
+    max-width:none;
+    flex:1 1 auto;
+    min-width:0;
+  }
+  .settings-trigger{
+    flex:0 0 auto;
+    width:54px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:21px;
+    color:var(--cream);
+    background:rgba(var(--black-rgb),0.3);
+    border:1px solid rgba(var(--block-border-rgb),0.45);
+    border-radius:12px;
+    cursor:pointer;
+    transition:background .12s ease;
+  }
+  .settings-trigger:hover{
+    background:rgba(var(--black-rgb),0.4);
+  }
+  body.light-mode .settings-trigger{
+    color:var(--light-text-dark);
+    background:rgba(var(--white-rgb),0.8);
+    border-color:rgba(var(--block-border-rgb),0.45);
+  }
+  /* ===== Попап настроек (часть/повтор/превью/таймер) ===== */
+  .settings-modal-title{
+    font-family:'Manrope', sans-serif;
+    font-size:16px;
+    font-weight:700;
+    color:var(--gold-soft);
+    flex:1;
+  }
+  .settings-modal-body{
+    padding:6px 16px 20px;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .settings-modal-body .speed-row{
+    margin-top:0;
+  }
+  /* ===== Плавающая панель воспроизведения ===== */
+  .floating-play-bar{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:150;
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    padding:0 16px calc(8px + env(safe-area-inset-bottom));
+    background:linear-gradient(180deg, rgba(var(--panel-tint-normal-rgb),0.14), rgba(var(--panel-tint-normal-rgb),0.05));
+    border-top:1px solid rgba(var(--block-border-rgb),0.25);
+    backdrop-filter:blur(10px);
+  }
+  body.karaoke-mode .floating-play-bar{
+    background:linear-gradient(180deg, rgba(var(--panel-tint-karaoke-rgb),0.14), rgba(var(--panel-tint-karaoke-rgb),0.05));
+  }
+  body.light-mode .floating-play-bar{
+    background:linear-gradient(180deg, rgba(var(--white-rgb),0.9), rgba(var(--white-rgb),0.78));
+  }
+  .playback-progress-track{
+    width:100%;
+    height:4px;
+    margin:10px 0 2px;
+    background:rgba(var(--white-rgb),0.14);
+    border-radius:999px;
+    overflow:hidden;
+    flex:0 0 auto;
+  }
+  body.light-mode .playback-progress-track{
+    background:rgba(var(--black-rgb),0.1);
+  }
+  .playback-progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--gold), var(--gold-soft));
+    border-radius:999px;
+    transition:width .12s linear;
+  }
+  .floating-play-bar-inner{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:8px 0 2px;
+  }
+  .floating-play-bar .floating-speed-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex:1 1 auto;
+    min-width:0;
+    margin-top:0;
+  }
+  .floating-play-bar .floating-speed-row label{
+    display:none;
+  }
+  .floating-play-bar .floating-speed-row input[type="range"]{
+    flex:1 1 auto;
+    min-width:0;
+    width:auto;
+  }
+  .floating-play-bar .floating-speed-row span{
+    flex:0 0 auto;
+    font-size:13px;
+    font-weight:700;
+    color:var(--gold);
+    min-width:44px;
+    width:44px;
+    text-align:right;
+  }
+  .floating-play-bar .play-row{
+    margin-top:0;
+    flex:0 0 auto;
+  }
+  .floating-play-bar .play-btn,
+  .floating-play-bar .stop-btn{
+    padding:12px 18px;
+    white-space:nowrap;
+  }
+  @media (max-width:480px){
+    .floating-play-bar .play-btn,
+    .floating-play-bar .stop-btn{
+      padding:12px 14px;
+      font-size:15px;
     }
   }
   .col-block{
@@ -1024,6 +1230,7 @@
   body.tuner-mode {
     background:
       radial-gradient(ellipse at 50% -5%, var(--tuner-bg-1) 0%, var(--tuner-bg-2) 55%, var(--tuner-bg-3) 100%);
+    padding-bottom:24px;
   }
   /* tuner-row всегда показан — содержит stage (гриф) и tuner-wrap (панель) */
   #tuner-row {
@@ -1143,7 +1350,9 @@
   }
   .tuner-str-btn .tsn { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: inherit; opacity: 0.7; }
   .tuner-str-btn .tsv { font-size: 22px; font-weight: 700; font-family: 'Marcellus', serif; line-height: 1; color: inherit; }
+  .tuner-str-btn .tsname { font-size: 12px; font-weight: 600; color: inherit; opacity: 0.75; }
   .tuner-str-btn.active .tsv { color: var(--gold-soft); }
+  .tuner-str-btn.active .tsname { color: var(--gold-soft); opacity: 0.9; }
   /* большой бегунок GuitarTuna */
   .tuner-track-wrap {
     position: relative;
@@ -1890,8 +2099,8 @@
       <button class="seg" data-mode="karaoke" data-i18n="modeKaraoke">🎤 Караоке</button>
     </div>
     <div class="top-bar-right">
-      <div id="authBox" class="auth-box">
-        <button id="loginBtn" class="auth-btn auth-btn-premium">✨Premium</button>
+      <div class="auth-box" id="authBox">
+        <button id="loginBtn" class="auth-btn auth-btn-premium"><span class="auth-btn-icon">✨</span><span class="auth-btn-label">Premium</span></button>
         <div id="userBox" class="user-box" style="display:none;">
           <span id="userEmail" class="user-email"></span>
           <button id="logoutBtn" class="auth-btn auth-btn-ghost">Выйти</button>
@@ -2034,10 +2243,12 @@
             <button class="tuner-str-btn active" id="tunerBtnBottom" data-str="bottom">
               <span class="tsn" data-i18n="tunerStrBottom">Нижняя</span>
               <span class="tsv" id="tunerBtnBottomNote">G3</span>
+              <span class="tsname" id="tunerBtnBottomName">Соль</span>
             </button>
             <button class="tuner-str-btn" id="tunerBtnTop" data-str="top">
               <span class="tsn" data-i18n="tunerStrTop">Верхняя</span>
               <span class="tsv" id="tunerBtnTopNote">D3</span>
+              <span class="tsname" id="tunerBtnTopName">Ре</span>
             </button>
           </div>
 
@@ -2083,7 +2294,7 @@
 
   <div class="two-col-wrap">
 
-    <div class="col-block" id="leftColBlock">
+    <div class="song-bar" id="songBar">
       <div class="song-picker">
         <button type="button" id="songPickerTrigger" class="song-picker-trigger">
           <span id="songPickerTriggerText" data-i18n="songPickerPlaceholder">Мелодия таңдаңыз</span>
@@ -2091,53 +2302,10 @@
         </button>
         <select id="songSelect" class="sr-only-select" tabindex="-1" aria-hidden="true"></select>
       </div>
-
-      <div class="speed-row" id="sectionRow">
-        <label data-i18n="sectionLabel">Часть</label>
-        <div id="sectionList" class="section-list"></div>
-      </div>
-
-      <div class="speed-row" id="loopRow">
-        <label for="loopToggle" data-i18n="loopLabel">Повторять по кругу</label>
-        <input type="checkbox" id="loopToggle">
-      </div>
-
-
-      <div class="speed-row">
-        <label for="previewToggle" data-i18n="previewLabel">Показывать следующий лад заранее</label>
-        <input type="checkbox" id="previewToggle">
-      </div>
-
-      <div class="speed-row">
-        <label for="countdownSelect" data-i18n="countdownLabel">Таймер</label>
-        <select id="countdownSelect">
-          <option value="0" data-i18n="cd0">Без таймера</option>
-          <option value="3" selected data-i18n="cd3">3 сек</option>
-          <option value="5" data-i18n="cd5">5 сек</option>
-          <option value="7" data-i18n="cd7">7 сек</option>
-          <option value="10" data-i18n="cd10">10 сек</option>
-        </select>
-      </div>
-
-      <div class="speed-row">
-        <label for="speedSlider" data-i18n="speedLabel">Скорость</label>
-        <input type="range" id="speedSlider" min="3" max="100" value="40" step="1">
-        <span id="speedVal">0.4×</span>
-      </div>
-
-      <div class="play-row" id="normalPlayRow">
-        <button id="playBtn" class="play-btn" data-i18n="playBtn">▶ Проиграть</button>
-        <button id="stopBtn" class="stop-btn" disabled data-i18n="stopBtn">⏹ Стоп</button>
-      </div>
-
-      <div class="play-row" id="karaokePlayRow" style="display:none;">
-        <button id="karaokeStartBtn" class="play-btn" data-i18n="karaokeStartBtn">🎤 Начать</button>
-        <button id="karaokeStopBtn" class="stop-btn" disabled data-i18n="stopBtn">⏹ Стоп</button>
-      </div>
-
+      <button type="button" id="settingsTrigger" class="settings-trigger" aria-label="Баптаулар">⚙</button>
     </div>
 
-    <div class="col-block">
+    <div class="col-block" id="notationColBlock">
 
       <div id="normalRightContent">
         <div class="scrub-wrap">
@@ -2169,6 +2337,68 @@
 
     </div>
 
+  </div>
+
+  <!-- ===== Попап настроек (часть / повтор / превью / таймер) ===== -->
+  <div id="settingsModalOverlay" class="song-modal-overlay" style="display:none;">
+    <div class="song-modal" role="dialog" aria-modal="true" aria-label="Баптаулар">
+      <div class="song-modal-header">
+        <div class="settings-modal-title" data-i18n="settingsModalTitle">Баптаулар</div>
+        <button type="button" id="settingsModalClose" class="song-modal-close" aria-label="Жабу">✕</button>
+      </div>
+
+      <div class="settings-modal-body">
+        <div class="speed-row" id="sectionRow">
+          <label data-i18n="sectionLabel">Часть</label>
+          <div id="sectionList" class="section-list"></div>
+        </div>
+
+        <div class="speed-row" id="loopRow">
+          <label for="loopToggle" data-i18n="loopLabel">Повторять по кругу</label>
+          <input type="checkbox" id="loopToggle">
+        </div>
+
+        <div class="speed-row">
+          <label for="previewToggle" data-i18n="previewLabel">Показывать следующий лад заранее</label>
+          <input type="checkbox" id="previewToggle">
+        </div>
+
+        <div class="speed-row">
+          <label for="countdownSelect" data-i18n="countdownLabel">Таймер</label>
+          <select id="countdownSelect">
+            <option value="0" data-i18n="cd0">Без таймера</option>
+            <option value="3" selected data-i18n="cd3">3 сек</option>
+            <option value="5" data-i18n="cd5">5 сек</option>
+            <option value="7" data-i18n="cd7">7 сек</option>
+            <option value="10" data-i18n="cd10">10 сек</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Плавающая панель воспроизведения ===== -->
+  <div class="floating-play-bar" id="floatingPlayBar">
+    <div class="playback-progress-track" id="playbackProgressTrack">
+      <div class="playback-progress-fill" id="playbackProgressFill"></div>
+    </div>
+    <div class="floating-play-bar-inner">
+      <div class="speed-row floating-speed-row">
+        <label for="speedSlider" data-i18n="speedLabel">Скорость</label>
+        <input type="range" id="speedSlider" min="3" max="300" value="40" step="1">
+        <span id="speedVal">0.4×</span>
+      </div>
+
+      <div class="play-row" id="normalPlayRow">
+        <button id="playBtn" class="play-btn" data-i18n="playBtn">▶ Проиграть</button>
+        <button id="stopBtn" class="stop-btn" disabled data-i18n="stopBtn">⏹ Стоп</button>
+      </div>
+
+      <div class="play-row" id="karaokePlayRow" style="display:none;">
+        <button id="karaokeStartBtn" class="play-btn" data-i18n="karaokeStartBtn">🎤 Начать</button>
+        <button id="karaokeStopBtn" class="stop-btn" disabled data-i18n="stopBtn">⏹ Стоп</button>
+      </div>
+    </div>
   </div>
 
   <!-- ===== Попап выбора мелодии ===== -->
@@ -2339,6 +2569,7 @@
       tunerStopped: 'Остановлено.',
       tunerMicDenied: 'Нет доступа к микрофону — разрешите в браузере.',
       songPickerPlaceholder: 'Выберите мелодию',
+      settingsModalTitle: 'Настройки',
       songSearchPlaceholder: '🔍 Поиск мелодии…',
       songFilterGenre: 'Жанр:',
       songFilterDifficulty: 'Сложность:',
@@ -2424,6 +2655,7 @@
       tunerStopped: 'Тоқтатылды.',
       tunerMicDenied: 'Микрофонға қол жетімсіз — браузерде рұқсат беріңіз.',
       songPickerPlaceholder: 'Мелодия таңдаңыз',
+      settingsModalTitle: 'Баптаулар',
       songSearchPlaceholder: '🔍 Мелодияны іздеу…',
       songFilterGenre: 'Жанр:',
       songFilterDifficulty: 'Деңгей:',
@@ -2512,6 +2744,7 @@
       tunerStopped: 'Stopped.',
       tunerMicDenied: 'No microphone access — allow it in your browser.',
       songPickerPlaceholder: 'Choose a melody',
+      settingsModalTitle: 'Settings',
       songSearchPlaceholder: '🔍 Search melody…',
       songFilterGenre: 'Genre:',
       songFilterDifficulty: 'Difficulty:',
@@ -2600,6 +2833,7 @@
       tunerStopped: 'Durduruldu.',
       tunerMicDenied: 'Mikrofona erişim yok — tarayıcıda izin verin.',
       songPickerPlaceholder: 'Bir melodi seç',
+      settingsModalTitle: 'Ayarlar',
       songSearchPlaceholder: '🔍 Melodi ara…',
       songFilterGenre: 'Tür:',
       songFilterDifficulty: 'Zorluk:',
@@ -3088,6 +3322,7 @@
   const startLabel = document.getElementById('startLabel');
   const songSelect = document.getElementById('songSelect');
   let audioCtx = null;
+  let masterGain = null;
   let currentOsc = null;
   let currentStop = null;
   const SOUNDS_PATH = 'sounds/';
@@ -3095,10 +3330,27 @@
   let samplesLoading = false;
   let samplesLoaded = false;
 
+  // единая точка создания AudioContext + общий узел громкости, через который
+  // проходят и сэмплы, и синтезированный фолбэк — так звук мелодии в
+  // режиме "Учиться" стал заметно громче и его не приходится накручивать
+  // системной громкостью на максимум
+  const PLAYBACK_MASTER_GAIN = 1.9;
+  function ensureAudioCtx(){
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(!masterGain){
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = PLAYBACK_MASTER_GAIN;
+      masterGain.connect(audioCtx.destination);
+    }
+    return audioCtx;
+  }
+
   async function preloadSamples(){
     if(samplesLoading || samplesLoaded) return;
     samplesLoading = true;
-    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    ensureAudioCtx();
     const tasks = [];
     ['bottom','top'].forEach(s => {
       for(let f=0; f<=19; f++){
@@ -3432,6 +3684,13 @@
     });
   }
 
+  const playbackProgressFill = document.getElementById('playbackProgressFill');
+  function setPlaybackProgress(fraction){
+    if(!playbackProgressFill) return;
+    const pct = Math.max(0, Math.min(1, fraction)) * 100;
+    playbackProgressFill.style.width = pct + '%';
+  }
+
   speedSlider.addEventListener('input', () => {
     speedVal.textContent = (speedSlider.value/100).toFixed(2) + '×';
   });
@@ -3442,9 +3701,9 @@
     osc.type = 'sine';
     osc.frequency.value = freq;
     gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.25, audioCtx.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.35, audioCtx.currentTime + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + durationMs/1000);
-    osc.connect(gain).connect(audioCtx.destination);
+    osc.connect(gain).connect(masterGain);
     osc.start();
     osc.stop(audioCtx.currentTime + durationMs/1000 + 0.02);
     currentStop = () => { try{ osc.stop(); }catch(e){} };
@@ -3455,7 +3714,7 @@
     const gain = audioCtx.createGain();
     src.buffer = buffer;
     gain.gain.setValueAtTime(1, audioCtx.currentTime);
-    src.connect(gain).connect(audioCtx.destination);
+    src.connect(gain).connect(masterGain);
     src.start();
     // мягко подрезаем хвост записи под длительность ноты в мелодии,
     // чтобы ноты не "наезжали" друг на друга при быстром темпе
@@ -3465,7 +3724,7 @@
   }
 
   function playNote(step, durationMs){
-    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    ensureAudioCtx();
     // удар может звучать сразу на двух струнах — играем все, что есть
     stepParts(step).forEach(p => {
       const key = `${p.name}_${p.fret}`;
@@ -3580,6 +3839,7 @@
     }
 
     playBtn.textContent = t('playing');
+    setPlaybackProgress(0);
 
     // повтор по кругу: гоняем выбранную часть, пока не нажмут Стоп
     do {
@@ -3591,16 +3851,21 @@
         const durMs = (step.beats * EIGHTH_MS) / speed;
         highlightStep(step, previewToggle.checked ? nextStep : null);
         setPlayingSeg(slice[i].displayIndex);
+        setPlaybackProgress((i+1) / slice.length);
         playNote(step, durMs * 0.9);
         await new Promise(r => setTimeout(r, durMs));
       }
       if(playToken !== myToken) break;
-      if(loopToggle.checked) await new Promise(r => setTimeout(r, 500)); // пауза между кругами
+      if(loopToggle.checked){
+        setPlaybackProgress(0);
+        await new Promise(r => setTimeout(r, 500)); // пауза между кругами
+      }
     } while(loopToggle.checked && playToken === myToken);
 
     if(playToken === myToken){
       svg.querySelectorAll('.dot').forEach(d => d.classList.remove('active','preview'));
       setPlayingSeg(-1);
+      setPlaybackProgress(0);
       playBtn.disabled = false;
       stopBtn.disabled = true;
       playBtn.textContent = originalLabel;
@@ -3613,6 +3878,7 @@
     stopSound();
     svg.querySelectorAll('.dot').forEach(d => d.classList.remove('active','preview'));
     setPlayingSeg(-1);
+    setPlaybackProgress(0);
     playBtn.disabled = false;
     stopBtn.disabled = true;
     playBtn.textContent = t('playBtn');
@@ -3641,6 +3907,7 @@
     karaokeRightContent.style.display = 'none';
     normalPlayRow.style.display  = 'none';
     karaokePlayRow.style.display = 'none';
+    if(typeof setPlaybackProgress === 'function') setPlaybackProgress(0);
     document.body.classList.remove('karaoke-mode', 'tuner-mode');
 
     // останавливаем активные процессы
@@ -3654,8 +3921,8 @@
       karaokeRightContent.style.display = 'block';
       karaokePlayRow.style.display = 'flex';
       document.body.classList.add('karaoke-mode');
-      document.getElementById('leftColBlock').style.display = '';
-      document.querySelector('.two-col-wrap').style.gridTemplateColumns = '';
+      document.getElementById('songBar').style.display = '';
+      document.getElementById('floatingPlayBar').style.display = '';
       document.getElementById('stage').style.display = '';
       const ts = document.getElementById('tunerStage'); if(ts) ts.style.display = 'none';
       resetStringHighlight();
@@ -3664,6 +3931,8 @@
       document.getElementById('loopRow').style.display = 'none';
     } else if(mode === 'tuner'){
       document.body.classList.add('tuner-mode');
+      document.getElementById('songBar').style.display = 'none';
+      document.getElementById('floatingPlayBar').style.display = 'none';
       document.getElementById('stage').style.display = 'none';
       const ts = document.getElementById('tunerStage'); if(ts) ts.style.display = '';
       render();
@@ -3672,8 +3941,8 @@
     } else {
       normalRightContent.style.display = 'block';
       normalPlayRow.style.display = 'flex';
-      document.getElementById('leftColBlock').style.display = '';
-      document.querySelector('.two-col-wrap').style.gridTemplateColumns = '';
+      document.getElementById('songBar').style.display = '';
+      document.getElementById('floatingPlayBar').style.display = '';
       document.getElementById('stage').style.display = '';
       const ts = document.getElementById('tunerStage'); if(ts) ts.style.display = 'none';
       resetStringHighlight();
@@ -3827,7 +4096,7 @@ function setCharState(state){
 
     try{
 
-    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    ensureAudioCtx();
     const micSource = audioCtx.createMediaStreamSource(micStream);
     analyser = audioCtx.createAnalyser();
     analyser.fftSize = 2048;
@@ -4091,6 +4360,8 @@ function setCharState(state){
       const tu = TUNINGS[tunerCur];
       document.getElementById('tunerBtnBottomNote').textContent = tu.bottom.note;
       document.getElementById('tunerBtnTopNote').textContent    = tu.top.note;
+      document.getElementById('tunerBtnBottomName').textContent = tu.bottom.name;
+      document.getElementById('tunerBtnTopName').textContent    = tu.top.name;
       selectTunerStr(tunerSel);
     }
 
@@ -4571,8 +4842,28 @@ function setCharState(state){
   songModalOverlay.addEventListener('click', (e) => {
     if(e.target === songModalOverlay) closeSongModal();
   });
+
+  // ==== Попап настроек (часть / повтор / превью / таймер) ====
+  var settingsTrigger = document.getElementById('settingsTrigger');
+  var settingsModalOverlay = document.getElementById('settingsModalOverlay');
+  var settingsModalClose = document.getElementById('settingsModalClose');
+
+  function openSettingsModal(){
+    settingsModalOverlay.style.display = 'flex';
+  }
+  function closeSettingsModal(){
+    settingsModalOverlay.style.display = 'none';
+  }
+  settingsTrigger.addEventListener('click', openSettingsModal);
+  settingsModalClose.addEventListener('click', closeSettingsModal);
+  settingsModalOverlay.addEventListener('click', (e) => {
+    if(e.target === settingsModalOverlay) closeSettingsModal();
+  });
+
   document.addEventListener('keydown', (e) => {
-    if(e.key === 'Escape' && songModalOverlay.style.display !== 'none') closeSongModal();
+    if(e.key !== 'Escape') return;
+    if(songModalOverlay.style.display !== 'none') closeSongModal();
+    if(settingsModalOverlay.style.display !== 'none') closeSettingsModal();
   });
 
   songSearchInput.addEventListener('input', () => {
