@@ -546,6 +546,25 @@
     text-anchor:middle;
     font-family:'Manrope', sans-serif;
   }
+  .finger-badge-bg{
+    fill:var(--white);
+    stroke:var(--wine-deep);
+    stroke-width:1.5;
+  }
+  .finger-badge-text{
+    font-size:11px;
+    font-weight:700;
+    fill:var(--wine-deep);
+    font-family:'Manrope', sans-serif;
+    pointer-events:none;
+  }
+  body.light-mode .finger-badge-bg{
+    fill:var(--gold);
+    stroke:var(--white);
+  }
+  body.light-mode .finger-badge-text{
+    fill:var(--white);
+  }
   .two-col-wrap{
     display:grid;
     grid-template-columns:minmax(0, 600px) 1fr;
@@ -1649,6 +1668,56 @@
     background:var(--gold-soft);
     border-color:var(--gold-soft);
   }
+  #sectionRow{
+    flex-direction:column;
+    align-items:stretch;
+    gap:6px;
+  }
+  .section-list{
+    width:100%;
+    max-height:190px;
+    overflow-y:auto;
+    background:rgba(var(--black-rgb),0.3);
+    border:1px solid rgba(var(--gold-rgb),0.45);
+    border-radius:10px;
+    padding:4px;
+  }
+  .section-list-item{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:7px 8px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:14px;
+    color:var(--cream);
+  }
+  .section-list-item:hover{
+    background:rgba(var(--white-rgb),0.06);
+  }
+  .section-list-item input[type="checkbox"]{
+    width:16px;
+    height:16px;
+    accent-color:var(--gold);
+    cursor:pointer;
+    flex:0 0 auto;
+  }
+  .section-list-item.section-list-all{
+    border-bottom:1px solid rgba(var(--gold-rgb),0.25);
+    margin-bottom:3px;
+    padding-bottom:9px;
+    font-weight:600;
+  }
+  body.light-mode .section-list{
+    background:rgba(var(--white-rgb),0.8);
+    border-color:rgba(var(--light-accent-rgb),0.4);
+  }
+  body.light-mode .section-list-item{
+    color:var(--light-text-strong);
+  }
+  body.light-mode .section-list-item:hover{
+    background:rgba(var(--black-rgb),0.05);
+  }
   body.light-mode .song-chip{
     color:var(--light-text-body);
     background:rgba(var(--white-rgb),0.7);
@@ -2023,9 +2092,9 @@
         <select id="songSelect" class="sr-only-select" tabindex="-1" aria-hidden="true"></select>
       </div>
 
-      <div class="speed-row">
-        <label for="sectionSelect" data-i18n="sectionLabel">Часть</label>
-        <select id="sectionSelect"></select>
+      <div class="speed-row" id="sectionRow">
+        <label data-i18n="sectionLabel">Часть</label>
+        <div id="sectionList" class="section-list"></div>
       </div>
 
       <div class="speed-row" id="loopRow">
@@ -2563,11 +2632,6 @@
       el.placeholder = t(el.dataset.i18nPlaceholder);
     });
     document.documentElement.lang = { kz: 'kk', ru: 'ru', en: 'en', tr: 'tr' }[currentLang] || 'ru';
-    if(typeof sectionSelect !== 'undefined' && sectionSelect.options.length){
-      const keep = sectionSelect.value;
-      sectionSelect.options[0].textContent = t('allSections');
-      sectionSelect.value = keep;
-    }
     if(typeof scrubTrack !== 'undefined') updateScrubSelection();
     if(typeof updateSongPickerTrigger === 'function') updateSongPickerTrigger();
     if(typeof renderSongModalList === 'function' && songModalOverlay && songModalOverlay.style.display !== 'none'){
@@ -2820,7 +2884,9 @@
                legatoBottom: !!st.legatoBottom,
                legatoTop: !!st.legatoTop,
                barEnd: !!st.barEnd,
-               lyric: st.lyric || null };
+               lyric: st.lyric || null,
+               fingerBottom: st.fingerBottom ?? null,
+               fingerTop: st.fingerTop ?? null };
     }
     return {
       bottom: st.string === 'bottom' ? st.fret : null,
@@ -2829,7 +2895,9 @@
       legatoBottom: !!st.legatoBottom,
       legatoTop: !!st.legatoTop,
       barEnd: !!st.barEnd,
-      lyric: st.lyric || null
+      lyric: st.lyric || null,
+      fingerBottom: st.fingerBottom ?? null,
+      fingerTop: st.fingerTop ?? null
     };
   }
 
@@ -2907,7 +2975,8 @@
     playBtn.disabled = false;
     if(typeof karaokeStartBtn !== 'undefined') karaokeStartBtn.disabled = false;
 
-    currentSectionIndex = -1;
+    sectionMode = 'all';
+    selectedSectionIndices.clear();
     buildSectionPicker();
     buildScrub();
     updateSongPickerTrigger();
@@ -2929,25 +2998,29 @@
   }
 
   let currentSongIndex = 0;
-  let currentSectionIndex = -1; // -1 = вся мелодия целиком
+  // выбор частей теперь множественный: sectionMode 'all' — вся мелодия целиком
+  // (включая безымянные части), 'custom' — только те части, что отмечены в
+  // selectedSectionIndices (только именованные — как и раньше у одиночного выбора)
+  let sectionMode = 'all';
+  let selectedSectionIndices = new Set();
 
-  // У обучения и караоке свой выбор мелодии/части: можно разучивать одно,
+  // У обучения и караоке свой выбор мелодии/частей: можно разучивать одно,
   // а проходить караоке по другому.
   let currentMode = 'normal';
   const modeState = {
-    normal:  { song: 0, section: -1, start: 0 },
-    karaoke: { song: 0, section: -1, start: 0 },
-    tuner:   { song: 0, section: -1, start: 0 }
+    normal:  { song: 0, sectionMode: 'all', sectionIndices: [], start: 0 },
+    karaoke: { song: 0, sectionMode: 'all', sectionIndices: [], start: 0 },
+    tuner:   { song: 0, sectionMode: 'all', sectionIndices: [], start: 0 }
   };
 
-  // Плоский список нот текущей области (вся мелодия или одна часть)
+  // Плоский список нот текущей области (вся мелодия или набор выбранных частей)
   // + границы частей, чтобы нотный лист рисовал заголовки.
   function activeScope(){
     if(!songs.length || !songs[currentSongIndex]) return { steps: [], groups: [], playback: [] };
     const song = songs[currentSongIndex];
-    const secs = currentSectionIndex === -1
+    const secs = sectionMode === 'all'
       ? song.sections
-      : [song.sections[currentSectionIndex]];
+      : song.sections.filter((sec, i) => selectedSectionIndices.has(i));
     const steps = [];
     const groups = [];
     // playback — отдельная последовательность ДЛЯ ПРОИГРЫВАНИЯ: если у части
@@ -3006,7 +3079,8 @@
   const speedVal = document.getElementById('speedVal');
   const previewToggle = document.getElementById('previewToggle');
   const countdownSelect = document.getElementById('countdownSelect');
-  const sectionSelect = document.getElementById('sectionSelect');
+  const sectionList = document.getElementById('sectionList');
+  const sectionRow = document.getElementById('sectionRow');
   const loopToggle = document.getElementById('loopToggle');
   // фича "играть звук мелодии в караоке" убрана: микрофон слышит системный
   // звук из колонок и ошибочно засчитывает его как правильную игру
@@ -3191,39 +3265,91 @@
     updateScrubSelection();
   }
 
-  // список частей текущей мелодии
+  // список частей текущей мелодии — чипы, можно отметить сразу несколько
   function buildSectionPicker(){
     if(!songs.length || !songs[currentSongIndex]) return;
     const song = songs[currentSongIndex];
-    sectionSelect.innerHTML = '';
-    const optAll = document.createElement('option');
-    optAll.value = -1;
-    optAll.textContent = t('allSections');
-    sectionSelect.appendChild(optAll);
-    song.sections.forEach((sec, i) => {
-      if(!sec.name) return; // у одночастных мелодий выбирать нечего
-      const opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = sec.name;
-      sectionSelect.appendChild(opt);
+    const namedSections = song.sections
+      .map((sec, i) => ({ sec, i }))
+      .filter(x => x.sec.name); // у одночастных мелодий выбирать нечего
+
+    sectionList.innerHTML = '';
+
+    const allRow = document.createElement('label');
+    allRow.className = 'section-list-item section-list-all';
+    allRow.innerHTML = `<input type="checkbox"><span data-i18n="allSections">${t('allSections')}</span>`;
+    const allCheckbox = allRow.querySelector('input');
+    allCheckbox.addEventListener('change', () => {
+      if(isPlaying) stopBtn.click();
+      if(karaokeRunning) stopKaraoke();
+      sectionMode = 'all';
+      selectedSectionIndices.clear();
+      startIndex = 0;
+      renderSectionChipsState();
+      saveModeState();
+      refreshSheets();
     });
+    sectionList.appendChild(allRow);
+
+    namedSections.forEach(({ sec, i }) => {
+      const row = document.createElement('label');
+      row.className = 'section-list-item';
+      row.innerHTML = `<input type="checkbox" data-section-index="${i}"><span>${sec.name}</span>`;
+      const cb = row.querySelector('input');
+      cb.addEventListener('change', () => {
+        if(isPlaying) stopBtn.click();
+        if(karaokeRunning) stopKaraoke();
+        if(cb.checked){
+          if(sectionMode === 'all'){
+            // уходим из «вся мелодия» — начинаем точечный выбор ровно с этой части
+            sectionMode = 'custom';
+            selectedSectionIndices = new Set([i]);
+          } else {
+            selectedSectionIndices.add(i);
+          }
+        } else {
+          selectedSectionIndices.delete(i);
+          if(selectedSectionIndices.size === 0) sectionMode = 'all'; // не даём остаться совсем без выбора
+        }
+        startIndex = 0;
+        renderSectionChipsState();
+        saveModeState();
+        refreshSheets();
+      });
+      sectionList.appendChild(row);
+    });
+
     // если частей нет — прячем сам выбор
-    const sRow = sectionSelect.closest('.speed-row');
-    if(sectionSelect.options.length > 1){
-      sRow.style.display = 'flex';
-      sRow.style.marginTop = '';
+    if(namedSections.length > 0){
+      sectionRow.style.display = 'flex';
+      sectionRow.style.marginTop = '';
     } else {
-      sRow.style.display = 'none';
-      sRow.style.marginTop = '0';
+      sectionRow.style.display = 'none';
+      sectionRow.style.marginTop = '0';
     }
-    currentSectionIndex = -1;
-    sectionSelect.value = -1;
+
+    sectionMode = 'all';
+    selectedSectionIndices.clear();
+    renderSectionChipsState();
+  }
+
+  // ставит галочки согласно текущему sectionMode/selectedSectionIndices
+  // (например, при переключении режима «Обучение» ↔ «Караоке»)
+  function renderSectionChipsState(){
+    sectionList.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      if(cb.dataset.sectionIndex === undefined){
+        cb.checked = sectionMode === 'all'; // строка «Вся мелодия»
+      } else {
+        cb.checked = sectionMode === 'custom' && selectedSectionIndices.has(parseInt(cb.dataset.sectionIndex));
+      }
+    });
   }
 
   function saveModeState(){
     const s = modeState[currentMode];
     s.song = currentSongIndex;
-    s.section = currentSectionIndex;
+    s.sectionMode = sectionMode;
+    s.sectionIndices = [...selectedSectionIndices];
     s.start = startIndex;
   }
 
@@ -3232,11 +3358,12 @@
     currentSongIndex = s.song;
     songSelect.value = s.song;
     buildSectionPicker();                  // сбрасывает выбор части на «всю мелодию»
-    const hasSection = [...sectionSelect.options].some(o => o.value == s.section);
-    currentSectionIndex = hasSection ? s.section : -1;
-    sectionSelect.value = currentSectionIndex;
+    sectionMode = s.sectionMode || 'all';
+    selectedSectionIndices = new Set(s.sectionIndices || []);
+    renderSectionChipsState();
     startIndex = s.start;
   }
+
 
   // перерисовываем только тот лист, который сейчас на экране: у скрытого
   // ширина равна нулю, и раскладка колонок посчиталась бы неверно
@@ -3260,14 +3387,8 @@
     if(typeof updateSongPickerTrigger === 'function') updateSongPickerTrigger();
   });
 
-  sectionSelect.addEventListener('change', () => {
-    if(isPlaying) stopBtn.click();
-    if(karaokeRunning) stopKaraoke();
-    currentSectionIndex = parseInt(sectionSelect.value);
-    startIndex = 0;
-    saveModeState();
-    refreshSheets();
-  });
+  // клики по чипам частей обрабатываются прямо в buildSectionPicker(),
+  // отдельный общий обработчик change (как раньше у select) тут не нужен
 
   // buildSectionPicker() и buildScrub() вызываются из loadSongs(),
   // когда мелодии реально загружены
@@ -3286,9 +3407,22 @@
   function scrollNoteIntoView(el){
     if(!el) return;
     const line = el.closest('.tab-line');
-    if(!line) return;
-    const target = el.offsetLeft - (line.clientWidth - el.offsetWidth) / 2;
-    line.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+    if(line){
+      // по горизонтали — центрируем саму ноту внутри её строки
+      const target = el.offsetLeft - (line.clientWidth - el.offsetWidth) / 2;
+      line.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+    }
+    // по вертикали — если частей/страниц много, весь список прокручивается
+    // отдельно (.tab-sheet); подводим строку с активной нотой к центру
+    // видимой области, чтобы не приходилось скроллить руками во время игры
+    const sheet = el.closest('.tab-sheet');
+    if(sheet && line){
+      const sheetRect = sheet.getBoundingClientRect();
+      const lineRect = line.getBoundingClientRect();
+      const lineCenterY = lineRect.top + lineRect.height / 2 - sheetRect.top + sheet.scrollTop;
+      const targetTop = lineCenterY - sheet.clientHeight / 2;
+      sheet.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+    }
   }
 
   function setPlayingSeg(idx){
@@ -3350,13 +3484,43 @@
     }
   }
 
+  // группа для номеров пальцев на грифе — отдельно от точек, чтобы легко
+  // очищать/перерисовывать, не трогая сами точки
+  function fingerLabelGroup(){
+    let g = svg.querySelector('#fingerLabels');
+    if(!g){
+      g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.id = 'fingerLabels';
+      svg.appendChild(g);
+    }
+    g.innerHTML = '';
+    return g;
+  }
+
   function highlightStep(step, previewStep){
     svg.querySelectorAll('.dot').forEach(d => d.classList.remove('active','preview'));
+    const fingerGroup = fingerLabelGroup();
 
     const lit = [];
     stepParts(step).forEach(p => {
       const dot = svg.querySelector(`.dot[data-string="${p.name}"][data-fret="${p.fret}"]`);
-      if(dot){ dot.classList.add('active'); lit.push({ dot, p }); }
+      if(dot){
+        dot.classList.add('active');
+        lit.push({ dot, p });
+
+        // номер пальца — только на самом грифе, прямо у активной точки
+        const finger = p.name === 'bottom' ? step.fingerBottom : step.fingerTop;
+        if(finger){
+          const cx = dot.getAttribute('cx');
+          const cy = parseFloat(dot.getAttribute('cy')) - 15;
+          const badge = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          badge.innerHTML = `
+            <circle class="finger-badge-bg" cx="${cx}" cy="${cy}" r="8"/>
+            <text class="finger-badge-text" x="${cx}" y="${cy}" dy="0.35em" text-anchor="middle">${finger}</text>
+          `;
+          fingerGroup.appendChild(badge);
+        }
+      }
     });
 
     if(lit.length === 1){
