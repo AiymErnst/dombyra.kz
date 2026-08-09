@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>Домбыра — гриф</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -128,9 +129,15 @@
   }
 
   *{box-sizing:border-box;}
+  html{
+    overflow-x:hidden;
+    max-width:100%;
+  }
   body{
     margin:0;
     min-height:100vh;
+    overflow-x:hidden;
+    max-width:100%;
     background:
       radial-gradient(ellipse at 30% 0%, var(--bg-normal-1) 0%, transparent 50%),
       radial-gradient(ellipse at 80% 100%, var(--bg-normal-2) 0%, transparent 50%),
@@ -149,7 +156,8 @@
     justify-content:space-between;
     align-items:center;
     width:100%;
-    max-width:1500px;
+    max-width:1100px;
+    margin:0 auto;
     gap:10px;
     padding:0 4px 10px;
   }
@@ -199,9 +207,9 @@
     background:transparent;
     border:none;
     border-radius:999px;
-    padding:6px 14px;
+    padding:4px 12px;
     font-family:'Manrope', sans-serif;
-    font-size:13px;
+    font-size:11px;
     font-weight:600;
     color:rgba(var(--white-rgb),0.7);
     cursor:pointer;
@@ -214,7 +222,7 @@
   }
   .lang-select{
     font-family:'Manrope', sans-serif;
-    font-size:12.5px;
+    font-size:11px;
     font-weight:600;
     color:var(--seg-active-text);
     background:rgba(var(--white-rgb),0.92);
@@ -236,13 +244,13 @@
   }
   .auth-btn{
     font-family:'Manrope', sans-serif;
-    font-size:12px;
+    font-size:11px;
     font-weight:600;
     color:var(--seg-active-text);
     background:rgba(var(--white-rgb),0.92);
     border:none;
     border-radius:999px;
-    padding:8px 14px;
+    padding:8px 12px;
     cursor:pointer;
     white-space:nowrap;
   }
@@ -354,7 +362,7 @@
     aspect-ratio: 990 / 260;
   }
   .stage.horizontal{
-    max-width:1500px;
+    max-width:1100px;
     aspect-ratio: 990 / 260;
   }
   .stage svg{
@@ -641,8 +649,8 @@
     flex-direction:column;
     gap:14px;
     width:100%;
-    max-width:1500px;
-    margin:0;
+    max-width:1100px;
+    margin:0 auto;
   }
   /* ===== Верхняя полоса: выбор мелодии + кнопка настроек ===== */
   .song-bar{
@@ -697,7 +705,7 @@
   .settings-modal-body .speed-row{
     margin-top:0;
   }
-  /* ===== Плавающая панель воспроизведения ===== */
+  /* ===== Плавающая панель воспроизведения — компактная, в одну строку ===== */
   .floating-play-bar{
     position:fixed;
     left:0;
@@ -705,9 +713,8 @@
     bottom:0;
     z-index:150;
     display:flex;
-    flex-direction:column;
     width:100%;
-    padding:0 16px calc(8px + env(safe-area-inset-bottom));
+    padding:0 12px calc(8px + env(safe-area-inset-bottom));
     background:linear-gradient(180deg, rgba(var(--panel-tint-normal-rgb),0.14), rgba(var(--panel-tint-normal-rgb),0.05));
     border-top:1px solid rgba(var(--block-border-rgb),0.25);
     backdrop-filter:blur(10px);
@@ -718,38 +725,65 @@
   body.light-mode .floating-play-bar{
     background:linear-gradient(180deg, rgba(var(--white-rgb),0.9), rgba(var(--white-rgb),0.78));
   }
+  .floating-play-bar-inner{
+    width:100%;
+    max-width:640px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:8px 0;
+  }
+  /* увеличенная область клика/тача вокруг тонкой полоски — сама полоска
+     остаётся 4px, но кликать/тащить можно в пределах всей этой обёртки */
+  .playback-progress-hit{
+    flex:1 1 auto;
+    min-width:0;
+    padding:12px 0;
+    cursor:pointer;
+    touch-action:none;
+  }
   .playback-progress-track{
+    position:relative;
     width:100%;
     height:4px;
-    margin:10px 0 2px;
     background:rgba(var(--white-rgb),0.14);
     border-radius:999px;
-    overflow:hidden;
-    flex:0 0 auto;
+    overflow:visible;
   }
   body.light-mode .playback-progress-track{
     background:rgba(var(--black-rgb),0.1);
   }
   .playback-progress-fill{
+    position:absolute;
+    left:0; top:0;
     height:100%;
     width:0%;
     background:linear-gradient(90deg, var(--gold), var(--gold-soft));
     border-radius:999px;
     transition:width .12s linear;
   }
-  .floating-play-bar-inner{
-    width:100%;
-    display:flex;
-    align-items:center;
-    gap:14px;
-    padding:8px 0 2px;
+  .playback-progress-hit.scrubbing .playback-progress-fill{
+    transition:none;
+  }
+  .playback-progress-handle{
+    position:absolute;
+    top:50%;
+    left:0%;
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:var(--gold-soft);
+    box-shadow:0 1px 4px rgba(var(--black-rgb),0.4);
+    transform:translate(-50%,-50%);
+    pointer-events:none;
   }
   .floating-play-bar .floating-speed-row{
     display:flex;
     align-items:center;
-    gap:8px;
-    flex:1 1 auto;
-    min-width:0;
+    gap:6px;
+    flex:0 0 auto;
+    width:118px;
     margin-top:0;
   }
   .floating-play-bar .floating-speed-row label{
@@ -762,26 +796,29 @@
   }
   .floating-play-bar .floating-speed-row span{
     flex:0 0 auto;
-    font-size:13px;
+    font-size:12px;
     font-weight:700;
     color:var(--gold);
-    min-width:44px;
-    width:44px;
+    min-width:38px;
+    width:38px;
     text-align:right;
   }
   .floating-play-bar .play-row{
     margin-top:0;
     flex:0 0 auto;
   }
-  .floating-play-bar .play-btn,
-  .floating-play-bar .stop-btn{
-    padding:12px 18px;
-    white-space:nowrap;
+  .floating-play-bar .play-btn.icon-only{
+    width:44px;
+    height:44px;
+    font-size:17px;
   }
   @media (max-width:480px){
-    .floating-play-bar .play-btn,
-    .floating-play-bar .stop-btn{
-      padding:12px 14px;
+    .floating-play-bar .floating-speed-row{
+      width:88px;
+    }
+    .floating-play-bar .play-btn.icon-only{
+      width:42px;
+      height:42px;
       font-size:15px;
     }
   }
@@ -907,6 +944,7 @@
   }
   .tab-section{
     margin-bottom:2px;
+    max-width:100%;
   }
   .tab-section-title{
     font-size:12px;
@@ -923,6 +961,8 @@
     align-items:flex-start;
     gap:4px;
     margin-bottom:6px;
+    width:100%;
+    max-width:100%;
     overflow-x:auto;
     overflow-y:hidden;
     padding-bottom:4px;
@@ -968,7 +1008,7 @@
     background:rgba(var(--gold-rgb),0.25);
   }
   .tab-lane{
-    height:26px;
+    height:20px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -983,7 +1023,7 @@
     color:var(--cream);
   }
   .tab-stroke{
-    height:20px;
+    height:15px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -998,7 +1038,9 @@
     color:var(--cream);
     text-align:center;
     white-space:nowrap;
-    padding-top:4px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    padding:4px 2px 0;
   }
   .tab-bar-divider{
     width:2px;
@@ -1190,6 +1232,21 @@
     opacity:0.55;
     cursor:default;
   }
+  .play-btn.icon-only{
+    width:56px;
+    height:56px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+    line-height:1;
+    flex:0 0 auto;
+  }
+  .play-btn.icon-only.is-playing{
+    background:linear-gradient(180deg, rgba(var(--cream-rgb),0.95), rgba(var(--cream-rgb),0.8));
+    color:var(--wine-deep);
+  }
   .speed-row{
     margin-top:14px;
     display:flex;
@@ -1236,7 +1293,7 @@
   #tuner-row {
     display: block;
     width: 100%;
-    max-width: 1500px;
+    max-width: 1100px;
     margin: 0 auto;
   }
   /* tuner-wrap (панель тюнера) скрыта по умолчанию */
@@ -1293,6 +1350,12 @@
     align-items: center;
     gap: 0;
     width: 100%;
+  }
+  .tuner-hand-slot{
+    margin-bottom: 14px;
+  }
+  .tuner-hand-slot:empty{
+    display:none;
   }
   /* переключатели строя */
   .tuner-tuning-btns {
@@ -1538,9 +1601,9 @@
     background: rgba(var(--white-rgb),0.08);
     border: 1px solid rgba(var(--white-rgb),0.15);
     border-radius: 50%;
-    width: 34px;
-    height: 34px;
-    font-size: 16px;
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -2106,12 +2169,8 @@
           <button id="logoutBtn" class="auth-btn auth-btn-ghost">Выйти</button>
         </div>
       </div>
-      <div class="seg-group" id="handGroup">
-        <button class="seg active" data-hand="right" data-i18n="handRight">Правша</button>
-        <button class="seg" data-hand="left" data-i18n="handLeft">Левша</button>
-      </div>
       <select id="langSelect" class="lang-select">
-        <option value="kz">ҚАЗ — Қазақша</option>
+        <option value="kz">KZ — Қазақша</option>
         <option value="ru">RU — Русский</option>
         <option value="en">EN — English</option>
         <option value="tr">TR — Türkçe</option>
@@ -2234,6 +2293,8 @@
       <div id="tunerContent">
         <div class="tuner-gt">
 
+          <div class="tuner-hand-slot" id="tunerHandSlot"></div>
+
           <div class="tuner-tuning-btns">
             <button class="tuner-tuning-btn active" id="tunerTuningStandard" data-i18n="tunerTuningStandard">Оң бұрау · G3 / D3</button>
             <button class="tuner-tuning-btn" id="tunerTuningTeris" data-i18n="tunerTuningTeris">Теріс бұрау · G3 / C3</button>
@@ -2348,6 +2409,14 @@
       </div>
 
       <div class="settings-modal-body">
+        <div class="speed-row" id="handRow">
+          <label data-i18n="handLabel">Рука</label>
+          <div class="seg-group" id="handGroup">
+            <button class="seg active" data-hand="right" data-i18n="handRight">Правша</button>
+            <button class="seg" data-hand="left" data-i18n="handLeft">Левша</button>
+          </div>
+        </div>
+
         <div class="speed-row" id="sectionRow">
           <label data-i18n="sectionLabel">Часть</label>
           <div id="sectionList" class="section-list"></div>
@@ -2379,24 +2448,27 @@
 
   <!-- ===== Плавающая панель воспроизведения ===== -->
   <div class="floating-play-bar" id="floatingPlayBar">
-    <div class="playback-progress-track" id="playbackProgressTrack">
-      <div class="playback-progress-fill" id="playbackProgressFill"></div>
-    </div>
     <div class="floating-play-bar-inner">
-      <div class="speed-row floating-speed-row">
-        <label for="speedSlider" data-i18n="speedLabel">Скорость</label>
-        <input type="range" id="speedSlider" min="3" max="300" value="40" step="1">
-        <span id="speedVal">0.4×</span>
-      </div>
-
       <div class="play-row" id="normalPlayRow">
-        <button id="playBtn" class="play-btn" data-i18n="playBtn">▶ Проиграть</button>
-        <button id="stopBtn" class="stop-btn" disabled data-i18n="stopBtn">⏹ Стоп</button>
+        <button id="playBtn" class="play-btn icon-only" aria-label="Play / Stop">▶</button>
       </div>
 
       <div class="play-row" id="karaokePlayRow" style="display:none;">
         <button id="karaokeStartBtn" class="play-btn" data-i18n="karaokeStartBtn">🎤 Начать</button>
         <button id="karaokeStopBtn" class="stop-btn" disabled data-i18n="stopBtn">⏹ Стоп</button>
+      </div>
+
+      <div class="playback-progress-hit" id="playbackProgressTrack">
+        <div class="playback-progress-track">
+          <div class="playback-progress-fill" id="playbackProgressFill"></div>
+          <div class="playback-progress-handle" id="playbackProgressHandle"></div>
+        </div>
+      </div>
+
+      <div class="speed-row floating-speed-row">
+        <label for="speedSlider" data-i18n="speedLabel">Скорость</label>
+        <input type="range" id="speedSlider" min="3" max="300" value="40" step="1">
+        <span id="speedVal">0.4×</span>
       </div>
     </div>
   </div>
@@ -2488,14 +2560,9 @@
   let songs = [];
   let songsLoading = true;
 
-
-
-  // верхняя струна открытая = Ре первой октавы, нижняя = Соль первой октавы
-  // хроматический гриф, 19 ладов
-  const topNotes = ["Ре","Ре♯","Ми","Фа","Фа♯","Соль","Соль♯","Ля","Ля♯","Си",
-                     "До²","До♯²","Ре²","Ре♯²","Ми²","Фа²","Фа♯²","Соль²","Соль♯²","Ля²"];
-  const bottomNotes = ["Соль","Соль♯","Ля","Ля♯","Си","До²","До♯²","Ре²","Ре♯²","Ми²",
-                        "Фа²","Фа♯²","Соль²","Соль♯²","Ля²","Ля♯²","Си²","До³","До♯³","Ре³"];
+  // подписи нот на грифе (topNotes/bottomNotes) больше не фиксированы —
+  // считаются динамически под строй текущей мелодии, см. buildFretNoteNames()
+  // и applySongTuning() ниже
 
   // --- мелодии подключены отдельным файлом songs.js (см. <script src> ниже) ---
 
@@ -2506,6 +2573,7 @@
       subtitle: '19 ладов · нажми на лад, чтобы увидеть ноту',
       modeNormal: 'Обучение',
       modeKaraoke: '🎤 Караоке',
+      handLabel: 'Рука',
       handRight: 'Правша',
       handLeft: 'Левша',
       countdownLabel: 'Таймер',
@@ -2595,6 +2663,7 @@
       subtitle: '19 перне · нотаны көру үшін пернеге бас',
       modeNormal: 'Үйрену',
       modeKaraoke: '🎤 Караоке',
+      handLabel: 'Қол',
       handRight: 'Оңқай',
       handLeft: 'Солақай',
       countdownLabel: 'Таймер',
@@ -2681,6 +2750,7 @@
       subtitle: '19 frets · tap a fret to see the note',
       modeNormal: 'Learn',
       modeKaraoke: '🎤 Karaoke',
+      handLabel: 'Hand',
       handRight: 'Right-handed',
       handLeft: 'Left-handed',
       countdownLabel: 'Timer',
@@ -2770,6 +2840,7 @@
       subtitle: '19 perde · notayı görmek için perdeye dokun',
       modeNormal: 'Öğren',
       modeKaraoke: '🎤 Karaoke',
+      handLabel: 'El',
       handRight: 'Sağ elini kullanan',
       handLeft: 'Sol elini kullanan',
       countdownLabel: 'Zamanlayıcı',
@@ -3147,10 +3218,22 @@
     playBtn.disabled = true;
     if(typeof karaokeStartBtn !== 'undefined') karaokeStartBtn.disabled = true;
 
-    const [{ data: catalog, error: catErr }, { data: playable, error: playErr }] = await Promise.all([
+    const [{ data: catalog, error: catErr }, playableResult] = await Promise.all([
       sb.rpc('get_song_catalog'),
-      sb.from('songs').select('id, title, sections').order('sort_order', { ascending: true })
+      sb.from('songs').select('id, title, sections, tuning_key').order('sort_order', { ascending: true })
     ]);
+
+    let playable = playableResult.data;
+    let playErr = playableResult.error;
+
+    // на случай, если в базе ещё не завели колонку tuning_key — не роняем
+    // загрузку мелодий целиком, а тихо пробуем запрос без неё
+    if(playErr){
+      console.warn('[домбра] запрос с tuning_key не удался, пробую без неё:', playErr);
+      const fallback = await sb.from('songs').select('id, title, sections').order('sort_order', { ascending: true });
+      playable = fallback.data;
+      playErr = fallback.error;
+    }
 
     if(catErr || playErr){
       console.error('[домбра] не удалось загрузить мелодии:', catErr || playErr);
@@ -3179,7 +3262,10 @@
         seq: sections ? sections.flatMap(sec => sec.steps) : [],
         stringsTag,
         genreTags,
-        difficulty: difficultyTag ? parseInt(difficultyTag) : null
+        difficulty: difficultyTag ? parseInt(difficultyTag) : null,
+        // строй, в котором записана эта мелодия — по умолчанию стандартный
+        // (Соль/Ре), если в базе для песни ничего не указано
+        tuningKey: (full && full.tuning_key) || 'standard'
       };
     });
 
@@ -3214,6 +3300,7 @@
     buildSectionPicker();
     buildScrub();
     updateSongPickerTrigger();
+    if(typeof applySongTuning === 'function') applySongTuning();
     if(typeof loadTopSongs === 'function') loadTopSongs();
   }
 
@@ -3285,8 +3372,58 @@
   }
 
   const EIGHTH_MS = 190;
-  const OPEN_FREQ_BOTTOM = 196;   // соль малой октавы, нижняя открытая струна
-  const OPEN_FREQ_TOP = 146.83;   // ре малой октавы, верхняя открытая струна
+
+  // ===== Строи домбры =====
+  // Единый справочник строёв: используется и тюнером, и обучением/караоке
+  // (для проигрывания и подписи нот на грифе под конкретную мелодию).
+  // Чтобы добавить новый строй кюя — просто добавь сюда ключ с частотами
+  // открытых струн, а затем впиши этот ключ в колонку tuning_key в Supabase
+  // у нужных мелодий.
+  const TUNINGS = {
+    standard: { bottom:{note:'G3',freq:196.00,name:'Соль'}, top:{note:'D3',freq:146.83,name:'Ре'} },
+    teris:    { bottom:{note:'G3',freq:196.00,name:'Соль'}, top:{note:'C3',freq:130.81,name:'До'} }
+  };
+
+  // хроматический ряд от До — по нему строятся подписи нот на грифе для
+  // ЛЮБОГО строя, отталкиваясь от ноты открытой струны
+  const CHROMA_NAMES = ["До","До♯","Ре","Ре♯","Ми","Фа","Фа♯","Соль","Соль♯","Ля","Ля♯","Си"];
+  const CHROMA_INDEX = {C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
+  const OCTAVE_SUFFIX = ["", "²", "³", "⁴"];
+  function buildFretNoteNames(openNote){
+    // openNote вида "G3" / "D3" / "C3" — буква определяет позицию в хроматическом
+    // ряду, дальше просто идём по 19 ладам вверх и считаем, сколько раз
+    // прошли через До (это и даёт верхний индекс октавы)
+    const letter = openNote.replace(/\d+$/, '');
+    const openIdx = CHROMA_INDEX[letter] ?? 0;
+    const names = [];
+    for(let f=0; f<=19; f++){
+      const total = openIdx + f;
+      const octave = Math.floor(total / 12);
+      names.push(CHROMA_NAMES[total % 12] + (OCTAVE_SUFFIX[octave] || ''));
+    }
+    return names;
+  }
+
+  // активный строй — меняется при выборе мелодии; частоты открытых струн
+  // и подписи нот на грифе для панели пересчитываются под него
+  let OPEN_FREQ_BOTTOM = TUNINGS.standard.bottom.freq;
+  let OPEN_FREQ_TOP = TUNINGS.standard.top.freq;
+  let topNotes = buildFretNoteNames(TUNINGS.standard.top.note);
+  let bottomNotes = buildFretNoteNames(TUNINGS.standard.bottom.note);
+
+  // применяет строй текущей выбранной мелодии (song.tuningKey) — вызывается
+  // при загрузке списка мелодий и при каждой смене выбранной мелодии
+  function applySongTuning(){
+    const song = songs[currentSongIndex];
+    const key = (song && song.tuningKey) || 'standard';
+    const tuning = TUNINGS[key] || TUNINGS.standard;
+    OPEN_FREQ_BOTTOM = tuning.bottom.freq;
+    OPEN_FREQ_TOP = tuning.top.freq;
+    topNotes = buildFretNoteNames(tuning.top.note);
+    bottomNotes = buildFretNoteNames(tuning.bottom.note);
+    // перерисовываем гриф, чтобы data-note у ладов обновились под новый строй
+    if(typeof render === 'function' && currentMode !== 'tuner') render();
+  }
 
   const countdownOverlay = document.getElementById('countdownOverlay');
   const countdownNum = document.getElementById('countdownNum');
@@ -3308,7 +3445,7 @@
   }
 
   const playBtn = document.getElementById('playBtn');
-  const stopBtn = document.getElementById('stopBtn');
+  // stopBtn убран — playBtn теперь сам переключается между play/stop
   const speedSlider = document.getElementById('speedSlider');
   const speedVal = document.getElementById('speedVal');
   const previewToggle = document.getElementById('previewToggle');
@@ -3386,13 +3523,11 @@
     ctx.font = font;
     return ctx.measureText(text).width;
   }
+  const NOTE_WIDTH = 40;
   function noteWidth(step){
-    // длинные ноты — чуть шире, чтобы длительность читалась визуально
-    const base = Math.min(42 + (step.beats - 1) * 3, 60);
-    if(!step.lyric) return base;
-    // текст под нотой может быть длиннее самой ноты — считаем реальную ширину,
-    // а не на глаз по числу символов (иначе слово съезжает мимо своей ноты)
-    return Math.max(base, measureTextWidth(step.lyric, '700 12px Manrope, sans-serif') + 16);
+    // все ноты теперь одинаковой ширины (как у конкурента) — длительность
+    // и текст под нотой больше не растягивают ячейку
+    return NOTE_WIDTH;
   }
 
   function renderTabSheet(container, clickable){
@@ -3532,7 +3667,7 @@
     allRow.innerHTML = `<input type="checkbox"><span data-i18n="allSections">${t('allSections')}</span>`;
     const allCheckbox = allRow.querySelector('input');
     allCheckbox.addEventListener('change', () => {
-      if(isPlaying) stopBtn.click();
+      if(isPlaying) stopPlayback();
       if(karaokeRunning) stopKaraoke();
       sectionMode = 'all';
       selectedSectionIndices.clear();
@@ -3549,7 +3684,7 @@
       row.innerHTML = `<input type="checkbox" data-section-index="${i}"><span>${sec.name}</span>`;
       const cb = row.querySelector('input');
       cb.addEventListener('change', () => {
-        if(isPlaying) stopBtn.click();
+        if(isPlaying) stopPlayback();
         if(karaokeRunning) stopKaraoke();
         if(cb.checked){
           if(sectionMode === 'all'){
@@ -3614,6 +3749,7 @@
     selectedSectionIndices = new Set(s.sectionIndices || []);
     renderSectionChipsState();
     startIndex = s.start;
+    if(typeof applySongTuning === 'function') applySongTuning();
   }
 
 
@@ -3629,13 +3765,14 @@
   }
 
   songSelect.addEventListener('change', () => {
-    if(isPlaying) stopBtn.click();
+    if(isPlaying) stopPlayback();
     if(karaokeRunning) stopKaraoke();
     currentSongIndex = parseInt(songSelect.value);
     buildSectionPicker();
     startIndex = 0;
     saveModeState();
     refreshSheets();
+    applySongTuning();
     if(typeof updateSongPickerTrigger === 'function') updateSongPickerTrigger();
   });
 
@@ -3685,10 +3822,65 @@
   }
 
   const playbackProgressFill = document.getElementById('playbackProgressFill');
+  const playbackProgressHandle = document.getElementById('playbackProgressHandle');
   function setPlaybackProgress(fraction){
     if(!playbackProgressFill) return;
     const pct = Math.max(0, Math.min(1, fraction)) * 100;
     playbackProgressFill.style.width = pct + '%';
+    if(playbackProgressHandle) playbackProgressHandle.style.left = pct + '%';
+  }
+
+  // ==== Перемотка кликом/протаскиванием по полоске прогресса, как в
+  // музыкальных стримингах — по отпусканию сразу переходим на нужный лад ====
+  const playbackProgressTrack = document.getElementById('playbackProgressTrack');
+  let isScrubbingProgress = false;
+
+  function progressFractionFromEvent(e){
+    const trackEl = playbackProgressTrack.querySelector('.playback-progress-track');
+    const rect = trackEl.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    return rect.width > 0 ? Math.max(0, Math.min(1, x / rect.width)) : 0;
+  }
+
+  function seekToPlaybackFraction(fraction){
+    const playback = activePlayback();
+    if(!playback.length) return;
+    const idx = Math.max(0, Math.min(playback.length - 1, Math.round(fraction * (playback.length - 1))));
+    const target = playback[idx];
+    startIndex = target.displayIndex;
+    if(typeof updateScrubSelection === 'function') updateScrubSelection();
+    setPlaybackProgress(playback.length > 1 ? idx / (playback.length - 1) : 0);
+    if(isPlaying){
+      stopPlayback();
+      startPlayback({ skipCountdown: true });
+    } else {
+      highlightStep(target.step, null);
+      playNote(target.step, 300);
+    }
+  }
+
+  if(playbackProgressTrack){
+    playbackProgressTrack.addEventListener('pointerdown', (e) => {
+      isScrubbingProgress = true;
+      playbackProgressTrack.classList.add('scrubbing');
+      playbackProgressTrack.setPointerCapture(e.pointerId);
+      setPlaybackProgress(progressFractionFromEvent(e));
+    });
+    playbackProgressTrack.addEventListener('pointermove', (e) => {
+      if(!isScrubbingProgress) return;
+      setPlaybackProgress(progressFractionFromEvent(e));
+    });
+    const commitScrub = (e) => {
+      if(!isScrubbingProgress) return;
+      isScrubbingProgress = false;
+      playbackProgressTrack.classList.remove('scrubbing');
+      seekToPlaybackFraction(progressFractionFromEvent(e));
+    };
+    playbackProgressTrack.addEventListener('pointerup', commitScrub);
+    playbackProgressTrack.addEventListener('pointercancel', () => {
+      isScrubbingProgress = false;
+      playbackProgressTrack.classList.remove('scrubbing');
+    });
   }
 
   speedSlider.addEventListener('input', () => {
@@ -3805,17 +3997,30 @@
     }
   }
 
-  playBtn.addEventListener('click', async () => {
+  const ICON_PLAY = '▶';
+  const ICON_STOP = '⏹';
+
+  function stopPlayback(){
+    playToken++; // прерывает текущий цикл воспроизведения
+    stopSound();
+    svg.querySelectorAll('.dot').forEach(d => d.classList.remove('active','preview'));
+    setPlayingSeg(-1);
+    setPlaybackProgress(0);
+    playBtn.classList.remove('is-playing');
+    playBtn.textContent = ICON_PLAY;
+    isPlaying = false;
+  }
+
+  async function startPlayback(opts){
+    const skipCountdown = !!(opts && opts.skipCountdown);
     if(isPlaying) return;
     isPlaying = true;
     if(typeof logSongPlayEvent === 'function') logSongPlayEvent();
     const myToken = ++playToken;
-    playBtn.disabled = true;
-    stopBtn.disabled = false;
-    const originalLabel = playBtn.textContent;
+    playBtn.classList.add('is-playing');
+    playBtn.textContent = ICON_STOP;
 
     if(!samplesLoaded){
-      playBtn.textContent = t('loadingSounds');
       await preloadSamples();
     }
 
@@ -3826,22 +4031,20 @@
       highlightStep(slice[0].step, previewToggle.checked ? (slice[1]?.step||null) : null);
     }
 
-    const countdownSecs = parseInt(countdownSelect.value) || 0;
+    const countdownSecs = skipCountdown ? 0 : (parseInt(countdownSelect.value) || 0);
     const ready = countdownSecs > 0
       ? await runCountdown(countdownSecs, () => playToken !== myToken)
       : true;
     if(!ready){
-      playBtn.disabled = false;
-      stopBtn.disabled = true;
-      playBtn.textContent = originalLabel;
+      playBtn.classList.remove('is-playing');
+      playBtn.textContent = ICON_PLAY;
       isPlaying = false;
       return;
     }
 
-    playBtn.textContent = t('playing');
     setPlaybackProgress(0);
 
-    // повтор по кругу: гоняем выбранную часть, пока не нажмут Стоп
+    // повтор по кругу: гоняем выбранную часть, пока не нажмут кнопку ещё раз
     do {
       for(let i=0; i<slice.length; i++){
         if(playToken !== myToken) break; // остановлено
@@ -3866,23 +4069,14 @@
       svg.querySelectorAll('.dot').forEach(d => d.classList.remove('active','preview'));
       setPlayingSeg(-1);
       setPlaybackProgress(0);
-      playBtn.disabled = false;
-      stopBtn.disabled = true;
-      playBtn.textContent = originalLabel;
+      playBtn.classList.remove('is-playing');
+      playBtn.textContent = ICON_PLAY;
       isPlaying = false;
     }
-  });
+  }
 
-  stopBtn.addEventListener('click', () => {
-    playToken++; // прерывает текущий цикл воспроизведения
-    stopSound();
-    svg.querySelectorAll('.dot').forEach(d => d.classList.remove('active','preview'));
-    setPlayingSeg(-1);
-    setPlaybackProgress(0);
-    playBtn.disabled = false;
-    stopBtn.disabled = true;
-    playBtn.textContent = t('playBtn');
-    isPlaying = false;
+  playBtn.addEventListener('click', () => {
+    if(isPlaying) stopPlayback(); else startPlayback();
   });
 
   // ============ РЕЖИМ КАРАОКЕ ============
@@ -3911,7 +4105,7 @@
     document.body.classList.remove('karaoke-mode', 'tuner-mode');
 
     // останавливаем активные процессы
-    if(isPlaying){ playToken++; stopSound(); isPlaying=false; playBtn.disabled=false; stopBtn.disabled=true; playBtn.textContent=t('playBtn'); }
+    if(isPlaying) stopPlayback();
     if(karaokeRunning) stopKaraoke();
     // Останавливаем mic при смене режима
     if(micStream){ micStream.getTracks().forEach(t => t.stop()); micStream = null; }
@@ -3929,6 +4123,7 @@
       render();
       // в караоке "повторять по кругу" не имеет смысла — прячем эту строку
       document.getElementById('loopRow').style.display = 'none';
+      document.getElementById('handRow').appendChild(handGroup);
     } else if(mode === 'tuner'){
       document.body.classList.add('tuner-mode');
       document.getElementById('songBar').style.display = 'none';
@@ -3938,6 +4133,7 @@
       render();
       applyTunerMirror();
       highlightTunerString(window.tunerSelStr || 'bottom');
+      document.getElementById('tunerHandSlot').appendChild(handGroup);
     } else {
       normalRightContent.style.display = 'block';
       normalPlayRow.style.display = 'flex';
@@ -3948,6 +4144,7 @@
       resetStringHighlight();
       render();
       document.getElementById('loopRow').style.display = 'flex';
+      document.getElementById('handRow').appendChild(handGroup);
     }
 
     currentMode = mode;
@@ -4281,10 +4478,8 @@ function setCharState(state){
 
   // ============ РЕЖИМ ТЮНЕР ============
   (function(){
-    const TUNINGS = {
-      standard: { bottom:{note:'G3',freq:196.00,name:'Соль'}, top:{note:'D3',freq:146.83,name:'Ре'} },
-      teris:    { bottom:{note:'G3',freq:196.00,name:'Соль'}, top:{note:'C3',freq:130.81,name:'До'} }
-    };
+    // TUNINGS — общий справочник строёв, объявлен выше (используется и
+    // проигрывателем мелодий, и этой панелью тюнера)
 
     let tunerCur = 'standard';
     let tunerSel = 'bottom';
