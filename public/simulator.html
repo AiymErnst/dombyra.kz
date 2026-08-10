@@ -609,12 +609,6 @@
   .karaoke-seg.ok .karaoke-cell.filled{ color:var(--grade-ok-text); }
   .karaoke-seg.miss{ background:var(--grade-miss); }
   .karaoke-seg.miss .karaoke-cell.filled{ color:var(--grade-miss-text); }
-  #karaokeStartBtn, #karaokeStopBtn{
-    margin-top:18px;
-  }
-  #karaokeStopBtn{
-    margin-left:10px;
-  }
   .karaoke-result{
     margin-top:18px;
     text-align:center;
@@ -1436,7 +1430,7 @@
       height:100vh;
       height:100dvh;
       overflow:hidden;
-      padding-bottom:14px;
+      padding-bottom:0;
     }
     .top-bar{
       flex:0 0 auto;
@@ -1450,7 +1444,7 @@
       min-height:0;
       overflow-y:auto;
       -webkit-overflow-scrolling:touch;
-      padding-bottom:calc(92px + env(safe-area-inset-bottom));
+      padding-bottom:12px;
     }
     /* в режиме тюнера .two-col-wrap скрыт целиком — там прокручивается
        сама tuner-row (кнопки строя, карточки струн, слайдер, Бастау).
@@ -1464,7 +1458,26 @@
       align-items:flex-start;
       overflow-y:auto;
       -webkit-overflow-scrolling:touch;
-      padding-bottom:calc(24px + env(safe-area-inset-bottom));
+      padding-bottom:12px;
+    }
+    /* панель Play на мобильном — НЕ position:fixed, а обычный последний
+       элемент flex-колонки body (как у конкурента: footer.playerbar —
+       просто последний блок, а не "прибитый" к viewport). Раз документ
+       целиком не скроллится (см. body{overflow:hidden} выше), Safari
+       физически нечего прятать/двигать — адресная строка не "гуляет".
+       Плюс это разом снимает все проблемы, которые были у fixed-версии
+       (задержка позиционирования при display↔none, дрожание при скролле). */
+    .floating-play-bar{
+      position:static;
+      left:auto;
+      right:auto;
+      bottom:auto;
+      flex:0 0 auto;
+      width:100%;
+      padding-bottom:env(safe-area-inset-bottom);
+    }
+    body.tuner-mode .floating-play-bar{
+      display:none;
     }
   }
   /* обёртка для панели тюнера */
@@ -2570,8 +2583,7 @@
       </div>
 
       <div class="play-row" id="karaokePlayRow">
-        <button id="karaokeStartBtn" class="play-btn" data-i18n="karaokeStartBtn">🎤 Начать</button>
-        <button id="karaokeStopBtn" class="stop-btn" disabled data-i18n="stopBtn">⏹ Стоп</button>
+        <button id="karaokeStartBtn" class="play-btn icon-only" aria-label="Play / Stop">🎤</button>
       </div>
 
       <div class="playback-progress-hit" id="playbackProgressTrack">
@@ -4292,7 +4304,7 @@
   const karaokeStatus = document.getElementById('karaokeStatus');
   const karaokeTrack = document.getElementById('karaokeTrack');
   const karaokeStartBtn = document.getElementById('karaokeStartBtn');
-  const karaokeStopBtn = document.getElementById('karaokeStopBtn');
+  // karaokeStopBtn убран — karaokeStartBtn теперь сам переключается play/stop
   const karaokeResult = document.getElementById('karaokeResult');
 
   let micStream = null;
@@ -4434,8 +4446,8 @@ function setCharState(state){
     micSource.connect(analyser);
 
     karaokeRunning = true;
-    karaokeStartBtn.disabled = true;
-    karaokeStopBtn.disabled = false;
+    karaokeStartBtn.classList.add('is-playing');
+    karaokeStartBtn.textContent = ICON_STOP;
     karaokeResult.style.display = 'none';
     setCharState('listening');
     karaokeStatus.textContent = t('getReady');
@@ -4454,8 +4466,8 @@ function setCharState(state){
       : true;
     if(!ready){
       karaokeRunning = false;
-      karaokeStartBtn.disabled = false;
-      karaokeStopBtn.disabled = true;
+      karaokeStartBtn.classList.remove('is-playing');
+      karaokeStartBtn.textContent = '🎤';
       setCharState(null);
       return;
     }
@@ -4549,15 +4561,15 @@ function setCharState(state){
 
     // micStream сохраняем для следующего запуска
     karaokeRunning = false;
-    karaokeStartBtn.disabled = false;
-    karaokeStopBtn.disabled = true;
+    karaokeStartBtn.classList.remove('is-playing');
+    karaokeStartBtn.textContent = '🎤';
     }catch(e){
       console.error('[домбра] ошибка в режиме караоке:', e);
       karaokeStatus.textContent = t('errorPrefix') + e.message;
       if(micStream){ micStream.getTracks().forEach(t => t.stop()); micStream = null; }
       karaokeRunning = false;
-      karaokeStartBtn.disabled = false;
-      karaokeStopBtn.disabled = true;
+      karaokeStartBtn.classList.remove('is-playing');
+      karaokeStartBtn.textContent = '🎤';
       setCharState(null);
     }
   }
@@ -4598,15 +4610,16 @@ function setCharState(state){
     karaokeToken++;
     // micStream сохраняем — не останавливаем чтобы не запрашивать разрешение повторно
     karaokeRunning = false;
-    karaokeStartBtn.disabled = false;
-    karaokeStopBtn.disabled = true;
+    karaokeStartBtn.classList.remove('is-playing');
+    karaokeStartBtn.textContent = '🎤';
     setCharState(null);
     karaokeStatus.textContent = t('stopped');
     karaokeTrack.querySelectorAll('.tab-note').forEach(s => s.classList.remove('current'));
   }
 
-  karaokeStartBtn.addEventListener('click', startKaraoke);
-  karaokeStopBtn.addEventListener('click', stopKaraoke);
+  karaokeStartBtn.addEventListener('click', () => {
+    if(karaokeRunning) stopKaraoke(); else startKaraoke();
+  });
 
   applyLang();
 
