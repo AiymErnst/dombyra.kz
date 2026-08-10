@@ -1435,6 +1435,13 @@
     .top-bar{
       flex:0 0 auto;
     }
+    /* гриф домбры на телефоне убираем целиком — лады всё равно плохо
+       читаются на маленьком экране, а место освобождает для нот.
+       В режиме тюнера #stage и так уже скрыт отдельным правилом ниже —
+       здесь просто не даём ему ни шанса появиться на мобильном вообще. */
+    #stage{
+      display:none !important;
+    }
     #tuner-row{
       flex:0 0 auto;
       overflow:visible;
@@ -1443,7 +1450,6 @@
       flex:1 1 auto;
       min-height:0;
       overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
       padding-bottom:12px;
     }
     /* в режиме тюнера .two-col-wrap скрыт целиком — там прокручивается
@@ -1457,7 +1463,6 @@
       min-height:0;
       align-items:flex-start;
       overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
       padding-bottom:12px;
     }
     /* панель Play на мобильном — НЕ position:fixed, а обычный последний
