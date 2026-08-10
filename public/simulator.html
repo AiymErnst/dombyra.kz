@@ -949,6 +949,16 @@
     overflow-y:auto;
     padding:10px 2px 2px;
   }
+  /* на мобильном убираем собственный вертикальный скролл нотного листа —
+     вложенный скролл внутри страницы мешает достать до плавающей панели
+     снизу (палец постоянно "проваливается" в этот блок вместо страницы).
+     Пусть лист просто растёт вместе со страницей, скроллится только она. */
+  @media (max-width:640px){
+    .tab-sheet{
+      max-height:none;
+      overflow-y:visible;
+    }
+  }
   .tab-sheet.two-cols{
     display:grid;
     grid-template-columns:repeat(2, minmax(0, 1fr));
@@ -1362,6 +1372,42 @@
   @media (max-width:640px){
     body.tuner-mode #tunerStage{
       display:none;
+    }
+  }
+  /* ===== Мобильный "app-shell": шапка, гриф и Play-панель не двигаются,
+     скроллится только блок с мелодией/нотами (или панель тюнера).
+     Стоит здесь, ПОСЛЕ остальных правил #tuner-row, чтобы гарантированно
+     их перебить (иначе body.tuner-mode #tuner-row{min-height:60vh} выше
+     по каскаду выигрывает у одинаковых по специфичности селекторов). ===== */
+  @media (max-width:640px){
+    body{
+      height:100vh;
+      height:100dvh;
+      overflow:hidden;
+      padding-bottom:14px;
+    }
+    .top-bar{
+      flex:0 0 auto;
+    }
+    #tuner-row{
+      flex:0 0 auto;
+      overflow:visible;
+    }
+    .two-col-wrap{
+      flex:1 1 auto;
+      min-height:0;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:calc(92px + env(safe-area-inset-bottom));
+    }
+    /* в режиме тюнера .two-col-wrap скрыт целиком — там прокручивается
+       сама tuner-row (кнопки строя, карточки струн, слайдер, Бастау) */
+    body.tuner-mode #tuner-row{
+      flex:1 1 auto;
+      min-height:0;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:calc(24px + env(safe-area-inset-bottom));
     }
   }
   /* обёртка для панели тюнера */
@@ -2191,7 +2237,7 @@
         </div>
       </div>
       <select id="langSelect" class="lang-select">
-        <option value="kz">KZ — Қазақша</option>
+        <option value="kz">ҚАЗ — Қазақша</option>
         <option value="ru">RU — Русский</option>
         <option value="en">EN — English</option>
         <option value="tr">TR — Türkçe</option>
@@ -3822,16 +3868,22 @@
       const target = el.offsetLeft - (line.clientWidth - el.offsetWidth) / 2;
       line.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
     }
-    // по вертикали — если частей/страниц много, весь список прокручивается
-    // отдельно (.tab-sheet); подводим строку с активной нотой к центру
-    // видимой области, чтобы не приходилось скроллить руками во время игры
+    // по вертикали — если частей/страниц много и лист умеет скроллиться
+    // сам в себе (десктоп), подводим строку к центру видимой области листа.
+    // На мобильном у листа своего скролла больше нет (см. CSS) — тогда
+    // просто скроллим саму страницу до этой строки.
     const sheet = el.closest('.tab-sheet');
     if(sheet && line){
-      const sheetRect = sheet.getBoundingClientRect();
-      const lineRect = line.getBoundingClientRect();
-      const lineCenterY = lineRect.top + lineRect.height / 2 - sheetRect.top + sheet.scrollTop;
-      const targetTop = lineCenterY - sheet.clientHeight / 2;
-      sheet.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+      const hasInnerScroll = sheet.scrollHeight - sheet.clientHeight > 4;
+      if(hasInnerScroll){
+        const sheetRect = sheet.getBoundingClientRect();
+        const lineRect = line.getBoundingClientRect();
+        const lineCenterY = lineRect.top + lineRect.height / 2 - sheetRect.top + sheet.scrollTop;
+        const targetTop = lineCenterY - sheet.clientHeight / 2;
+        sheet.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+      } else {
+        line.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
   }
 
