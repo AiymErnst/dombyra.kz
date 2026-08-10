@@ -1,5 +1,5 @@
 import { Placeholder, SectionEyebrow, Button } from "./ui";
-import { TRAINER_CARDS, TUNER_STEPS } from "./data";
+import { TRAINER_CARDS, TUNER_STEPS, KARAOKE_STEPS } from "./data";
 
 export default function TrainerPromo() {
   return (
@@ -62,7 +62,7 @@ export default function TrainerPromo() {
               </span>
             </div>
           </div>
-          <a href="/simulator">
+          <a href="/learn">
             <Button className="w-full">Открыть тренажёр</Button>
           </a>
         </div>
@@ -98,7 +98,7 @@ export default function TrainerPromo() {
         </div>
 
         <a
-          href="/simulator"
+          href="/tuner"
           className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-blue px-6.5 py-3.5 font-brand text-sm font-bold text-white transition-colors hover:bg-brand-blue-dark"
         >
           Настроить домбру
@@ -106,6 +106,47 @@ export default function TrainerPromo() {
         </a>
         <div className="mt-3 font-brand text-[11.5px] font-medium text-brand-ink/45">
           Тюнер и тренажёр — на одной странице
+        </div>
+      </section>
+
+      {/* ---------- караоке ---------- */}
+      <section id="karaoke" className="scroll-mt-16 bg-brand-bg px-5 py-11 text-center lg:px-7">
+        <div className="mx-auto mb-4.5 h-3 w-3 rotate-45 bg-brand-lime" />
+        <h2 className="font-brand text-[34px] font-extrabold uppercase leading-[0.94] tracking-[-0.035em] lg:text-[52px]">
+          Караоке
+          <br />
+          <span className="text-brand-blue">для домбры</span>
+        </h2>
+        <p className="mx-auto mt-3.5 max-w-[300px] text-pretty font-brand text-[13.5px] font-medium leading-relaxed text-brand-ink/60">
+          Микрофон слушает твою игру и подсвечивает лады в реальном
+          времени — сразу видно, где сфальшивил и что переиграть.
+        </p>
+
+        <div className="mx-auto mt-6.5 grid max-w-[1000px] grid-cols-2 gap-2.5 text-left lg:grid-cols-4">
+          {KARAOKE_STEPS.map((step) => (
+            <div key={step.num} className="bg-white px-3.5 pb-4.5 pt-4">
+              <div className="mb-3 flex h-6.5 w-6.5 items-center justify-center bg-brand-blue font-brand text-[11px] font-extrabold text-white">
+                {step.num}
+              </div>
+              <div className="font-brand text-[13px] font-extrabold uppercase tracking-[-0.01em]">
+                {step.title}
+              </div>
+              <div className="mt-1.5 font-brand text-xs font-medium leading-snug text-brand-ink/60">
+                {step.desc}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <a
+          href="/karaoke"
+          className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-blue px-6.5 py-3.5 font-brand text-sm font-bold text-white transition-colors hover:bg-brand-blue-dark"
+        >
+          Играть в караоке
+          <span className="font-brand text-[15px] font-bold">›</span>
+        </a>
+        <div className="mt-3 font-brand text-[11.5px] font-medium text-brand-ink/45">
+          Бесплатно, без установки и регистрации
         </div>
       </section>
     </>
