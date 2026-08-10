@@ -6,12 +6,12 @@ export const metadata = {
 
 export default function LearnPage() {
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex h-dvh flex-col overflow-hidden">
       <iframe
         src="/simulator.html"
         title="Тренажёр домбры — режим обучения"
         allow="microphone"
-        className="min-h-[900px] w-full flex-1 border-0"
+        className="w-full flex-1 border-0"
       />
     </div>
   );
