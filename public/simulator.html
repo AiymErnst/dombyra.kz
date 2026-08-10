@@ -156,7 +156,7 @@
     justify-content:space-between;
     align-items:center;
     width:100%;
-    max-width:1100px;
+    max-width:1300px;
     margin:0 auto;
     gap:10px;
     padding:0 4px 10px;
@@ -207,9 +207,9 @@
     background:transparent;
     border:none;
     border-radius:999px;
-    padding:4px 12px;
+    padding:6px 14px;
     font-family:'Manrope', sans-serif;
-    font-size:11px;
+    font-size:13px;
     font-weight:600;
     color:rgba(var(--white-rgb),0.7);
     cursor:pointer;
@@ -222,7 +222,7 @@
   }
   .lang-select{
     font-family:'Manrope', sans-serif;
-    font-size:11px;
+    font-size:12.5px;
     font-weight:600;
     color:var(--seg-active-text);
     background:rgba(var(--white-rgb),0.92);
@@ -244,13 +244,13 @@
   }
   .auth-btn{
     font-family:'Manrope', sans-serif;
-    font-size:11px;
+    font-size:12px;
     font-weight:600;
     color:var(--seg-active-text);
     background:rgba(var(--white-rgb),0.92);
     border:none;
     border-radius:999px;
-    padding:8px 12px;
+    padding:8px 14px;
     cursor:pointer;
     white-space:nowrap;
   }
@@ -286,7 +286,13 @@
       gap:6px;
       padding:0 2px 8px;
     }
+    /* на мобильном сверху Premium/язык/тема, табы режимов — под ними
+       (порядок как на макете), хотя в HTML порядок остаётся прежним */
+    .top-bar-right{
+      order:-1;
+    }
     #modeGroup{
+      order:0;
       width:100%;
     }
     #modeGroup .seg{
@@ -362,7 +368,7 @@
     aspect-ratio: 990 / 260;
   }
   .stage.horizontal{
-    max-width:1100px;
+    max-width:1300px;
     aspect-ratio: 990 / 260;
   }
   .stage svg{
@@ -649,7 +655,7 @@
     flex-direction:column;
     gap:14px;
     width:100%;
-    max-width:1100px;
+    max-width:1300px;
     margin:0 auto;
   }
   /* ===== Верхняя полоса: выбор мелодии + кнопка настроек ===== */
@@ -714,10 +720,17 @@
     z-index:150;
     display:flex;
     width:100%;
-    padding:0 12px calc(8px + env(safe-area-inset-bottom));
+    padding:0 16px calc(8px + env(safe-area-inset-bottom));
     background:linear-gradient(180deg, rgba(var(--panel-tint-normal-rgb),0.14), rgba(var(--panel-tint-normal-rgb),0.05));
     border-top:1px solid rgba(var(--block-border-rgb),0.25);
     backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    /* фикс для iOS Safari: без этого position:fixed иногда "теряется"
+       при скролле, особенно в паре с backdrop-filter — форсируем
+       элемент в собственный composite-слой */
+    -webkit-transform:translateZ(0);
+    transform:translateZ(0);
+    will-change:transform;
   }
   body.karaoke-mode .floating-play-bar{
     background:linear-gradient(180deg, rgba(var(--panel-tint-karaoke-rgb),0.14), rgba(var(--panel-tint-karaoke-rgb),0.05));
@@ -808,8 +821,8 @@
     flex:0 0 auto;
   }
   .floating-play-bar .play-btn.icon-only{
-    width:44px;
-    height:44px;
+    width:48px;
+    height:48px;
     font-size:17px;
   }
   @media (max-width:480px){
@@ -1008,7 +1021,7 @@
     background:rgba(var(--gold-rgb),0.25);
   }
   .tab-lane{
-    height:20px;
+    height:26px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -1023,7 +1036,7 @@
     color:var(--cream);
   }
   .tab-stroke{
-    height:15px;
+    height:20px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -1293,7 +1306,7 @@
   #tuner-row {
     display: block;
     width: 100%;
-    max-width: 1100px;
+    max-width: 1300px;
     margin: 0 auto;
   }
   /* tuner-wrap (панель тюнера) скрыта по умолчанию */
@@ -1343,6 +1356,14 @@
   #tunerStage { display: none; width: 100%; align-self: center; }
   body.tuner-mode #tunerStage { display: block; }
   #tunerNeckSvg { display: block; width: 100%; height: auto; }
+  /* на мобильном иллюстрация грифа с рукой в тюнере не показывается —
+     сразу после табов идут кнопки строя и карточки струн, экономим место.
+     На вебе иллюстрация остаётся как была. */
+  @media (max-width:640px){
+    body.tuner-mode #tunerStage{
+      display:none;
+    }
+  }
   /* обёртка для панели тюнера */
   .tuner-gt {
     display: flex;
@@ -1601,9 +1622,9 @@
     background: rgba(var(--white-rgb),0.08);
     border: 1px solid rgba(var(--white-rgb),0.15);
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    font-size: 14px;
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -2170,7 +2191,7 @@
         </div>
       </div>
       <select id="langSelect" class="lang-select">
-        <option value="kz">KZ — Қазақша</option>
+        <option value="kz">ҚАЗ — Қазақша</option>
         <option value="ru">RU — Русский</option>
         <option value="en">EN — English</option>
         <option value="tr">TR — Türkçe</option>
@@ -3523,7 +3544,7 @@
     ctx.font = font;
     return ctx.measureText(text).width;
   }
-  const NOTE_WIDTH = 40;
+  const NOTE_WIDTH = 46;
   function noteWidth(step){
     // все ноты теперь одинаковой ширины (как у конкурента) — длительность
     // и текст под нотой больше не растягивают ячейку
