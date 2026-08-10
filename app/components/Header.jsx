@@ -1,7 +1,7 @@
 import { Button } from "./ui";
 import { NAV_LINKS } from "./data";
 
-export default function Header({ menuOpen, onOpenMenu, onCloseMenu }) {
+export default function Header({ menuOpen, onOpenMenu, onCloseMenu, dict }) {
   return (
     <>
       {/* ---------- шапка ---------- */}
@@ -27,7 +27,7 @@ export default function Header({ menuOpen, onOpenMenu, onCloseMenu }) {
               href={link.href}
               className="flex items-center gap-1.5 font-brand text-[13px] font-semibold text-brand-ink hover:text-brand-teal"
             >
-              {link.label}
+              {dict.nav[link.key]}
               {link.badge && (
                 <span className="rounded-full bg-brand-lime px-1.5 py-1 font-brand text-[8.5px] font-extrabold tracking-[0.1em] text-brand-ink">
                   {link.badge}
@@ -64,14 +64,14 @@ export default function Header({ menuOpen, onOpenMenu, onCloseMenu }) {
             </button>
           </div>
           <nav className="flex flex-col">
-            {[...NAV_LINKS, { href: "#video", label: "Видео" }].map((link) => (
+            {NAV_LINKS.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={onCloseMenu}
                 className="flex items-center gap-2.5 border-b border-[#D8E0EE] py-2.5 font-brand text-[30px] font-extrabold leading-[1.15] tracking-tight text-brand-ink last:border-b-0"
               >
-                {link.label}
+                {dict.nav[link.key]}
                 {link.badge && (
                   <span className="rounded-full bg-brand-lime px-1.5 py-1 font-brand text-[9.5px] font-extrabold tracking-[0.12em] text-brand-ink">
                     БЕСПЛАТНО

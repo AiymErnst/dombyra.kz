@@ -15,7 +15,7 @@ import LeadForm from "./LeadForm";
 import Footer from "./Footer";
 import StickyBuyBar from "./StickyBuyBar";
 
-export default function LandingPage() {
+export default function LandingPage({ dict }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState(0);
   const [playingVideo, setPlayingVideo] = useState(null);
@@ -48,8 +48,9 @@ export default function LandingPage() {
         menuOpen={menuOpen}
         onOpenMenu={() => setMenuOpen(true)}
         onCloseMenu={() => setMenuOpen(false)}
+        dict={dict}
       />
-      <Hero sentinelRef={sentinelRef} />
+      <Hero sentinelRef={sentinelRef} dict={dict} />
       <CatalogPreview />
       <Certificate />
       <TrainerPromo />
