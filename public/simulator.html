@@ -3662,7 +3662,7 @@
         secEl.appendChild(title);
       }
 
-      let line = null, lineW = 0, prevNoteInLine = null;
+      let line = null, lineW = 0, prevNoteInLine = null, notesInLine = 0;
       const startLine = () => {
         line = document.createElement('div');
         line.className = 'tab-line';
@@ -3674,14 +3674,40 @@
           </div>`;
         lineW = 0;
         prevNoteInLine = null;
+        notesInLine = 0;
         secEl.appendChild(line);
       };
       startLine();
+
+      // максимум ладов в одной строке на мобильном — остальное уходит на
+      // новую строку (со своими подписями Т/Ж/↓↑ слева). На вебе строка
+      // по-прежнему одна на всю часть, со своим горизонтальным скроллом.
+      // "Мобильный" определяем по МЕНЬШЕЙ стороне экрана (а не просто по
+      // ширине) — иначе телефон, повёрнутый боком, перестал бы считаться
+      // мобильным, т.к. его ширина в landscape обычно больше 640px.
+      const MOBILE_PORTRAIT_MAX_NOTES = 8;
+      const MOBILE_LANDSCAPE_MAX_NOTES = 16;
+      const shortSide = Math.min(window.innerWidth, window.innerHeight);
+      const isMobileNow = shortSide <= 640;
+      const isLandscapeNow = window.innerWidth > window.innerHeight;
+      const MOBILE_MAX_NOTES_PER_LINE = isLandscapeNow ? MOBILE_LANDSCAPE_MAX_NOTES : MOBILE_PORTRAIT_MAX_NOTES;
 
       for(let k = 0; k < group.count; k++){
         const i = group.from + k;
         const step = steps[i];
         const w = noteWidth(step);
+
+        // перенос строки на мобильном — но не ровно посередине легато-пары:
+        // если следующая нота должна дугой соединиться именно с этой, сначала
+        // ставим текущую ноту, а разрыв строки сдвигаем на шаг позже
+        if(isMobileNow && notesInLine >= MOBILE_MAX_NOTES_PER_LINE){
+          const nextStep = steps[i+1];
+          const nextWillLegatoToThis = nextStep && (
+            (nextStep.legatoBottom && nextStep.bottom !== null && step.bottom !== null) ||
+            (nextStep.legatoTop && nextStep.top !== null && step.top !== null)
+          );
+          if(!nextWillLegatoToThis) startLine();
+        }
 
         // легато проверяем НЕЗАВИСИМО по каждой струне: нужна нота и у текущего,
         // и у предыдущего шага на этой же струне — иначе дуге не к чему тянуться
@@ -3691,9 +3717,6 @@
           step.top !== null && prevNoteInLine.step.top !== null);
         let needsConnector = legatoBottomArc || legatoTopArc;
         const connectorW = needsConnector ? 12 : 0;
-
-        // переноса строки внутри части больше нет — вся часть остаётся одной
-        // строкой и прокручивается по горизонтали в своих собственных рамках
 
         if(needsConnector){
           const connector = document.createElement('div');
@@ -3741,6 +3764,7 @@
         line.appendChild(note);
         lineW += w + 4;
         prevNoteInLine = { el: note, step };
+        notesInLine++;
 
         // тактовая черта — рисуем ПОСЛЕ этой ноты, если админ отметил конец такта
         if(step.barEnd){
