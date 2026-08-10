@@ -102,12 +102,14 @@ export const VIDEOS = [
   { id: "Rq6HWfL9lD8", title: "Первый урок: постановка руки за 6 минут", duration: "6:05" },
 ];
 
+// текст подписей больше не хранится здесь — только ключи, соответствующие
+// locales/*.json → nav (catalog, certificate, trainer, tuner, why, reviews, blog)
 export const NAV_LINKS = [
-  { href: "#catalog", label: "Каталог" },
-  { href: "#certificate", label: "Сертификат" },
-  { href: "#trainer", label: "Тренажёр" },
-  { href: "#tuner", label: "Тюнер", badge: "FREE" },
-  { href: "#why", label: "Почему мы" },
-  { href: "#reviews", label: "Отзывы" },
-  { href: "#blog", label: "Журнал" },
+  { href: "#catalog", key: "catalog" },
+  { href: "#certificate", key: "certificate" },
+  { href: "#trainer", key: "trainer" },
+  { href: "#tuner", key: "tuner", badge: "FREE" },
+  { href: "#why", key: "why" },
+  { href: "#reviews", key: "reviews" },
+  { href: "#blog", key: "blog" },
 ];
