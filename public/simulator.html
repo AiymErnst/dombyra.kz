@@ -133,7 +133,7 @@
     overflow-x:hidden;
     max-width:100%;
   }
-  @media (max-width:640px){
+  @media (max-width:640px), (orientation:landscape) and (max-height:640px){
     html{
       height:100%;
       overflow-y:hidden;
@@ -292,7 +292,7 @@
   .auth-btn-label{ }
 
   /* ===== Компактная шапка на мобильных: две плотные строки вместо трёх ===== */
-  @media (max-width:640px){
+  @media (max-width:640px), (orientation:landscape) and (max-height:640px){
     .top-bar{
       flex-direction:column;
       align-items:stretch;
@@ -972,7 +972,7 @@
      вложенный скролл внутри страницы мешает достать до плавающей панели
      снизу (палец постоянно "проваливается" в этот блок вместо страницы).
      Пусть лист просто растёт вместе со страницей, скроллится только она. */
-  @media (max-width:640px){
+  @media (max-width:640px), (orientation:landscape) and (max-height:640px){
     .tab-sheet{
       max-height:none;
       overflow-y:visible;
@@ -1421,7 +1421,7 @@
   /* на мобильном иллюстрация грифа с рукой в тюнере не показывается —
      сразу после табов идут кнопки строя и карточки струн, экономим место.
      На вебе иллюстрация остаётся как была. */
-  @media (max-width:640px){
+  @media (max-width:640px), (orientation:landscape) and (max-height:640px){
     body.tuner-mode #tunerStage{
       display:none;
     }
@@ -1431,7 +1431,7 @@
      Стоит здесь, ПОСЛЕ остальных правил #tuner-row, чтобы гарантированно
      их перебить (иначе body.tuner-mode #tuner-row{min-height:60vh} выше
      по каскаду выигрывает у одинаковых по специфичности селекторов). ===== */
-  @media (max-width:640px){
+  @media (max-width:640px), (orientation:landscape) and (max-height:640px){
     body{
       height:100vh;
       height:100dvh;
@@ -2249,7 +2249,7 @@
   .song-row-fav.active{ color:var(--gold-soft); }
   .song-row-fav:hover{ color:var(--gold-soft); }
 
-  @media (max-width: 640px){
+  @media (max-width:640px), (orientation:landscape) and (max-height:640px){
     .song-modal-overlay{ padding:0; align-items:flex-end; }
     .song-modal{
       max-width:100%;
