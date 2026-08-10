@@ -156,6 +156,12 @@
     padding:14px 16px calc(100px + env(safe-area-inset-bottom));
     position:relative;
   }
+  .sticky-top-shell{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:100%;
+  }
   .top-bar{
     display:flex;
     flex-wrap:wrap;
@@ -657,7 +663,16 @@
   body.light-mode .finger-badge-text{
     fill:var(--white);
   }
+  /* .two-col-wrap теперь сам скроллящийся контейнер на всю ширину экрана —
+     это важно, чтобы его нативная полоса прокрутки рисовалась у истинного
+     края окна браузера (как обычная страничная прокрутка у конкурента),
+     а не у края узкой центрированной колонки. Сама ширина контента
+     (1300px, по центру) переехала во внутреннюю обёртку .two-col-wrap-inner. */
   .two-col-wrap{
+    display:block;
+    width:100%;
+  }
+  .two-col-wrap-inner{
     display:flex;
     flex-direction:column;
     gap:14px;
@@ -917,6 +932,11 @@
   body.karaoke-mode .col-block{
     background:linear-gradient(180deg, rgba(var(--panel-tint-karaoke-rgb),0.06), rgba(var(--panel-tint-karaoke-rgb),0.015));
   }
+  /* подсказка "выбери лад на грифе" (panel) убрана везде — потерялась
+     была при переносе разметки, возвращаю: не показываем нигде */
+  #panel{
+    display:none !important;
+  }
   .col-block .song-picker,
   .col-block .scrub-wrap,
   .col-block .panel{
@@ -1012,21 +1032,14 @@
     cursor:default;
   }
   /* --- нотный лист: части, перенос строк, удары --- */
+  /* max-height/overflow-y убраны — теперь единственная скроллящаяся зона
+     везде (и на вебе, и на мобильном) — это .two-col-wrap (app-shell).
+     Раньше здесь тоже был свой скролл (52vh) — на мобильном это уже
+     убирали, но на вебе он остался и давал вложенный скролл-в-скролле
+     (двойная полоса прокрутки, визуальные глюки на границах блока). */
   .tab-sheet{
     width:100%;
-    max-height:52vh;
-    overflow-y:auto;
     padding:10px 2px 2px;
-  }
-  /* на мобильном убираем собственный вертикальный скролл нотного листа —
-     вложенный скролл внутри страницы мешает достать до плавающей панели
-     снизу (палец постоянно "проваливается" в этот блок вместо страницы).
-     Пусть лист просто растёт вместе со страницей, скроллится только она. */
-  @media (max-width:640px), (orientation:landscape) and (max-height:640px){
-    .tab-sheet{
-      max-height:none;
-      overflow-y:visible;
-    }
   }
   .tab-sheet.two-cols{
     display:grid;
@@ -1471,42 +1484,71 @@
   /* на мобильном иллюстрация грифа с рукой в тюнере не показывается —
      сразу после табов идут кнопки строя и карточки струн, экономим место.
      На вебе иллюстрация остаётся как была. */
-  /* ===== "App-shell": шапка, строка мелодии и гриф не двигаются — везде,
-     и на вебе, и на мобильном. Скроллится только блок с нотами (или
-     панель тюнера в этом режиме). ===== */
-  body{
-    height:100vh;
-    height:100dvh;
-    min-height:0;
-    overflow:hidden;
-    padding-bottom:0;
+  /* ===== "App-shell" — ТОЛЬКО для мобильного (см. медиазапрос ниже, в
+     котором эти правила теперь и живут). На вебе — обычная длинная
+     страница с sticky-шапкой, как у конкурента: один-единственный скролл
+     самого браузера, без искусственно запертой body и отдельного
+     скролл-контейнера под ноты. ===== */
+  /* ===== Веб: sticky-шапка (табы + строка мелодии + гриф) на обычной
+     скроллящейся странице — один скролл, как у конкурента. ===== */
+  @media (min-width:641px) and (min-height:641px){
+    .sticky-top-shell{
+      position:sticky;
+      top:0;
+      z-index:60;
+      gap:10px;
+      padding-bottom:10px;
+      background:
+        radial-gradient(ellipse at 30% 0%, var(--bg-normal-1) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, var(--bg-normal-2) 0%, transparent 50%),
+        linear-gradient(160deg, var(--bg-normal-3) 0%, var(--bg-normal-4) 45%, var(--bg-normal-2) 100%);
+    }
+    body.light-mode .sticky-top-shell{
+      background:
+        radial-gradient(ellipse at 30% 0%, var(--light-normal-bg-1) 0%, var(--light-normal-bg-2) 50%, var(--light-normal-bg-3) 100%);
+    }
+    /* после sticky-шапки контенту нужен нижний запас — плавающая панель
+       Play на вебе всё ещё position:fixed и перекрывала бы последние
+       ноты в самом конце страницы без этого отступа */
+    .two-col-wrap-inner{
+      padding-bottom:calc(90px + env(safe-area-inset-bottom));
+    }
   }
-  .top-bar{
-    flex:0 0 auto;
-  }
-  .song-bar{
-    flex:0 0 auto;
-  }
-  #tuner-row{
-    flex:0 0 auto;
-    overflow:visible;
-  }
-  .two-col-wrap{
-    flex:1 1 auto;
-    min-height:0;
-    overflow-y:auto;
-    padding-bottom:calc(90px + env(safe-area-inset-bottom));
-  }
-  /* в режиме тюнера .two-col-wrap скрыт целиком — там прокручивается сама
-     tuner-row (кнопки строя, карточки струн, слайдер, Бастау). Десктопное
-     align-items:center центрировало бы контент по вертикали внутри
-     растянутой на весь экран колонки, поэтому явно прижимаем к началу. */
-  body.tuner-mode #tuner-row{
-    flex:1 1 auto;
-    min-height:0;
-    align-items:flex-start;
-    overflow-y:auto;
-    padding-bottom:12px;
+  @media (max-width:640px), (orientation:landscape) and (max-height:640px){
+    body{
+      height:100vh;
+      height:100dvh;
+      min-height:0;
+      overflow:hidden;
+      padding-bottom:0;
+    }
+    .top-bar{
+      flex:0 0 auto;
+    }
+    .song-bar{
+      flex:0 0 auto;
+    }
+    #tuner-row{
+      flex:0 0 auto;
+      overflow:visible;
+    }
+    .two-col-wrap{
+      flex:1 1 auto;
+      min-height:0;
+      overflow-y:auto;
+      padding-bottom:12px;
+    }
+    /* в режиме тюнера .two-col-wrap скрыт целиком — там прокручивается сама
+       tuner-row (кнопки строя, карточки струн, слайдер, Бастау). Десктопное
+       align-items:center центрировало бы контент по вертикали внутри
+       растянутой на весь экран колонки, поэтому явно прижимаем к началу. */
+    body.tuner-mode #tuner-row{
+      flex:1 1 auto;
+      min-height:0;
+      align-items:flex-start;
+      overflow-y:auto;
+      padding-bottom:12px;
+    }
   }
   /* ===== Веб-версия по умолчанию выглядит как при 80% зуме браузера —
      гриф и остальные блоки меньше, видно больше строк с нотами без
@@ -1516,8 +1558,19 @@
      Только веб: узкие/невысокие экраны (телефоны, в т.ч. landscape)
      явно исключены через min-width/min-height. ===== */
   @media (min-width:641px) and (min-height:641px){
-    body{
-      zoom:0.8;
+    /* zoom временно убран целиком (не только с body, но и отовсюду) —
+       чтобы точно проверить, что именно ломает position:sticky. Если
+       шапка/гриф зафиксируются без zoom — значит дело было в нём (даже
+       на потомках sticky-блока, не только на предках), и масштаб 80%
+       нужно будет вернуть другим способом (не через zoom). */
+    /* панель Play на вебе стала слишком компактной после сужения контейнера —
+       элементы кучковались в центре. Раздвигаем шкалу прогресса и скорость
+       вдвое шире (панель и так центрируется, просто была маловата). */
+    .floating-play-bar-inner{
+      max-width:1280px;
+    }
+    .floating-play-bar .floating-speed-row{
+      width:300px;
     }
   }
   @media (max-width:640px), (orientation:landscape) and (max-height:640px){
@@ -1559,11 +1612,6 @@
     }
     body.tuner-mode .floating-play-bar{
       display:none;
-    }
-    /* подсказка "выбери лад на грифе" больше не нужна — грифа на
-       мобильном нет вообще (см. #stage{display:none} выше) */
-    #panel{
-      display:none !important;
     }
     /* рамка карточки с нотами раньше всегда была минимум 340px высотой,
        даже если реальных нот там на пару строк — из-за этого на коротких
@@ -2382,6 +2430,7 @@
 </head>
 <body>
 
+  <div class="sticky-top-shell">
   <div class="top-bar">
     <div class="seg-group" id="modeGroup">
       <button class="seg" data-mode="tuner" data-i18n="modeTuner">Тюнер</button>
@@ -2588,8 +2637,10 @@
     </div>
     <button type="button" id="settingsTrigger" class="settings-trigger" aria-label="Баптаулар">⚙</button>
   </div>
+  </div>
 
   <div class="two-col-wrap">
+   <div class="two-col-wrap-inner">
 
     <div class="col-block" id="notationColBlock">
 
@@ -2623,6 +2674,7 @@
 
     </div>
 
+   </div>
   </div>
 
   <!-- ===== Попап настроек (часть / повтор / превью / таймер) ===== -->
