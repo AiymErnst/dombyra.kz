@@ -103,12 +103,14 @@ export const VIDEOS = [
 ];
 
 // текст подписей больше не хранится здесь — только ключи, соответствующие
-// locales/*.json → nav (catalog, certificate, trainer, tuner, why, reviews, blog)
+// locales/*.json → nav (catalog, certificate, trainer, tuner, why, reviews, blog).
+// trainer/tuner ведут сразу на страницы инструмента (не на секции лендинга) —
+// остальные пункты остаются якорями, т.к. отдельных страниц под них нет
 export const NAV_LINKS = [
   { href: "#catalog", key: "catalog" },
   { href: "#certificate", key: "certificate" },
-  { href: "#trainer", key: "trainer" },
-  { href: "#tuner", key: "tuner", badge: "FREE" },
+  { href: "/learn", key: "trainer" },
+  { href: "/tuner", key: "tuner", badge: "FREE" },
   { href: "#why", key: "why" },
   { href: "#reviews", key: "reviews" },
   { href: "#blog", key: "blog" },
