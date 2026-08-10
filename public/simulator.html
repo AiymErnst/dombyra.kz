@@ -133,6 +133,12 @@
     overflow-x:hidden;
     max-width:100%;
   }
+  @media (max-width:640px){
+    html{
+      height:100%;
+      overflow-y:hidden;
+    }
+  }
   body{
     margin:0;
     min-height:100vh;
@@ -237,6 +243,13 @@
     background-size:5px 5px, 5px 5px;
     background-repeat:no-repeat;
     padding-right:26px;
+    /* в закрытом виде показываем только код (KZ/RU/EN/TR) — длинное
+       название языка обрезается шириной поля; при открытии выпадающего
+       списка браузер сам показывает полный текст опций без обрезки */
+    width:58px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:clip;
   }
   .auth-box{
     display:flex;
@@ -731,9 +744,15 @@
     -webkit-transform:translateZ(0);
     transform:translateZ(0);
     will-change:transform;
+    visibility:visible;
+    pointer-events:auto;
   }
   body.karaoke-mode .floating-play-bar{
     background:linear-gradient(180deg, rgba(var(--panel-tint-karaoke-rgb),0.14), rgba(var(--panel-tint-karaoke-rgb),0.05));
+  }
+  body.tuner-mode .floating-play-bar{
+    visibility:hidden;
+    pointer-events:none;
   }
   body.light-mode .floating-play-bar{
     background:linear-gradient(180deg, rgba(var(--white-rgb),0.9), rgba(var(--white-rgb),0.78));
@@ -1355,6 +1374,39 @@
     display: block;
   }
   body.tuner-mode .two-col-wrap { display: none !important; }
+  body.tuner-mode #stage { display: none !important; }
+  body.tuner-mode #songBar { display: none !important; }
+
+  /* ===== Видимость контента по режиму — через класс на body, а не через
+     точечные style.display из JS. Раньше setMode() дёргал ~10 разных
+     элементов по отдельности через инлайн-стили — на iOS Safari это
+     иногда даёт видимую задержку/дребезг, потому что браузер не всегда
+     схлопывает такую пачку правок в один проход. Один переключённый
+     класс браузер применяет атомарно за один пересчёт стилей. ===== */
+  #karaokeRightContent,
+  #karaokePlayRow{
+    display:none;
+  }
+  body.karaoke-mode #normalRightContent,
+  body.karaoke-mode #normalPlayRow,
+  body.tuner-mode #normalRightContent,
+  body.tuner-mode #normalPlayRow{
+    display:none;
+  }
+  body.karaoke-mode #karaokeRightContent{
+    display:block;
+  }
+  body.karaoke-mode #karaokePlayRow{
+    display:flex;
+  }
+  body.karaoke-mode #loopRow{
+    display:none;
+  }
+  body.tuner-mode #karaokeRightContent,
+  body.tuner-mode #karaokePlayRow{
+    display:none;
+  }
+
   @media (max-width: 700px) {
     body.tuner-mode #tuner-row {
       grid-template-columns: 1fr;
@@ -1401,10 +1453,15 @@
       padding-bottom:calc(92px + env(safe-area-inset-bottom));
     }
     /* в режиме тюнера .two-col-wrap скрыт целиком — там прокручивается
-       сама tuner-row (кнопки строя, карточки струн, слайдер, Бастау) */
+       сама tuner-row (кнопки строя, карточки струн, слайдер, Бастау).
+       align-items:center (унаследовано от десктопного grid-правила)
+       центрировало бы контент по вертикали внутри растянутой на весь
+       экран колонки — из-за этого появлялся большой пустой отступ сверху
+       и всё уезжало вниз, поэтому явно прижимаем контент к началу. */
     body.tuner-mode #tuner-row{
       flex:1 1 auto;
       min-height:0;
+      align-items:flex-start;
       overflow-y:auto;
       -webkit-overflow-scrolling:touch;
       padding-bottom:calc(24px + env(safe-area-inset-bottom));
@@ -1417,12 +1474,6 @@
     align-items: center;
     gap: 0;
     width: 100%;
-  }
-  .tuner-hand-slot{
-    margin-bottom: 14px;
-  }
-  .tuner-hand-slot:empty{
-    display:none;
   }
   /* переключатели строя */
   .tuner-tuning-btns {
@@ -2237,7 +2288,7 @@
         </div>
       </div>
       <select id="langSelect" class="lang-select">
-        <option value="kz">ҚАЗ — Қазақша</option>
+        <option value="kz">KZ — Қазақша</option>
         <option value="ru">RU — Русский</option>
         <option value="en">EN — English</option>
         <option value="tr">TR — Türkçe</option>
@@ -2360,8 +2411,6 @@
       <div id="tunerContent">
         <div class="tuner-gt">
 
-          <div class="tuner-hand-slot" id="tunerHandSlot"></div>
-
           <div class="tuner-tuning-btns">
             <button class="tuner-tuning-btn active" id="tunerTuningStandard" data-i18n="tunerTuningStandard">Оң бұрау · G3 / D3</button>
             <button class="tuner-tuning-btn" id="tunerTuningTeris" data-i18n="tunerTuningTeris">Теріс бұрау · G3 / C3</button>
@@ -2451,7 +2500,7 @@
         </div>
       </div>
 
-      <div id="karaokeRightContent" style="display:none;">
+      <div id="karaokeRightContent">
 	    <div id="karaokeChar" class="karaoke-char">😐</div>
         <div class="karaoke-status" id="karaokeStatus" data-i18n="karaokeIntro">Нажми «Начать», разреши доступ к микрофону и играй мелодию на домбре вслед за подсветкой</div>
         <div class="karaoke-result" id="karaokeResult" style="display:none;"></div>
@@ -2520,7 +2569,7 @@
         <button id="playBtn" class="play-btn icon-only" aria-label="Play / Stop">▶</button>
       </div>
 
-      <div class="play-row" id="karaokePlayRow" style="display:none;">
+      <div class="play-row" id="karaokePlayRow">
         <button id="karaokeStartBtn" class="play-btn" data-i18n="karaokeStartBtn">🎤 Начать</button>
         <button id="karaokeStopBtn" class="stop-btn" disabled data-i18n="stopBtn">⏹ Стоп</button>
       </div>
@@ -4168,14 +4217,7 @@
     if(mode === currentMode) return;
 
     saveModeState();
-
-    // скрываем всё
-    normalRightContent.style.display  = 'none';
-    karaokeRightContent.style.display = 'none';
-    normalPlayRow.style.display  = 'none';
-    karaokePlayRow.style.display = 'none';
     if(typeof setPlaybackProgress === 'function') setPlaybackProgress(0);
-    document.body.classList.remove('karaoke-mode', 'tuner-mode');
 
     // останавливаем активные процессы
     if(isPlaying) stopPlayback();
@@ -4184,39 +4226,24 @@
     if(micStream){ micStream.getTracks().forEach(t => t.stop()); micStream = null; }
     if(window.tunerRunning) window.stopTuner();
 
+    // видимость всех блоков (гриф/тюнер, панели, Play-бар) переключается
+    // через CSS-правила по классу на body — один атомарный переход,
+    // без пачки отдельных style.display из JS (см. комментарий у CSS)
+    document.body.classList.remove('karaoke-mode', 'tuner-mode');
+    if(mode === 'karaoke') document.body.classList.add('karaoke-mode');
+    else if(mode === 'tuner') document.body.classList.add('tuner-mode');
+
     if(mode === 'karaoke'){
-      karaokeRightContent.style.display = 'block';
-      karaokePlayRow.style.display = 'flex';
-      document.body.classList.add('karaoke-mode');
-      document.getElementById('songBar').style.display = '';
-      document.getElementById('floatingPlayBar').style.display = '';
-      document.getElementById('stage').style.display = '';
-      const ts = document.getElementById('tunerStage'); if(ts) ts.style.display = 'none';
       resetStringHighlight();
       render();
-      // в караоке "повторять по кругу" не имеет смысла — прячем эту строку
-      document.getElementById('loopRow').style.display = 'none';
       document.getElementById('handRow').appendChild(handGroup);
     } else if(mode === 'tuner'){
-      document.body.classList.add('tuner-mode');
-      document.getElementById('songBar').style.display = 'none';
-      document.getElementById('floatingPlayBar').style.display = 'none';
-      document.getElementById('stage').style.display = 'none';
-      const ts = document.getElementById('tunerStage'); if(ts) ts.style.display = '';
       render();
       applyTunerMirror();
       highlightTunerString(window.tunerSelStr || 'bottom');
-      document.getElementById('tunerHandSlot').appendChild(handGroup);
     } else {
-      normalRightContent.style.display = 'block';
-      normalPlayRow.style.display = 'flex';
-      document.getElementById('songBar').style.display = '';
-      document.getElementById('floatingPlayBar').style.display = '';
-      document.getElementById('stage').style.display = '';
-      const ts = document.getElementById('tunerStage'); if(ts) ts.style.display = 'none';
       resetStringHighlight();
       render();
-      document.getElementById('loopRow').style.display = 'flex';
       document.getElementById('handRow').appendChild(handGroup);
     }
 
@@ -4227,6 +4254,16 @@
       if(typeof updateSongPickerTrigger === 'function') updateSongPickerTrigger();
     }
   });
+
+  // открытие сразу в нужном режиме по ссылке (?mode=tuner, ?mode=karaoke) —
+  // используется отдельными SEO-страницами /tuner, /karaoke, которые
+  // грузят этот файл в iframe с соответствующим параметром в URL
+  const urlMode = new URLSearchParams(window.location.search).get('mode');
+  if(urlMode){
+    const targetBtn = modeGroup.querySelector(`[data-mode="${urlMode}"]`);
+    if(targetBtn) targetBtn.click();
+  }
+
   const karaokeChar = document.getElementById('karaokeChar');
   const karaokeStatus = document.getElementById('karaokeStatus');
   const karaokeTrack = document.getElementById('karaokeTrack');
