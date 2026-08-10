@@ -66,8 +66,8 @@
     /* ===== Фон карточек (.col-block: выбор мелодии, скорость, таймлайн) =====
        У каждого режима — свой независимый цвет, друг с другом не связаны.
        Формат RGB-триплет (без #), чтобы разная прозрачность считалась от одного числа. */
-    --panel-tint-normal-rgb:137, 207, 240;   /* режим "Обучение" — сейчас золото */
-    --panel-tint-karaoke-rgb:180, 196, 36;  /* режим "Караоке" — сейчас тоже золото, поменяй на своё */
+    --panel-tint-normal-rgb:201, 162, 39;   /* нейтральное золото — без привязки к режиму */
+    --panel-tint-karaoke-rgb:201, 162, 39;  /* то же золото, режим больше не красится в отдельный цвет */
     --block-border-rgb:201,162,39;        /* обводка всех трёх блоков (гриф + два нижних) — одна на все темы и режимы */
 
     /* ===== Персонаж режима караоке (лицо-реакция) ===== */
@@ -665,12 +665,18 @@
     max-width:1300px;
     margin:0 auto;
   }
-  /* ===== Верхняя полоса: выбор мелодии + кнопка настроек ===== */
+  /* ===== Верхняя полоса: выбор мелодии + кнопка настроек =====
+     Раньше жила внутри .two-col-wrap и потому уезжала бы вместе со
+     скроллом нот — вынесена отдельным блоком-соседом, поэтому теперь
+     сама задаёт себе ширину/центрирование (раньше наследовала от
+     родителя). */
   .song-bar{
     display:flex;
     align-items:stretch;
     gap:10px;
     width:100%;
+    max-width:1300px;
+    margin:0 auto 14px;
   }
   .song-bar .song-picker{
     margin-top:0;
@@ -684,7 +690,7 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:21px;
+    font-size:16px;
     color:var(--cream);
     background:rgba(var(--black-rgb),0.3);
     border:1px solid rgba(var(--block-border-rgb),0.45);
@@ -756,15 +762,19 @@
     max-width:640px;
     margin:0 auto;
     display:flex;
+    flex-direction:row;
     align-items:center;
     gap:12px;
     padding:8px 0;
   }
   /* увеличенная область клика/тача вокруг тонкой полоски — сама полоска
-     остаётся 4px, но кликать/тащить можно в пределах всей этой обёртки */
+     остаётся 4px, но кликать/тащить можно в пределах всей этой обёртки.
+     На вебе — часть общего ряда (order управляет порядком). На мобильном
+     (см. медиазапрос ниже) становится отдельной строкой сверху панели. */
   .playback-progress-hit{
     flex:1 1 auto;
     min-width:0;
+    order:2;
     padding:12px 0;
     cursor:pointer;
     touch-action:none;
@@ -804,12 +814,40 @@
     transform:translate(-50%,-50%);
     pointer-events:none;
   }
+  /* на вебе floating-bottom-row "исчезает" как контейнер — её дети
+     (кнопка/нота/скорость) становятся обычными элементами общего ряда
+     вместе с полосой прогресса, порядок берёт на себя order ниже.
+     На мобильном (медиазапрос ниже) снова становится настоящим рядом. */
+  .floating-bottom-row{
+    display:contents;
+  }
+  .floating-play-bar .play-row{
+    order:1;
+    margin-top:0;
+    flex:0 0 auto;
+  }
+  /* название ноты, которая сейчас играет — чтобы панель не выглядела
+     пустой, когда с мобильной версии убрали гриф и старую панель с нотой */
+  .floating-active-note{
+    order:3;
+    flex:0 1 160px;
+    min-width:0;
+    text-align:center;
+    font-family:'Marcellus', serif;
+    font-size:17px;
+    color:var(--gold-soft);
+    letter-spacing:0.02em;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
   .floating-play-bar .floating-speed-row{
+    order:4;
     display:flex;
     align-items:center;
     gap:6px;
     flex:0 0 auto;
-    width:118px;
+    width:150px;
     margin-top:0;
   }
   .floating-play-bar .floating-speed-row label{
@@ -829,18 +867,36 @@
     width:38px;
     text-align:right;
   }
-  .floating-play-bar .play-row{
-    margin-top:0;
-    flex:0 0 auto;
-  }
   .floating-play-bar .play-btn.icon-only{
     width:48px;
     height:48px;
     font-size:17px;
   }
+  /* ===== Мобильный вариант панели: полоса прогресса отдельной строкой
+     сверху, кнопка/нота/скорость — обычным рядом под ней ===== */
+  @media (max-width:640px), (orientation:landscape) and (max-height:640px){
+    .floating-play-bar-inner{
+      flex-direction:column;
+      gap:2px;
+    }
+    .playback-progress-hit{
+      order:0;
+      flex:0 0 auto;
+      width:100%;
+    }
+    .floating-bottom-row{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      width:100%;
+    }
+  }
   @media (max-width:480px){
     .floating-play-bar .floating-speed-row{
-      width:88px;
+      width:120px;
+    }
+    .floating-active-note{
+      font-size:15px;
     }
     .floating-play-bar .play-btn.icon-only{
       width:42px;
@@ -1415,56 +1471,75 @@
   /* на мобильном иллюстрация грифа с рукой в тюнере не показывается —
      сразу после табов идут кнопки строя и карточки струн, экономим место.
      На вебе иллюстрация остаётся как была. */
+  /* ===== "App-shell": шапка, строка мелодии и гриф не двигаются — везде,
+     и на вебе, и на мобильном. Скроллится только блок с нотами (или
+     панель тюнера в этом режиме). ===== */
+  body{
+    height:100vh;
+    height:100dvh;
+    min-height:0;
+    overflow:hidden;
+    padding-bottom:0;
+  }
+  .top-bar{
+    flex:0 0 auto;
+  }
+  .song-bar{
+    flex:0 0 auto;
+  }
+  #tuner-row{
+    flex:0 0 auto;
+    overflow:visible;
+  }
+  .two-col-wrap{
+    flex:1 1 auto;
+    min-height:0;
+    overflow-y:auto;
+    padding-bottom:calc(90px + env(safe-area-inset-bottom));
+  }
+  /* в режиме тюнера .two-col-wrap скрыт целиком — там прокручивается сама
+     tuner-row (кнопки строя, карточки струн, слайдер, Бастау). Десктопное
+     align-items:center центрировало бы контент по вертикали внутри
+     растянутой на весь экран колонки, поэтому явно прижимаем к началу. */
+  body.tuner-mode #tuner-row{
+    flex:1 1 auto;
+    min-height:0;
+    align-items:flex-start;
+    overflow-y:auto;
+    padding-bottom:12px;
+  }
+  /* ===== Веб-версия по умолчанию выглядит как при 80% зуме браузера —
+     гриф и остальные блоки меньше, видно больше строк с нотами без
+     прокрутки. zoom (а не transform:scale) пересчитывает раскладку
+     ровно так же, как ручной зум страницы — самый точный способ
+     повторить то, что человек видит, when reducing browser zoom to 80%.
+     Только веб: узкие/невысокие экраны (телефоны, в т.ч. landscape)
+     явно исключены через min-width/min-height. ===== */
+  @media (min-width:641px) and (min-height:641px){
+    body{
+      zoom:0.8;
+    }
+  }
   @media (max-width:640px), (orientation:landscape) and (max-height:640px){
     body.tuner-mode #tunerStage{
       display:none;
     }
   }
-  /* ===== Мобильный "app-shell": шапка, гриф и Play-панель не двигаются,
-     скроллится только блок с мелодией/нотами (или панель тюнера).
-     Стоит здесь, ПОСЛЕ остальных правил #tuner-row, чтобы гарантированно
-     их перебить (иначе body.tuner-mode #tuner-row{min-height:60vh} выше
-     по каскаду выигрывает у одинаковых по специфичности селекторов). ===== */
+  /* ===== Остальное — только для мобильного: гриф прячем целиком (лады
+     всё равно плохо читаются на маленьком экране), панель Play становится
+     обычным элементом раскладки вместо fixed, подсказка про гриф и
+     минимальная высота карточки с нотами больше не нужны. Стоит здесь,
+     ПОСЛЕ остальных правил #tuner-row, чтобы гарантированно их перебить
+     (иначе body.tuner-mode #tuner-row{min-height:60vh} выше по каскаду
+     выигрывает у одинаковых по специфичности селекторов). ===== */
   @media (max-width:640px), (orientation:landscape) and (max-height:640px){
-    body{
-      height:100vh;
-      height:100dvh;
-      min-height:0;
-      overflow:hidden;
-      padding-bottom:0;
+    /* на мобильном панель Play больше не fixed (см. ниже), а обычный
+       элемент раскладки — большой запас снизу для неё уже не нужен */
+    .two-col-wrap{
+      padding-bottom:12px;
     }
-    .top-bar{
-      flex:0 0 auto;
-    }
-    /* гриф домбры на телефоне убираем целиком — лады всё равно плохо
-       читаются на маленьком экране, а место освобождает для нот.
-       В режиме тюнера #stage и так уже скрыт отдельным правилом ниже —
-       здесь просто не даём ему ни шанса появиться на мобильном вообще. */
     #stage{
       display:none !important;
-    }
-    #tuner-row{
-      flex:0 0 auto;
-      overflow:visible;
-    }
-    .two-col-wrap{
-      flex:1 1 auto;
-      min-height:0;
-      overflow-y:auto;
-      padding-bottom:12px;
-    }
-    /* в режиме тюнера .two-col-wrap скрыт целиком — там прокручивается
-       сама tuner-row (кнопки строя, карточки струн, слайдер, Бастау).
-       align-items:center (унаследовано от десктопного grid-правила)
-       центрировало бы контент по вертикали внутри растянутой на весь
-       экран колонки — из-за этого появлялся большой пустой отступ сверху
-       и всё уезжало вниз, поэтому явно прижимаем контент к началу. */
-    body.tuner-mode #tuner-row{
-      flex:1 1 auto;
-      min-height:0;
-      align-items:flex-start;
-      overflow-y:auto;
-      padding-bottom:12px;
     }
     /* панель Play на мобильном — НЕ position:fixed, а обычный последний
        элемент flex-колонки body (как у конкурента: footer.playerbar —
@@ -1961,18 +2036,19 @@
   }
   .song-picker-trigger{
     width:100%;
+    height:40px;
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:10px;
     font-family:'Manrope', sans-serif;
-    font-size:18px;
+    font-size:16px;
     font-weight:600;
     color:var(--cream);
     background:rgba(var(--black-rgb),0.3);
     border:1px solid rgba(var(--block-border-rgb),0.45);
     border-radius:12px;
-    padding:16px 18px;
+    padding:0 16px;
     cursor:pointer;
     text-align:left;
   }
@@ -2502,18 +2578,18 @@
   </div>
   </div>
 
-  <div class="two-col-wrap">
-
-    <div class="song-bar" id="songBar">
-      <div class="song-picker">
-        <button type="button" id="songPickerTrigger" class="song-picker-trigger">
-          <span id="songPickerTriggerText" data-i18n="songPickerPlaceholder">Мелодия таңдаңыз</span>
-          <span class="song-picker-trigger-arrow">▾</span>
-        </button>
-        <select id="songSelect" class="sr-only-select" tabindex="-1" aria-hidden="true"></select>
-      </div>
-      <button type="button" id="settingsTrigger" class="settings-trigger" aria-label="Баптаулар">⚙</button>
+  <div class="song-bar" id="songBar">
+    <div class="song-picker">
+      <button type="button" id="songPickerTrigger" class="song-picker-trigger">
+        <span id="songPickerTriggerText" data-i18n="songPickerPlaceholder">Мелодия таңдаңыз</span>
+        <span class="song-picker-trigger-arrow">▾</span>
+      </button>
+      <select id="songSelect" class="sr-only-select" tabindex="-1" aria-hidden="true"></select>
     </div>
+    <button type="button" id="settingsTrigger" class="settings-trigger" aria-label="Баптаулар">⚙</button>
+  </div>
+
+  <div class="two-col-wrap">
 
     <div class="col-block" id="notationColBlock">
 
@@ -2598,13 +2674,6 @@
   <!-- ===== Плавающая панель воспроизведения ===== -->
   <div class="floating-play-bar" id="floatingPlayBar">
     <div class="floating-play-bar-inner">
-      <div class="play-row" id="normalPlayRow">
-        <button id="playBtn" class="play-btn icon-only" aria-label="Play / Stop">▶</button>
-      </div>
-
-      <div class="play-row" id="karaokePlayRow">
-        <button id="karaokeStartBtn" class="play-btn icon-only" aria-label="Play / Stop">🎤</button>
-      </div>
 
       <div class="playback-progress-hit" id="playbackProgressTrack">
         <div class="playback-progress-track">
@@ -2613,11 +2682,27 @@
         </div>
       </div>
 
-      <div class="speed-row floating-speed-row">
-        <label for="speedSlider" data-i18n="speedLabel">Скорость</label>
-        <input type="range" id="speedSlider" min="3" max="300" value="40" step="1">
-        <span id="speedVal">0.4×</span>
+      <div class="floating-bottom-row">
+        <div class="play-row" id="normalPlayRow">
+          <button id="playBtn" class="play-btn icon-only" aria-label="Play / Stop">▶</button>
+        </div>
+
+        <div class="play-row" id="karaokePlayRow">
+          <button id="karaokeStartBtn" class="play-btn icon-only" aria-label="Play / Stop">🎤</button>
+        </div>
+
+        <div class="floating-active-note" id="floatingActiveNote"></div>
+
+        <div class="speed-row floating-speed-row">
+          <label for="speedSlider" data-i18n="speedLabel">Скорость</label>
+          <input type="range" id="speedSlider" min="3" max="300" value="40" step="1" list="speedTicks">
+          <datalist id="speedTicks">
+            <option value="100"></option>
+          </datalist>
+          <span id="speedVal">0.4×</span>
+        </div>
       </div>
+
     </div>
   </div>
 
@@ -4062,6 +4147,12 @@
   }
 
   speedSlider.addEventListener('input', () => {
+    // "залипание" на стандартной скорости (1×=100) — удобнее попасть
+    // пальцем на телефоне точно в неё, а не в 0.98× или 1.03×
+    const raw = parseInt(speedSlider.value, 10);
+    if(Math.abs(raw - 100) <= 4 && raw !== 100){
+      speedSlider.value = 100;
+    }
     speedVal.textContent = (speedSlider.value/100).toFixed(2) + '×';
   });
 
@@ -4173,6 +4264,14 @@
         if(nd && !nd.classList.contains('active')) nd.classList.add('preview');
       });
     }
+
+    // название ноты(нот), которая сейчас звучит — дублируем в плавающую
+    // панель снизу: на мобильном там больше нет грифа и старой панели с
+    // нотой, без этого панель выглядела пусто (одна кнопка + скорость)
+    const floatingActiveNote = document.getElementById('floatingActiveNote');
+    if(floatingActiveNote){
+      floatingActiveNote.textContent = lit.map(({dot}) => dot.dataset.note).join(' / ');
+    }
   }
 
   const ICON_PLAY = '▶';
@@ -4187,6 +4286,8 @@
     playBtn.classList.remove('is-playing');
     playBtn.textContent = ICON_PLAY;
     isPlaying = false;
+    const floatingActiveNote = document.getElementById('floatingActiveNote');
+    if(floatingActiveNote) floatingActiveNote.textContent = '';
   }
 
   async function startPlayback(opts){
