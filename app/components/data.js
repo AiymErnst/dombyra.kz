@@ -22,6 +22,13 @@ export const TUNER_STEPS = [
   { num: "04", title: "Всем и навсегда", desc: "Без регистрации и оплаты" },
 ];
 
+export const KARAOKE_STEPS = [
+  { num: "01", title: "Включи микрофон", desc: "Один клик — и тренажёр слышит твою домбру" },
+  { num: "02", title: "Следи за подсветкой", desc: "Лады загораются в темпе мелодии" },
+  { num: "03", title: "Видишь ошибки сразу", desc: "Фальшивая нота подсвечивается красным" },
+  { num: "04", title: "Играй любимые кюи", desc: "От простых мелодий до сложных партий" },
+];
+
 export const WHY_TAGS = [
   { label: "Гарантия 3 года", filled: true },
   { label: "Бесплатный тренажёр", filled: true },
@@ -111,6 +118,7 @@ export const NAV_LINKS = [
   { href: "#certificate", key: "certificate" },
   { href: "/learn", key: "trainer" },
   { href: "/tuner", key: "tuner", badge: "FREE" },
+  { href: "/karaoke", key: "karaoke", badge: "FREE" },
   { href: "#why", key: "why" },
   { href: "#reviews", key: "reviews" },
   { href: "#blog", key: "blog" },
