@@ -35,24 +35,24 @@
     --brand-red:#FF3D35;
     --brand-red-rgb:255,61,53;
 
-    /* ===== Фон: обычный режим (тёмно-синий градиент) ===== */
-    --bg-normal-1:#0a2472;
-    --bg-normal-2:#051650;
+    /* ===== Фон: обычный режим — нейтральный тёмный, без цветного оттенка ===== */
+    --bg-normal-1:#1a1210;
+    --bg-normal-2:#120c0a;
     --bg-normal-3:#00020f;
     --bg-normal-4:#00072d;
     --light-normal-bg-1:#ffffff;  /* фон обучения на светлой теме — свой цвет, не связан с тёмной темой */
     --light-normal-bg-2:#ffffff;
-    --light-normal-bg-3:#F0FFFF;
+    --light-normal-bg-3:#ffffff;
 
-    /* ===== Фон: режим караоке (тёмно-зелёный градиент) ===== */
-    --bg-karaoke-1:#044035;
-    --bg-karaoke-2:#071f18;
-    --bg-karaoke-3:#010a08;
-    --bg-karaoke-4:#06231D;
-    --bg-karaoke-5:#0a2e24;
+    /* ===== Фон: режим караоке — тот же нейтральный тёмный, без зелёного оттенка ===== */
+    --bg-karaoke-1:#1a1210;
+    --bg-karaoke-2:#120c0a;
+    --bg-karaoke-3:#00020f;
+    --bg-karaoke-4:#00072d;
+    --bg-karaoke-5:#0a0705;
     --light-karaoke-bg-1:#ffffff;  /* фон караоке на светлой теме — свой цвет, не связан с тёмной темой */
     --light-karaoke-bg-2:#ffffff;
-    --light-karaoke-bg-3:#ECFFDC;
+    --light-karaoke-bg-3:#ffffff;
 
     /* ===== Гриф домбры ===== */
     --neck-wood:#5a3320;              /* цвет дерева грифа */
@@ -66,8 +66,8 @@
     /* ===== Фон карточек (.col-block: выбор мелодии, скорость, таймлайн) =====
        У каждого режима — свой независимый цвет, друг с другом не связаны.
        Формат RGB-триплет (без #), чтобы разная прозрачность считалась от одного числа. */
-    --panel-tint-normal-rgb:201, 162, 39;   /* нейтральное золото — без привязки к режиму */
-    --panel-tint-karaoke-rgb:201, 162, 39;  /* то же золото, режим больше не красится в отдельный цвет */
+    --panel-tint-normal-rgb:255, 255, 255;   /* нейтральный белый — без цветного оттенка */
+    --panel-tint-karaoke-rgb:255, 255, 255;  /* то же самое, режим больше не красится в отдельный цвет */
     --block-border-rgb:201,162,39;        /* обводка всех трёх блоков (гриф + два нижних) — одна на все темы и режимы */
 
     /* ===== Персонаж режима караоке (лицо-реакция) ===== */
@@ -156,11 +156,37 @@
     padding:14px 16px calc(100px + env(safe-area-inset-bottom));
     position:relative;
   }
+  /* ===== ЕДИНЫЙ контейнер ширины для ВСЕЙ основной колонки — шапка,
+     гриф, строка мелодии И блок с нотами теперь физически внутри одной
+     и той же коробки, а не двух разных (сама body + отдельно .two-col-wrap
+     со своим скроллбаром). Раньше у каждого блока была СВОЯ max-width —
+     совпадающие числа не гарантировали совпадение на пиксель (мешали то
+     скроллбар, то паддинг, то забытая обёртка). Теперь рассинхронизация
+     физически невозможна — это одна и та же коробка. */
+  .content-shell{
+    width:100%;
+    max-width:1300px;
+    margin:0 auto;
+    display:flex;
+    flex-direction:column;
+    flex:1 1 auto;
+    min-height:0;
+  }
+  body.web-compact .content-shell{
+    max-width:1100px;
+  }
   .sticky-top-shell{
     display:flex;
     flex-direction:column;
     align-items:center;
     width:100%;
+    /* резервируем место под скроллбар, даже если сам этот блок не
+       скроллится — иначе центрирование съезжает относительно
+       .two-col-wrap (у неё скроллбар реально есть и отъедает
+       несколько пикселей только с ПРАВОЙ стороны, из-за чего центр
+       по факту немного смещается влево у одной и не смещается у
+       другой — это и давало видимое расхождение на пару пикселей) */
+    scrollbar-gutter: stable;
   }
   .top-bar{
     display:flex;
@@ -168,10 +194,8 @@
     justify-content:space-between;
     align-items:center;
     width:100%;
-    max-width:1300px;
-    margin:0 auto;
     gap:10px;
-    padding:0 4px 10px;
+    padding:0 0 10px;
   }
   .top-bar-right{
     display:flex;
@@ -232,11 +256,31 @@
     background:rgba(var(--white-rgb),0.92);
     color:var(--seg-active-text);
   }
-  .lang-select{
+  /* обёртка + отдельная надпись поверх select — нативный select обрезает
+     текст ненадёжно (зависит от браузера, appearance:none тоже не всегда
+     помогает), поэтому в закрытом виде код языка (KZ/RU/EN/TR) рисуем
+     ВРУЧНУЮ поверх, а не полагаемся на CSS-обрезку текста самого select */
+  .lang-select-wrap{
+    position:relative;
+    display:inline-flex;
+  }
+  .lang-select-label{
+    position:absolute;
+    left:12px;
+    top:50%;
+    transform:translateY(-50%);
     font-family:'Manrope', sans-serif;
     font-size:12.5px;
     font-weight:600;
     color:var(--seg-active-text);
+    pointer-events:none;
+    white-space:nowrap;
+  }
+  .lang-select{
+    font-family:'Manrope', sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    color:transparent !important;
     background:rgba(var(--white-rgb),0.92);
     border:none;
     border-radius:999px;
@@ -249,13 +293,15 @@
     background-size:5px 5px, 5px 5px;
     background-repeat:no-repeat;
     padding-right:26px;
-    /* в закрытом виде показываем только код (KZ/RU/EN/TR) — длинное
-       название языка обрезается шириной поля; при открытии выпадающего
-       списка браузер сам показывает полный текст опций без обрезки */
     width:58px;
     overflow:hidden;
     white-space:nowrap;
-    text-overflow:clip;
+  }
+  /* сам текст в закрытом виде теперь прозрачный (см. .lang-select-label
+     выше) — но в РАСКРЫТОМ списке опции должны быть видны нормально */
+  .lang-select option{
+    padding:8px 14px;
+    color:initial;
   }
   .auth-box{
     display:flex;
@@ -324,22 +370,11 @@
     .top-bar-right{
       width:100%;
       flex-wrap:nowrap;
-      justify-content:space-between;
+      justify-content:flex-start;
       gap:6px;
     }
-    .auth-btn-premium{
-      width:34px;
-      height:34px;
-      padding:0;
-      border-radius:50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:15px;
-      flex:0 0 auto;
-    }
-    .auth-btn-premium .auth-btn-label{
-      display:none;
+    .auth-box{
+      margin-right:auto;
     }
     .user-email{
       display:none;
@@ -358,12 +393,21 @@
       padding:6px 9px;
       font-size:11px;
     }
+    .lang-select-wrap{
+      flex:0 0 auto;
+    }
+    .lang-select-label{
+      left:8px;
+      font-size:11px;
+    }
     .lang-select{
-      max-width:60px;
+      width:52px;
+      max-width:52px;
+      overflow:hidden;
+      white-space:nowrap;
       font-size:11px;
       padding:7px 20px 7px 8px;
       background-position:calc(100% - 10px) center, calc(100% - 6px) center;
-      flex:0 0 auto;
     }
     #themeToggle{
       width:34px;
@@ -389,6 +433,11 @@
   .stage.horizontal{
     max-width:1300px;
     aspect-ratio: 990 / 260;
+  }
+  /* показ/скрытие грифа теперь чекбоксом в настройках (не отдельной
+     кнопкой над нотами — та тоже отъедала высоту экрана) */
+  body.fretboard-collapsed #stage{
+    display:none;
   }
   .stage svg{
     position:absolute;
@@ -465,6 +514,31 @@
     stroke:var(--cream);
     transform:scale(1.5);
   }
+  /* всплывающая подсказка с названием ноты — появляется прямо на грифе
+     рядом с нажатым ладом (не отдельным блоком под нотами, который на
+     длинных произведениях уезжал далеко вниз и был не виден) */
+  .fret-note-label{
+    pointer-events:none;
+  }
+  .fret-note-label rect{
+    fill:var(--wine-deep);
+    stroke:var(--gold-soft);
+    stroke-width:1.2;
+  }
+  .fret-note-label text{
+    fill:var(--gold-soft);
+    font-family:'Manrope', sans-serif;
+    font-size:15px;
+    font-weight:700;
+    text-anchor:middle;
+  }
+  body.light-mode .fret-note-label rect{
+    fill:var(--cream);
+    stroke:rgba(var(--gold-rgb),0.6);
+  }
+  body.light-mode .fret-note-label text{
+    fill:var(--wine-deep);
+  }
   .body-flare{
     fill:var(--neck-wood);
     stroke:none;
@@ -494,14 +568,13 @@
     color:var(--cream);
   }
   .countdown-overlay{
-    position:absolute;
+    position:fixed;
     inset:0;
     background:rgba(var(--black-rgb),0.42);
     display:flex;
     align-items:center;
     justify-content:center;
-    border-radius:18px;
-    z-index:5;
+    z-index:200;
   }
   .countdown-overlay span{
     font-family:'Marcellus', serif;
@@ -671,14 +744,13 @@
   .two-col-wrap{
     display:block;
     width:100%;
+    scrollbar-gutter: stable;
   }
   .two-col-wrap-inner{
     display:flex;
     flex-direction:column;
     gap:14px;
     width:100%;
-    max-width:1300px;
-    margin:0 auto;
   }
   /* ===== Верхняя полоса: выбор мелодии + кнопка настроек =====
      Раньше жила внутри .two-col-wrap и потому уезжала бы вместе со
@@ -690,8 +762,7 @@
     align-items:stretch;
     gap:10px;
     width:100%;
-    max-width:1300px;
-    margin:0 auto 14px;
+    margin-bottom:14px;
   }
   .song-bar .song-picker{
     margin-top:0;
@@ -848,7 +919,7 @@
     flex:0 1 160px;
     min-width:0;
     text-align:center;
-    font-family:'Marcellus', serif;
+    font-family:'Manrope', sans-serif;
     font-size:17px;
     color:var(--gold-soft);
     letter-spacing:0.02em;
@@ -887,9 +958,19 @@
     height:48px;
     font-size:17px;
   }
-  /* ===== Мобильный вариант панели: полоса прогресса отдельной строкой
-     сверху, кнопка/нота/скорость — обычным рядом под ней ===== */
+  /* слайдер скорости на мобильном — вдвое длиннее базового (было 150px),
+     независимо от ориентации */
   @media (max-width:640px), (orientation:landscape) and (max-height:640px){
+    .floating-play-bar .floating-speed-row{
+      width:300px;
+    }
+  }
+  /* ===== Двухрядная панель (полоса прогресса отдельной строкой сверху) —
+     ТОЛЬКО в портретной ориентации. В landscape высоты и так мало: если
+     панель займёт два ряда, на экране влезет всего одна строка нот —
+     поэтому в landscape оставляем тот же однорядный вид, что на вебе
+     (кнопка+нота+скорость+прогресс в одну линию). ===== */
+  @media (max-width:640px) and (orientation:portrait){
     .floating-play-bar-inner{
       flex-direction:column;
       gap:2px;
@@ -908,7 +989,7 @@
   }
   @media (max-width:480px){
     .floating-play-bar .floating-speed-row{
-      width:120px;
+      width:240px;
     }
     .floating-active-note{
       font-size:15px;
@@ -932,8 +1013,9 @@
   body.karaoke-mode .col-block{
     background:linear-gradient(180deg, rgba(var(--panel-tint-karaoke-rgb),0.06), rgba(var(--panel-tint-karaoke-rgb),0.015));
   }
-  /* подсказка "выбери лад на грифе" (panel) убрана везде — потерялась
-     была при переносе разметки, возвращаю: не показываем нигде */
+  /* старый блок с названием ноты под нотным листом больше не используется —
+     теперь подсказка появляется прямо на грифе, рядом с нажатым ладом
+     (см. .fret-note-label в SVG-стилях ниже) */
   #panel{
     display:none !important;
   }
@@ -1113,11 +1195,11 @@
     background:rgba(var(--gold-rgb),0.25);
   }
   .tab-lane{
-    height:26px;
+    height:29px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:17px;
+    font-size:19px;
     font-weight:700;
     color:var(--cream-muted);
   }
@@ -1128,11 +1210,11 @@
     color:var(--cream);
   }
   .tab-stroke{
-    height:20px;
+    height:22px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:14px;
+    font-size:15px;
     color:var(--gold-soft);
     opacity:0.75;
     border-top:1px solid rgba(var(--gold-rgb),0.14);
@@ -1323,15 +1405,6 @@
     border-radius:999px;
     padding:16px 30px;
     cursor:pointer;
-    box-shadow:0 4px 18px rgba(var(--gold-rgb),0.35);
-    transition:transform .12s ease, box-shadow .12s ease;
-  }
-  .play-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:0 6px 24px rgba(var(--gold-rgb),0.5);
-  }
-  .play-btn:active{
-    transform:translateY(0);
   }
   .play-btn:disabled{
     opacity:0.55;
@@ -1398,8 +1471,6 @@
   #tuner-row {
     display: block;
     width: 100%;
-    max-width: 1300px;
-    margin: 0 auto;
   }
   /* tuner-wrap (панель тюнера) скрыта по умолчанию */
   #tuner-wrap {
@@ -1484,94 +1555,119 @@
   /* на мобильном иллюстрация грифа с рукой в тюнере не показывается —
      сразу после табов идут кнопки строя и карточки струн, экономим место.
      На вебе иллюстрация остаётся как была. */
-  /* ===== "App-shell" — ТОЛЬКО для мобильного (см. медиазапрос ниже, в
-     котором эти правила теперь и живут). На вебе — обычная длинная
-     страница с sticky-шапкой, как у конкурента: один-единственный скролл
-     самого браузера, без искусственно запертой body и отдельного
-     скролл-контейнера под ноты. ===== */
-  /* ===== Веб: sticky-шапка (табы + строка мелодии + гриф) на обычной
-     скроллящейся странице — один скролл, как у конкурента. ===== */
-  @media (min-width:641px) and (min-height:641px){
-    .sticky-top-shell{
-      position:sticky;
-      top:0;
-      z-index:60;
-      gap:10px;
-      padding-bottom:10px;
-      background:
-        radial-gradient(ellipse at 30% 0%, var(--bg-normal-1) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 100%, var(--bg-normal-2) 0%, transparent 50%),
-        linear-gradient(160deg, var(--bg-normal-3) 0%, var(--bg-normal-4) 45%, var(--bg-normal-2) 100%);
-    }
-    body.light-mode .sticky-top-shell{
-      background:
-        radial-gradient(ellipse at 30% 0%, var(--light-normal-bg-1) 0%, var(--light-normal-bg-2) 50%, var(--light-normal-bg-3) 100%);
-    }
-    /* после sticky-шапки контенту нужен нижний запас — плавающая панель
-       Play на вебе всё ещё position:fixed и перекрывала бы последние
-       ноты в самом конце страницы без этого отступа */
-    .two-col-wrap-inner{
-      padding-bottom:calc(90px + env(safe-area-inset-bottom));
-    }
+  /* ===== "App-shell": шапка/выбор мелодии/гриф не двигаются — теперь
+     везде, и на вебе, и на мобильном. Пробовала sticky на вебе — Computed
+     показывал position:sticky/top:0 корректно, но реально при живом
+     скролле всё равно уезжало (судя по всему, что-то в связке с iframe
+     ломает sticky непредсказуемо). Возвращаюсь к проверенному варианту —
+     запертая body + один явный скроллящийся блок (.two-col-wrap), это
+     подтверждённо работает (уже проверено на мобильном). ===== */
+  body{
+    height:100vh;
+    height:100dvh;
+    min-height:0;
+    overflow:hidden;
+    padding-bottom:0;
+  }
+  /* .sticky-top-shell раньше была нужна для (не сработавшего) sticky —
+     теперь просто группирует шапку/гриф/выбор мелодии в один
+     фиксированный "этаж" app-shell'а, сама флекс-элементом body */
+  .sticky-top-shell{
+    flex:0 0 auto;
+  }
+  .two-col-wrap{
+    flex:1 1 auto;
+    min-height:0;
+    overflow-y:auto;
+    padding-bottom:calc(90px + env(safe-area-inset-bottom));
+  }
+  /* в режиме тюнера .two-col-wrap скрыт целиком — там прокручивается сама
+     tuner-row (кнопки строя, карточки струн, слайдер, Бастау). Десктопное
+     align-items:center центрировало бы контент по вертикали внутри
+     растянутой на весь экран колонки, поэтому явно прижимаем к началу. */
+  body.tuner-mode #tuner-row{
+    flex:1 1 auto;
+    min-height:0;
+    align-items:flex-start;
+    overflow-y:auto;
+    padding-bottom:12px;
   }
   @media (max-width:640px), (orientation:landscape) and (max-height:640px){
-    body{
-      height:100vh;
-      height:100dvh;
-      min-height:0;
-      overflow:hidden;
-      padding-bottom:0;
-    }
-    .top-bar{
-      flex:0 0 auto;
-    }
-    .song-bar{
-      flex:0 0 auto;
-    }
-    #tuner-row{
-      flex:0 0 auto;
-      overflow:visible;
-    }
+    /* на мобильном панель Play не fixed (см. ниже) — большой запас снизу
+       под неё уже не нужен, оставляем компактный */
     .two-col-wrap{
-      flex:1 1 auto;
-      min-height:0;
-      overflow-y:auto;
-      padding-bottom:12px;
-    }
-    /* в режиме тюнера .two-col-wrap скрыт целиком — там прокручивается сама
-       tuner-row (кнопки строя, карточки струн, слайдер, Бастау). Десктопное
-       align-items:center центрировало бы контент по вертикали внутри
-       растянутой на весь экран колонки, поэтому явно прижимаем к началу. */
-    body.tuner-mode #tuner-row{
-      flex:1 1 auto;
-      min-height:0;
-      align-items:flex-start;
-      overflow-y:auto;
       padding-bottom:12px;
     }
   }
-  /* ===== Веб-версия по умолчанию выглядит как при 80% зуме браузера —
-     гриф и остальные блоки меньше, видно больше строк с нотами без
-     прокрутки. zoom (а не transform:scale) пересчитывает раскладку
-     ровно так же, как ручной зум страницы — самый точный способ
-     повторить то, что человек видит, when reducing browser zoom to 80%.
-     Только веб: узкие/невысокие экраны (телефоны, в т.ч. landscape)
-     явно исключены через min-width/min-height. ===== */
-  @media (min-width:641px) and (min-height:641px){
-    /* zoom временно убран целиком (не только с body, но и отовсюду) —
-       чтобы точно проверить, что именно ломает position:sticky. Если
-       шапка/гриф зафиксируются без zoom — значит дело было в нём (даже
-       на потомках sticky-блока, не только на предках), и масштаб 80%
-       нужно будет вернуть другим способом (не через zoom). */
-    /* панель Play на вебе стала слишком компактной после сужения контейнера —
-       элементы кучковались в центре. Раздвигаем шкалу прогресса и скорость
-       вдвое шире (панель и так центрируется, просто была маловата). */
-    .floating-play-bar-inner{
-      max-width:1280px;
-    }
-    .floating-play-bar .floating-speed-row{
-      width:300px;
-    }
+  /* ===== Веб-версия: масштаб заметно компактнее (65% от исходных
+     размеров, было 80% — на большом мониторе разница в 20% почти не
+     читалась на глаз, особенно у высоты нот в пару пикселей). БЕЗ
+     zoom/transform — оба давали баг рендеринга (белый прямоугольник) в
+     связке с fixed/sticky/blur. Всё завязано на один класс
+     body.web-compact (выставляет JS, см. updateWebCompactClass) — если
+     менять процент ещё раз, значения ниже надо пересчитывать все вместе,
+     они все от одного и того же коэффициента. ===== */
+  body.web-compact .stage.horizontal{
+    max-width:1100px;
+  }
+  /* four individual max-width overrides removed — .content-shell теперь
+     единолично задаёт ширину и для обычного, и для сжатого веб-режима
+     (см. body.web-compact .content-shell{max-width:1100px} выше), эти
+     четыре блока просто width:100% внутри неё */
+  body.web-compact .tab-lane{
+    height:19px;
+    font-size:13px;
+  }
+  body.web-compact .tab-stroke{
+    height:15px;
+    font-size:11px;
+  }
+  body.web-compact .col-block{
+    padding:18px 21px;
+  }
+  body.web-compact .two-col-wrap-inner{
+    gap:9px;
+  }
+  body.web-compact .floating-play-bar-inner{
+    max-width:1080px;
+  }
+  body.web-compact .floating-play-bar .floating-speed-row{
+    width:255px;
+  }
+  /* кнопки/элементы шапки и строки мелодии — раньше сжималась только
+     ширина их ОБЁРТКИ (.top-bar/.song-bar), а сами кнопки внутри
+     оставались исходного размера (padding/font-size — отдельные от
+     ширины контейнера свойства). Теперь пропорционально (~85%,
+     тот же коэффициент 1100/1300) уменьшены и они. */
+  body.web-compact .seg{
+    padding:5px 12px;
+    font-size:11px;
+  }
+  body.web-compact .lang-select-label{
+    font-size:11px;
+    left:10px;
+  }
+  body.web-compact .lang-select{
+    font-size:11px;
+    padding:7px 20px 7px 10px;
+  }
+  body.web-compact .auth-btn{
+    font-size:10px;
+    padding:7px 12px;
+  }
+  body.web-compact #themeToggle{
+    width:29px;
+    height:29px;
+    font-size:14px;
+  }
+  body.web-compact .song-picker-trigger{
+    height:34px;
+    font-size:14px;
+    padding:0 13px;
+  }
+  body.web-compact .settings-trigger{
+    width:46px;
+    font-size:14px;
   }
   @media (max-width:640px), (orientation:landscape) and (max-height:640px){
     body.tuner-mode #tunerStage{
@@ -1592,6 +1688,11 @@
       padding-bottom:12px;
     }
     #stage{
+      display:none !important;
+    }
+    /* строка "Показывать гриф" в настройках на мобильном не нужна —
+       грифа там нет вообще (см. #stage{display:none} выше) */
+    #fretboardRow{
       display:none !important;
     }
     /* панель Play на мобильном — НЕ position:fixed, а обычный последний
@@ -1632,30 +1733,36 @@
     width: 100%;
   }
   /* переключатели строя */
+  /* стиль под табы режимов (Обучение/Караоке/Тюнер) — раньше здесь были
+     две отдельные кнопки с собственной рамкой и фоном каждая, что рядом
+     с табами визуально выглядело тяжелее/громче. Теперь один общий
+     "пилюльный" контейнер с двумя сегментами внутри — тот же приём. */
   .tuner-tuning-btns {
     display: flex;
-    gap: 8px;
+    gap: 3px;
     justify-content: center;
-    flex-wrap: wrap;
+    background: rgba(var(--white-rgb),0.08);
+    border: 1px solid rgba(var(--white-rgb),0.15);
+    border-radius: 999px;
+    padding: 3px;
     margin-bottom: 20px;
   }
   .tuner-tuning-btn {
     font-family: 'Manrope', sans-serif;
     font-size: 12px;
     font-weight: 600;
-    color: rgba(var(--cream-rgb),0.6);
-    background: rgba(var(--white-rgb),0.06);
-    border: 1px solid rgba(var(--white-rgb),0.12);
+    color: rgba(var(--white-rgb),0.7);
+    background: transparent;
+    border: none;
     border-radius: 999px;
     padding: 7px 14px;
     cursor: pointer;
-    transition: all .15s;
+    transition: background .15s, color .15s;
+    letter-spacing: 0.03em;
   }
-  .tuner-tuning-btn:hover { background: rgba(var(--white-rgb),0.1); color: var(--cream); }
   .tuner-tuning-btn.active {
-    background: linear-gradient(180deg, var(--gold-soft), var(--gold));
-    color: var(--wine-deep);
-    border-color: transparent;
+    background: rgba(var(--white-rgb),0.92);
+    color: var(--seg-active-text);
   }
   /* выбор струны */
   .tuner-str-row {
@@ -1878,6 +1985,7 @@
     width: 34px;
     height: 34px;
     font-size: 16px;
+    color: var(--cream);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -1890,6 +1998,7 @@
   body.light-mode #themeToggle {
     background: rgba(var(--black-rgb),0.07);
     border-color: rgba(var(--black-rgb),0.14);
+    color: var(--light-text-strong);
   }
 
   /* ══ СВЕТЛЫЙ РЕЖИМ ══ */
@@ -1973,6 +2082,7 @@
     background-size:5px 5px, 5px 5px;
     background-repeat:no-repeat;
     color:var(--light-text-strong);
+    border:1px solid rgba(var(--light-accent-rgb),0.4);
   }
 
   /* Скорость и чекбоксы */
@@ -2001,7 +2111,7 @@
   body.light-mode .tab-lane { color: var(--light-text-body); }
   body.light-mode .tab-lane.filled { color: var(--light-text-strong); }
   body.light-mode .tab-stroke { color: var(--gold); }
-  body.light-mode .tab-lyric { color: var(--gold); }
+  body.light-mode .tab-lyric { color: var(--cream-muted); }
   body.light-mode .tab-labels .tab-lane,
   body.light-mode .tab-labels .tab-stroke { color: var(--gold); }
   body.light-mode .tab-note.selected-start {
@@ -2037,13 +2147,16 @@
   body.light-mode #tunerLayoutInner {
     background: none;
   }
+  body.light-mode .tuner-tuning-btns {
+    background: rgba(var(--black-rgb),0.06);
+    border-color: rgba(var(--black-rgb),0.1);
+  }
   body.light-mode .tuner-tuning-btn {
-    color: var(--light-tuning-btn);
-    background: rgba(var(--black-rgb),0.05);
-    border-color: rgba(var(--light-accent-rgb),0.35);
+    color: rgba(var(--black-rgb),0.45);
+    background: transparent;
   }
   body.light-mode .tuner-tuning-btn.active {
-    background: linear-gradient(180deg, var(--gold-soft), var(--gold));
+    background: rgba(var(--black-rgb),0.82);
     color: var(--white);
   }
   body.light-mode .tuner-str-btn {
@@ -2430,28 +2543,32 @@
 </head>
 <body>
 
+  <div class="content-shell">
   <div class="sticky-top-shell">
   <div class="top-bar">
     <div class="seg-group" id="modeGroup">
       <button class="seg" data-mode="tuner" data-i18n="modeTuner">Тюнер</button>
       <button class="seg active" data-mode="normal" data-i18n="modeNormal">Үйрену</button>
-      <button class="seg" data-mode="karaoke" data-i18n="modeKaraoke">🎤 Караоке</button>
+      <button class="seg" data-mode="karaoke" data-i18n="modeKaraoke">Караоке</button>
     </div>
     <div class="top-bar-right">
       <div class="auth-box" id="authBox">
-        <button id="loginBtn" class="auth-btn auth-btn-premium"><span class="auth-btn-icon">✨</span><span class="auth-btn-label">Premium</span></button>
+        <button id="loginBtn" class="auth-btn auth-btn-premium"><span class="auth-btn-icon">★</span><span class="auth-btn-label">Premium</span></button>
         <div id="userBox" class="user-box" style="display:none;">
           <span id="userEmail" class="user-email"></span>
           <button id="logoutBtn" class="auth-btn auth-btn-ghost">Выйти</button>
         </div>
       </div>
-      <select id="langSelect" class="lang-select">
-        <option value="kz">KZ — Қазақша</option>
-        <option value="ru">RU — Русский</option>
-        <option value="en">EN — English</option>
-        <option value="tr">TR — Türkçe</option>
-      </select>
-      <button id="themeToggle" aria-label="Переключить тему">🌙</button>
+      <div class="lang-select-wrap">
+        <span class="lang-select-label" id="langSelectLabel">KZ</span>
+        <select id="langSelect" class="lang-select">
+          <option value="kz">KZ Қазақша</option>
+          <option value="ru">RU Русский</option>
+          <option value="en">EN English</option>
+          <option value="tr">TR Türkçe</option>
+        </select>
+      </div>
+      <button id="themeToggle" aria-label="Переключить тему"><svg id="themeIconMoon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="themeIconSun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none;"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8L6 18M18 6l1.8-1.8"/></svg></button>
     </div>
   </div>
 
@@ -2460,9 +2577,6 @@
     <svg id="neckSvg" xmlns="http://www.w3.org/2000/svg"></svg>
     <div class="string-label" id="labelTop"></div>
     <div class="string-label" id="labelBottom"></div>
-    <div class="countdown-overlay" id="countdownOverlay" style="display:none;">
-      <span id="countdownNum"></span>
-    </div>
   </div>
   <div id="tunerStage">
 <svg id="tunerNeckSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2304 1728" width="100%" style="display:block;height:auto;">
@@ -2626,6 +2740,7 @@
   </div>
   </div>
   </div>
+  </div>
 
   <div class="song-bar" id="songBar">
     <div class="song-picker">
@@ -2636,7 +2751,6 @@
       <select id="songSelect" class="sr-only-select" tabindex="-1" aria-hidden="true"></select>
     </div>
     <button type="button" id="settingsTrigger" class="settings-trigger" aria-label="Баптаулар">⚙</button>
-  </div>
   </div>
 
   <div class="two-col-wrap">
@@ -2676,6 +2790,7 @@
 
    </div>
   </div>
+  </div>
 
   <!-- ===== Попап настроек (часть / повтор / превью / таймер) ===== -->
   <div id="settingsModalOverlay" class="song-modal-overlay" style="display:none;">
@@ -2692,6 +2807,11 @@
             <button class="seg active" data-hand="right" data-i18n="handRight">Правша</button>
             <button class="seg" data-hand="left" data-i18n="handLeft">Левша</button>
           </div>
+        </div>
+
+        <div class="speed-row" id="fretboardRow">
+          <label for="fretboardToggle" data-i18n="fretboardLabel">Показывать гриф</label>
+          <input type="checkbox" id="fretboardToggle" checked>
         </div>
 
         <div class="speed-row" id="sectionRow">
@@ -2723,6 +2843,12 @@
     </div>
   </div>
 
+  <!-- ===== Обратный отсчёт перед стартом — по центру экрана, не зависит
+       от того, виден ли гриф (на мобильном грифа нет вообще) ===== -->
+  <div class="countdown-overlay" id="countdownOverlay" style="display:none;">
+    <span id="countdownNum"></span>
+  </div>
+
   <!-- ===== Плавающая панель воспроизведения ===== -->
   <div class="floating-play-bar" id="floatingPlayBar">
     <div class="floating-play-bar-inner">
@@ -2740,7 +2866,7 @@
         </div>
 
         <div class="play-row" id="karaokePlayRow">
-          <button id="karaokeStartBtn" class="play-btn icon-only" aria-label="Play / Stop">🎤</button>
+          <button id="karaokeStartBtn" class="play-btn icon-only" aria-label="Play / Stop"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a7 7 0 01-14 0H3a9 9 0 008 8.94V22h2v-2.06A9 9 0 0021 11h-2z"/></svg></button>
         </div>
 
         <div class="floating-active-note" id="floatingActiveNote"></div>
@@ -2750,6 +2876,7 @@
           <input type="range" id="speedSlider" min="3" max="300" value="40" step="1" list="speedTicks">
           <datalist id="speedTicks">
             <option value="100"></option>
+            <option value="200"></option>
           </datalist>
           <span id="speedVal">0.4×</span>
         </div>
@@ -2762,7 +2889,7 @@
   <div id="songModalOverlay" class="song-modal-overlay" style="display:none;">
     <div class="song-modal" role="dialog" aria-modal="true" aria-label="Мелодия">
       <div class="song-modal-header">
-        <input type="text" id="songSearchInput" class="song-search-input" data-i18n-placeholder="songSearchPlaceholder" placeholder="🔍 Мелодияны іздеу…">
+        <input type="text" id="songSearchInput" class="song-search-input" data-i18n-placeholder="songSearchPlaceholder" placeholder="Мелодияны іздеу…">
         <button type="button" id="songModalClose" class="song-modal-close" aria-label="Жабу">✕</button>
       </div>
 
@@ -2796,11 +2923,6 @@
             <option value="new" data-i18n="sortByNew">Жаңалары алдымен</option>
           </select>
         </div>
-      </div>
-
-      <div id="songModalTop" class="song-modal-top" style="display:none;">
-        <div class="song-modal-top-title" data-i18n="songTop5Title">🔥 Топ-5 танымал</div>
-        <div id="songTopList" class="song-top-list"></div>
       </div>
 
       <div id="songModalList" class="song-modal-list"></div>
@@ -2857,8 +2979,9 @@
       title: 'Гриф домбыры',
       subtitle: '19 ладов · нажми на лад, чтобы увидеть ноту',
       modeNormal: 'Обучение',
-      modeKaraoke: '🎤 Караоке',
+      modeKaraoke: 'Караоке',
       handLabel: 'Рука',
+      fretboardLabel: 'Показывать гриф',
       handRight: 'Правша',
       handLeft: 'Левша',
       countdownLabel: 'Таймер',
@@ -2871,10 +2994,10 @@
       speedLabel: 'Скорость',
       panelHint: 'Выбери лад на грифе',
       karaokeIntro: 'Нажми «Бастау», разреши доступ к микрофону и играй мелодию на домбре вслед за подсветкой',
-      gradeGreat: '🟢 Попал(а)',
-      gradeOk: '🟡 Почти',
-      gradeMiss: '🔴 Пропуск',
-      karaokeStartBtn: '🎤 Начать',
+      gradeGreat: '✓ Попал(а)',
+      gradeOk: '~ Почти',
+      gradeMiss: '✕ Пропуск',
+      karaokeStartBtn: 'Начать',
       frameBottom: 'Нижняя струна',
       frameTop: 'Верхняя струна',
       stringBottom: 'Нижняя струна',
@@ -2923,7 +3046,7 @@
       tunerMicDenied: 'Нет доступа к микрофону — разрешите в браузере.',
       songPickerPlaceholder: 'Выберите мелодию',
       settingsModalTitle: 'Настройки',
-      songSearchPlaceholder: '🔍 Поиск мелодии…',
+      songSearchPlaceholder: 'Поиск мелодии…',
       songFilterGenre: 'Жанр:',
       songFilterDifficulty: 'Сложность:',
       songFilterAll: 'Все',
@@ -2947,8 +3070,9 @@
       title: 'Домбыра грифі',
       subtitle: '19 перне · нотаны көру үшін пернеге бас',
       modeNormal: 'Үйрену',
-      modeKaraoke: '🎤 Караоке',
+      modeKaraoke: 'Караоке',
       handLabel: 'Қол',
+      fretboardLabel: 'Грифті көрсету',
       handRight: 'Оңқай',
       handLeft: 'Солақай',
       countdownLabel: 'Таймер',
@@ -2961,7 +3085,7 @@
       speedLabel: 'Жылдамдық',
       panelHint: 'Грифтен перне таңда',
       karaokeIntro: '«Бастау» түймесін бас, микрофонға рұқсат бер және жарықтандыруға сай домбырада ойна',
-      karaokeStartBtn: '🎤 Бастау',
+      karaokeStartBtn: 'Бастау',
       frameBottom: 'Астынғы ішек',
       frameTop: 'Жоғарғы ішек',
       stringBottom: 'Астынғы ішек',
@@ -2988,10 +3112,10 @@
       done: 'Ойналды!',
       stopped: 'Тоқтатылды. Қайта көру үшін «Бастау» түймесін бас.',
       exact: 'Дәл', almost: 'Қате', missed: 'Ойналған жоқ',
-      shortBottom: 'Т', shortTop: 'Ж',
+      shortBottom: 'А', shortTop: 'Ж',
       sectionLabel: 'Бөлім', allSections: 'Толық әуен',
       loopLabel: 'Қайталап ойнату',
-      legendBottom: 'төменгі ішек', legendTop: 'жоғарғы ішек', legendStroke: 'қағыс',
+      legendBottom: 'астынғы ішек', legendTop: 'жоғарғы ішек', legendStroke: 'қағыс',
       modeTuner: 'Тюнер',
       tunerTuningLabel: 'Күй',
       tunerTuningStandard: 'Оң бұрау · G3 / D3',
@@ -3010,7 +3134,7 @@
       tunerMicDenied: 'Микрофонға қол жетімсіз — браузерде рұқсат беріңіз.',
       songPickerPlaceholder: 'Мелодия таңдаңыз',
       settingsModalTitle: 'Баптаулар',
-      songSearchPlaceholder: '🔍 Мелодияны іздеу…',
+      songSearchPlaceholder: 'Мелодияны іздеу…',
       songFilterGenre: 'Жанр:',
       songFilterDifficulty: 'Деңгей:',
       songFilterAll: 'Барлығы',
@@ -3034,8 +3158,9 @@
       title: 'Dombra fretboard',
       subtitle: '19 frets · tap a fret to see the note',
       modeNormal: 'Learn',
-      modeKaraoke: '🎤 Karaoke',
+      modeKaraoke: 'Karaoke',
       handLabel: 'Hand',
+      fretboardLabel: 'Show fretboard',
       handRight: 'Right-handed',
       handLeft: 'Left-handed',
       countdownLabel: 'Timer',
@@ -3048,10 +3173,10 @@
       speedLabel: 'Speed',
       panelHint: 'Choose a fret on the neck',
       karaokeIntro: 'Press "Start", allow microphone access, and play the melody on your dombra following the highlights',
-      gradeGreat: '🟢 Nailed it',
-      gradeOk: '🟡 Close',
-      gradeMiss: '🔴 Missed',
-      karaokeStartBtn: '🎤 Start',
+      gradeGreat: '✓ Nailed it',
+      gradeOk: '~ Close',
+      gradeMiss: '✕ Missed',
+      karaokeStartBtn: 'Start',
       frameBottom: 'Lower string',
       frameTop: 'Upper string',
       stringBottom: 'Lower string',
@@ -3100,7 +3225,7 @@
       tunerMicDenied: 'No microphone access — allow it in your browser.',
       songPickerPlaceholder: 'Choose a melody',
       settingsModalTitle: 'Settings',
-      songSearchPlaceholder: '🔍 Search melody…',
+      songSearchPlaceholder: 'Search melody…',
       songFilterGenre: 'Genre:',
       songFilterDifficulty: 'Difficulty:',
       songFilterAll: 'All',
@@ -3124,8 +3249,9 @@
       title: 'Dombra sap',
       subtitle: '19 perde · notayı görmek için perdeye dokun',
       modeNormal: 'Öğren',
-      modeKaraoke: '🎤 Karaoke',
+      modeKaraoke: 'Karaoke',
       handLabel: 'El',
+      fretboardLabel: 'Klavyeyi göster',
       handRight: 'Sağ elini kullanan',
       handLeft: 'Sol elini kullanan',
       countdownLabel: 'Zamanlayıcı',
@@ -3138,10 +3264,10 @@
       speedLabel: 'Hız',
       panelHint: 'Sap üzerinden bir perde seç',
       karaokeIntro: '"Başlat"a bas, mikrofona izin ver ve ışıklandırmayı takip ederek melodiyi dombrada çal',
-      gradeGreat: '🟢 Tam isabet',
-      gradeOk: '🟡 Yakın',
-      gradeMiss: '🔴 Kaçırdın',
-      karaokeStartBtn: '🎤 Başlat',
+      gradeGreat: '✓ Tam isabet',
+      gradeOk: '~ Yakın',
+      gradeMiss: '✕ Kaçırdın',
+      karaokeStartBtn: 'Başlat',
       frameBottom: 'Alt tel',
       frameTop: 'Üst tel',
       stringBottom: 'Alt tel',
@@ -3190,7 +3316,7 @@
       tunerMicDenied: 'Mikrofona erişim yok — tarayıcıda izin verin.',
       songPickerPlaceholder: 'Bir melodi seç',
       settingsModalTitle: 'Ayarlar',
-      songSearchPlaceholder: '🔍 Melodi ara…',
+      songSearchPlaceholder: 'Melodi ara…',
       songFilterGenre: 'Tür:',
       songFilterDifficulty: 'Zorluk:',
       songFilterAll: 'Tümü',
@@ -3222,6 +3348,11 @@
       el.placeholder = t(el.dataset.i18nPlaceholder);
     });
     document.documentElement.lang = { kz: 'kk', ru: 'ru', en: 'en', tr: 'tr' }[currentLang] || 'ru';
+    // код языка в закрытом виде (KZ/RU/EN/TR) — рисуем отдельной надписью
+    // поверх select, а не полагаемся на обрезку текста самим select
+    // (ненадёжно между браузерами)
+    const langSelectLabel = document.getElementById('langSelectLabel');
+    if(langSelectLabel) langSelectLabel.textContent = currentLang.toUpperCase();
     if(typeof scrubTrack !== 'undefined') updateScrubSelection();
     if(typeof updateSongPickerTrigger === 'function') updateSongPickerTrigger();
     if(typeof renderSongModalList === 'function' && songModalOverlay && songModalOverlay.style.display !== 'none'){
@@ -3379,20 +3510,39 @@
       dot.addEventListener('click', () => {
         svg.querySelectorAll('.dot').forEach(d => d.classList.remove('active','preview'));
         dot.classList.add('active');
-        const stringName = dot.dataset.string === 'top' ? t('stringTop') : t('stringBottom');
         const fret = dot.dataset.fret;
         const note = dot.dataset.note;
-        const fretLabel = fret === '0' ? t('openString') : `${t('fretWord')} ${fret}`;
-        panel.innerHTML = `
-          <div class="note">${note}</div>
-          <div class="meta"><b>${stringName}</b> · ${fretLabel}</div>
-        `;
+        showFretNoteLabel(dot, note);
         const previewStep = dot.dataset.string === 'bottom'
           ? { bottom: parseInt(fret), top: null }
           : { bottom: null, top: parseInt(fret) };
         playNote(previewStep, 600);
       });
     });
+  }
+
+  // всплывающая подсказка с названием ноты прямо на грифе, рядом с
+  // нажатым ладом — вместо старого отдельного блока под нотами (тот на
+  // длинных произведениях уезжал далеко вниз и был не виден без скролла).
+  // Координаты берём прямо из cx/cy самой точки (SVG), без пересчётов
+  // пикселей — та же система координат, что и у самого грифа.
+  function showFretNoteLabel(dot, noteText){
+    const old = svg.querySelector('#fretNoteLabel');
+    if(old) old.remove();
+    const cx = parseFloat(dot.getAttribute('cx'));
+    const cy = parseFloat(dot.getAttribute('cy'));
+    const svgH = parseFloat(svg.getAttribute('viewBox').split(' ')[3]) || 260;
+    const isUpperRow = cy < svgH / 2;
+    const labelY = isUpperRow ? cy - 24 : cy + 34;
+    const w = Math.max(40, noteText.length * 9 + 18);
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('id', 'fretNoteLabel');
+    g.setAttribute('class', 'fret-note-label');
+    g.innerHTML = `
+      <rect x="${cx - w/2}" y="${labelY - 15}" width="${w}" height="24" rx="8"></rect>
+      <text x="${cx}" y="${labelY + 2}">${noteText}</text>
+    `;
+    svg.appendChild(g);
   }
 
   handGroup.addEventListener('click', (e) => {
@@ -3808,11 +3958,19 @@
     ctx.font = font;
     return ctx.measureText(text).width;
   }
-  const NOTE_WIDTH = 46;
+  const NOTE_WIDTH_MOBILE = 46;
+  const NOTE_WIDTH_DESKTOP = 30; // ~65% от мобильной — на вебе экран больше, можно компактнее
   function noteWidth(step){
-    // все ноты теперь одинаковой ширины (как у конкурента) — длительность
-    // и текст под нотой больше не растягивают ячейку
-    return NOTE_WIDTH;
+    // база — как раньше (одинаковая ширина, чтобы сетка не "гуляла").
+    // Но если под нотой длинное слово песни, которое не влезает —
+    // растягиваем именно эту ноту под текст (короткое слово/без слова —
+    // обычная ширина, длинное — шире, чтобы не обрезалось).
+    const shortSide = Math.min(window.innerWidth, window.innerHeight);
+    const base = shortSide > 640 ? NOTE_WIDTH_DESKTOP : NOTE_WIDTH_MOBILE;
+    if(!step || !step.lyric) return base;
+    const lyricFont = "700 12px 'Manrope', sans-serif";
+    const lyricW = measureTextWidth(step.lyric, lyricFont) + 10;
+    return Math.max(base, Math.ceil(lyricW));
   }
 
   function renderTabSheet(container, clickable){
@@ -3923,8 +4081,13 @@
           note.addEventListener('click', () => {
             startIndex = i;
             updateScrubSelection();
-            // показываем выбранный удар на грифе: обе струны сразу + панель с нотами
-            if(!isPlaying){
+            if(isPlaying){
+              // не нужно жать Стоп → выбрать ноту → снова Play — клик по
+              // ноте во время игры сам продолжает воспроизведение отсюда
+              stopPlayback();
+              startPlayback({ skipCountdown: true });
+            } else {
+              // показываем выбранный удар на грифе: обе струны сразу + панель с нотами
               highlightStep(step, previewToggle.checked ? (steps[i+1] || null) : null);
               playNote(step, 600);
             }
@@ -3953,6 +4116,32 @@
   window.addEventListener('resize', () => {
     clearTimeout(tabResizeTimer);
     tabResizeTimer = setTimeout(refreshSheets, 200);
+  });
+
+  // тот же порог "это веб или мобильный", что и в noteWidth() — держим на
+  // классе body, а не в CSS-медиазапросе, чтобы не зависеть от того,
+  // сработает ли сам медиазапрос (гриф/ноты уменьшены именно через этот
+  // класс: body.web-compact в CSS)
+  function updateWebCompactClass(){
+    const shortSide = Math.min(window.innerWidth, window.innerHeight);
+    document.body.classList.toggle('web-compact', shortSide > 640);
+  }
+  updateWebCompactClass();
+  window.addEventListener('resize', updateWebCompactClass);
+
+  // подстраховка: явно выставляем скорость по умолчанию (0.4×) при
+  // загрузке — на случай, если какая-то особенность браузера (например,
+  // взаимодействие range+datalist после добавления меток 1×/2×) сбивает
+  // отображаемое значение
+  speedSlider.value = 40;
+  speedVal.textContent = '0.40×';
+
+  // показ/скрытие грифа — теперь чекбокс в настройках (освобождает место
+  // под ноты, особенно полезно на длинных произведениях). Только веб —
+  // на мобильном сама строка настройки скрыта через CSS, а грифа там нет.
+  const fretboardToggle = document.getElementById('fretboardToggle');
+  fretboardToggle.addEventListener('change', () => {
+    document.body.classList.toggle('fretboard-collapsed', !fretboardToggle.checked);
   });
 
   function buildScrub(){
@@ -4199,11 +4388,13 @@
   }
 
   speedSlider.addEventListener('input', () => {
-    // "залипание" на стандартной скорости (1×=100) — удобнее попасть
-    // пальцем на телефоне точно в неё, а не в 0.98× или 1.03×
+    // "залипание" на стандартной скорости (1×=100) и на 2× (200) —
+    // удобнее попасть пальцем на телефоне точно в них, а не в 0.98×/2.03×
     const raw = parseInt(speedSlider.value, 10);
-    if(Math.abs(raw - 100) <= 4 && raw !== 100){
-      speedSlider.value = 100;
+    const SNAP_POINTS = [100, 200];
+    const snapTarget = SNAP_POINTS.find(p => Math.abs(raw - p) <= 4);
+    if(snapTarget !== undefined && raw !== snapTarget){
+      speedSlider.value = snapTarget;
     }
     speedVal.textContent = (speedSlider.value/100).toFixed(2) + '×';
   });
@@ -4328,6 +4519,7 @@
 
   const ICON_PLAY = '▶';
   const ICON_STOP = '⏹';
+  const ICON_MIC = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a7 7 0 01-14 0H3a9 9 0 008 8.94V22h2v-2.06A9 9 0 0021 11h-2z"/></svg>';
 
   function stopPlayback(){
     playToken++; // прерывает текущий цикл воспроизведения
@@ -4640,7 +4832,7 @@ function setCharState(state){
     if(!ready){
       karaokeRunning = false;
       karaokeStartBtn.classList.remove('is-playing');
-      karaokeStartBtn.textContent = '🎤';
+      karaokeStartBtn.innerHTML = ICON_MIC;
       setCharState(null);
       return;
     }
@@ -4735,14 +4927,14 @@ function setCharState(state){
     // micStream сохраняем для следующего запуска
     karaokeRunning = false;
     karaokeStartBtn.classList.remove('is-playing');
-    karaokeStartBtn.textContent = '🎤';
+    karaokeStartBtn.innerHTML = ICON_MIC;
     }catch(e){
       console.error('[домбра] ошибка в режиме караоке:', e);
       karaokeStatus.textContent = t('errorPrefix') + e.message;
       if(micStream){ micStream.getTracks().forEach(t => t.stop()); micStream = null; }
       karaokeRunning = false;
       karaokeStartBtn.classList.remove('is-playing');
-      karaokeStartBtn.textContent = '🎤';
+      karaokeStartBtn.innerHTML = ICON_MIC;
       setCharState(null);
     }
   }
@@ -4784,7 +4976,7 @@ function setCharState(state){
     // micStream сохраняем — не останавливаем чтобы не запрашивать разрешение повторно
     karaokeRunning = false;
     karaokeStartBtn.classList.remove('is-playing');
-    karaokeStartBtn.textContent = '🎤';
+    karaokeStartBtn.innerHTML = ICON_MIC;
     setCharState(null);
     karaokeStatus.textContent = t('stopped');
     karaokeTrack.querySelectorAll('.tab-note').forEach(s => s.classList.remove('current'));
@@ -5124,16 +5316,22 @@ function setCharState(state){
 
   // ── ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ ──
   const themeToggle = document.getElementById('themeToggle');
+  const themeIconMoon = document.getElementById('themeIconMoon');
+  const themeIconSun = document.getElementById('themeIconSun');
+  function setThemeIcon(isLight){
+    themeIconMoon.style.display = isLight ? 'none' : 'block';
+    themeIconSun.style.display = isLight ? 'block' : 'none';
+  }
   (function(){
     // Restore saved theme
     if(localStorage.getItem('dombraTheme') === 'light'){
       document.body.classList.add('light-mode');
-      themeToggle.textContent = '☀️';
+      setThemeIcon(true);
     }
   })();
   themeToggle.addEventListener('click', () => {
     const isLight = document.body.classList.toggle('light-mode');
-    themeToggle.textContent = isLight ? '☀️' : '🌙';
+    setThemeIcon(isLight);
     localStorage.setItem('dombraTheme', isLight ? 'light' : 'dark');
   });
 
@@ -5225,24 +5423,10 @@ function setCharState(state){
   }
 
   async function loadTopSongs(){
-    if(!songTopList) return;
-    const { data, error } = await sb.rpc('get_top_songs', { limit_count: 5 });
-    if(error || !data || !data.length){
-      songModalTop.style.display = 'none';
-      return;
-    }
-    songModalTop.style.display = 'block';
-    songTopList.innerHTML = '';
-    data.forEach(row => {
-      const idx = songs.findIndex(s => s.id === row.song_id);
-      if(idx === -1) return;
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'song-top-item';
-      btn.textContent = row.title;
-      btn.addEventListener('click', () => selectSongFromModal(idx));
-      songTopList.appendChild(btn);
-    });
+    // "Топ-5 популярных" убран из попапа выбора мелодии — функция больше
+    // не используется, оставлена пустой на случай, если где-то остался
+    // вызов loadTopSongs() (безопасный no-op)
+    return;
   }
 
   function getFilteredSortedSongs(){
