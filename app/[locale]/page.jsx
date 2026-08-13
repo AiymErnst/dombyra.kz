@@ -1,11 +1,11 @@
-// app/[locale]/blog/[slug]/page.jsx
+// app/[locale]/blog/page.jsx
 //
-// Страница статьи. Текст рендерится на сервере — робот видит его без
-// выполнения JS. Разметка Article сообщает поиску заголовок, дату и автора.
+// Список статей. Хаб: собирает ссылки на все статьи, чтобы робот дошёл
+// до каждой за один переход от главной. Без него статьи были бы доступны
+// только из sitemap и индексировались бы заметно медленнее.
 
-import { notFound } from 'next/navigation';
 import { locales, defaultLocale, getDictionary } from '@/lib/i18n';
-import { getPosts, getPost, pick, postBlocks, firstParagraph, availableLocales } from '@/lib/posts';
+import { getPosts, pick } from '@/lib/posts';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 
@@ -13,153 +13,70 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://dombyra.kz';
 const HREFLANG = { kz: 'kk-KZ', ru: 'ru-KZ', en: 'en', tr: 'tr-TR' };
 
 export const revalidate = 3600;
-// Статья, опубликованная после сборки, отрендерится при первом заходе.
-export const dynamicParams = true;
 
-export async function generateStaticParams() {
-  const posts = await getPosts();
-  return locales.flatMap((locale) => posts.map((p) => ({ locale, slug: p.slug })));
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
 }
 
 export async function generateMetadata({ params }) {
-  const { locale, slug } = await params;
-  const post = await getPost(slug);
-  if (!post) return {};
-
-  const dict = getDictionary(locale);
-  const t = dict.pages.blog || {};
-  const title = pick(post.title_i18n, locale);
-  const url = `${SITE}/${locale}/blog/${slug}`;
-
-  const raw = firstParagraph(post, locale);
-  const description = raw.length > 160 ? raw.slice(0, 157).trimEnd() + '…' : raw;
-
+  const { locale } = await params;
+  const t = getDictionary(locale).pages.blog || {};
+  const url = `${SITE}/${locale}/blog`;
   const languages = Object.fromEntries(
-    locales.map((l) => [HREFLANG[l], `${SITE}/${l}/blog/${slug}`])
+    locales.map((l) => [HREFLANG[l], `${SITE}/${l}/blog`])
   );
-  languages['x-default'] = `${SITE}/${defaultLocale}/blog/${slug}`;
-
-  // Статья без перевода на этот язык не должна попадать в индекс:
-  // иначе в выдаче окажется русский текст по казахскому адресу.
-  const translated = postBlocks(post, locale).length > 0;
-
+  languages['x-default'] = `${SITE}/${defaultLocale}/blog`;
   return {
-    title: `${title} | ${t.metaSuffix || 'dombyra.kz'}`,
-    description,
+    title: t.indexMetaTitle || t.indexTitle,
+    description: t.indexMetaDesc,
     alternates: { canonical: url, languages },
-    ...(translated ? {} : { robots: { index: false, follow: true } }),
-    openGraph: {
-      type: 'article',
-      title,
-      description,
-      url,
-      locale: HREFLANG[locale].replace('-', '_'),
-      publishedTime: post.published_at || undefined,
-      ...(post.cover_url ? { images: [post.cover_url] } : {}),
-    },
   };
 }
 
-/** Рендер блока статьи. Список типов закрытый — произвольный HTML
- *  из базы не принимаем, чтобы правка контента не могла сломать вёрстку. */
-function Block({ block }) {
-  switch (block.type) {
-    case 'h2':
-      return <h2>{block.text}</h2>;
-    case 'h3':
-      return <h3>{block.text}</h3>;
-    case 'quote':
-      return <blockquote>{block.text}</blockquote>;
-    case 'list':
-      return (
-        <ul>
-          {(block.items || []).map((it, i) => <li key={i}>{it}</li>)}
-        </ul>
-      );
-    case 'p':
-    default:
-      return <p>{block.text}</p>;
-  }
-}
-
-export default async function PostPage({ params }) {
-  const { locale, slug } = await params;
-  const post = await getPost(slug);
-  if (!post) notFound();
-
+export default async function BlogIndex({ params }) {
+  const { locale } = await params;
   const dict = getDictionary(locale);
   const t = dict.pages.blog || {};
-  const nav = dict.nav || {};
-
-  const title = pick(post.title_i18n, locale);
-  const blocks = postBlocks(post, locale);
-  // перевода нет — показываем русскую версию, но страница помечена noindex
-  const shown = blocks.length ? blocks : postBlocks(post, defaultLocale);
-  const category = (t.categories && t.categories[post.category_key]) || post.category_key;
-  const url = `${SITE}/${locale}/blog/${slug}`;
+  const posts = await getPosts();
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'Article',
-        '@id': url,
-        headline: title,
-        description: firstParagraph(post, locale),
-        url,
-        inLanguage: locale === 'kz' ? 'kk' : locale,
-        datePublished: post.published_at || undefined,
-        articleSection: category,
-        author: { '@type': 'Organization', name: 'dombyra.kz', url: `${SITE}/${locale}` },
-        publisher: { '@type': 'Organization', name: 'dombyra.kz', url: `${SITE}/${locale}` },
-        ...(post.cover_url ? { image: post.cover_url } : {}),
-      },
-      {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: nav.trainer || 'dombyra.kz', item: `${SITE}/${locale}` },
-          { '@type': 'ListItem', position: 2, name: t.indexTitle || 'Blog', item: `${SITE}/${locale}/blog` },
-          { '@type': 'ListItem', position: 3, name: title, item: url },
-        ],
-      },
-    ],
+    '@type': 'ItemList',
+    name: t.indexTitle,
+    itemListElement: posts.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: pick(p.title_i18n, locale),
+      url: `${SITE}/${locale}/blog/${p.slug}`,
+    })),
   };
 
   return (
     <>
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-
-      {/* Шапка нужна, чтобы со статьи можно было уйти на сайт и сменить
-          язык: раньше страница была тупиком — только хлебные крошки. */}
-      <Header locale={locale} path={`/blog/${slug}`} available={availableLocales(post)} dict={dict} />
-
+      {/* список переведён на все языки, поэтому available не передаём */}
+      <Header locale={locale} path="/blog" dict={dict} />
       <main className="post-page">
-        <nav className="post-crumbs" aria-label="breadcrumb">
-          <a href={`/${locale}`}>{nav.trainer || 'dombyra.kz'}</a>
-          {' / '}
-          <a href={`/${locale}/blog`}>{t.indexTitle || 'Blog'}</a>
-        </nav>
+        <h1>{t.indexTitle}</h1>
+        {t.indexLead && <p className="post-lead">{t.indexLead}</p>}
 
-        <div className="post-meta">
-          <span className="post-category">{category}</span>
-          {post.read_minutes ? (
-            <span>{post.read_minutes} {t.readMinutes || 'мин'}</span>
-          ) : null}
-        </div>
-
-        <h1>{title}</h1>
-
-        <article className="post-body">
-          {shown.map((b, i) => <Block key={i} block={b} />)}
-        </article>
-
-        <nav className="post-more">
-          <a href={`/${locale}/blog`}>{t.backToIndex || t.indexTitle}</a>
-        </nav>
+        <ul className="post-list">
+          {posts.map((p) => (
+            <li key={p.slug}>
+              <a href={`/${locale}/blog/${p.slug}`}>
+                <span className="post-category">
+                  {(t.categories && t.categories[p.category_key]) || p.category_key}
+                </span>
+                <b>{pick(p.title_i18n, locale)}</b>
+                <span className="post-excerpt">{pick(p.excerpt_i18n, locale)}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </main>
 
-      <Footer locale={locale} dict={dict} path={`/blog/${slug}`} />
+      <Footer locale={locale} dict={dict} path="/blog" />
     </>
   );
 }
