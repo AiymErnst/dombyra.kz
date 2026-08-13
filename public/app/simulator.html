@@ -4313,6 +4313,11 @@
   // Домен один, поэтому доступ к parent.location разрешён.
   const MODE_TO_PATH = { tuner: 'tuner', normal: 'learn', karaoke: 'karaoke' };
 
+  // Программный клик по вкладке (открытие ?mode=tuner при загрузке) НЕ должен
+  // уводить родительскую страницу: мы уже на ней. Иначе получалась петля —
+  // страница уходит на тот же адрес, iframe перезагружается, снова кликает.
+  let suppressParentNav = false;
+
   function parentPathParts(){
     try{
       const segs = window.parent.location.pathname.split('/').filter(Boolean);
@@ -4397,7 +4402,7 @@
     // а текст под тренажёром меняет язык вместе с ним.
     if(isEmbedded){
       const parts = parentPathParts();
-      if(parts){
+      if(parts && parts.lang !== langSelect.value){
         goParent(`/${langSelect.value}/${parts.rest.join('/')}`);
         return;
       }
@@ -6069,11 +6074,14 @@
     // Внутри страницы сайта вкладка — это переход на другой адрес,
     // а не переключение внутри рамки: иначе текст под тренажёром
     // остался бы от прежнего режима.
-    if(isEmbedded && btn.dataset.mode !== currentMode){
+    if(isEmbedded && !suppressParentNav && btn.dataset.mode !== currentMode){
       const parts = parentPathParts();
       const path = MODE_TO_PATH[btn.dataset.mode];
-      if(parts && path){
-        goParent(`/${parts.lang}/${path}`);
+      const target = parts && path ? `/${parts.lang}/${path}` : null;
+      // вторая защита: если уже на нужном адресе, переход не нужен
+      const alreadyThere = parts && parts.rest.join('/') === path;
+      if(target && !alreadyThere){
+        goParent(target);
         return;
       }
     }
@@ -7321,7 +7329,11 @@ function launchFireworks(){
     const urlMode = new URLSearchParams(window.location.search).get('mode');
     if(urlMode){
       const targetBtn = modeGroup.querySelector(`[data-mode="${urlMode}"]`);
-      if(targetBtn) targetBtn.click();
+      if(targetBtn){
+        suppressParentNav = true;
+        targetBtn.click();
+        suppressParentNav = false;
+      }
     }
   }
 
