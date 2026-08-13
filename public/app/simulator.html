@@ -3426,9 +3426,6 @@
     border:1px solid rgba(var(--block-border-rgb),0.25);
   }
 
-  /* Тренажёр внутри страницы сайта: свой переключатель языка не нужен —
-     языком управляет шапка страницы, она же меняет URL */
-  body.is-embedded .lang-select-wrap{ display:none; }
 
 </style>
 </head>
@@ -3437,7 +3434,7 @@
   <div class="content-shell">
   <div class="sticky-top-shell">
   <div class="top-bar">
-    <a class="brand" href="#" aria-label="Dombyra">
+    <a class="brand" id="brandLink" href="/kz" aria-label="dombyra.kz">
       <span class="brand-mark" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
           <path d="M5 19 L19 5"></path><path d="M5 5 L12 12"></path>
@@ -4307,6 +4304,25 @@
     try { return window.self !== window.top; }
     catch (e) { return true; }   // доступ к top закрыт — значит точно в iframe
   })();
+
+  // ── Навигация родительской страницы из тренажёра ──
+  // Внутри iframe переключение вкладок и языка меняло только содержимое
+  // рамки: адрес страницы оставался прежним, текст под тренажёром — от
+  // другого режима, а язык страницы не совпадал с языком тренажёра.
+  // Теперь эти действия ведут саму страницу: /kz/tuner, /ru/learn и т.д.
+  // Домен один, поэтому доступ к parent.location разрешён.
+  const MODE_TO_PATH = { tuner: 'tuner', normal: 'learn', karaoke: 'karaoke' };
+
+  function parentPathParts(){
+    try{
+      const segs = window.parent.location.pathname.split('/').filter(Boolean);
+      return { lang: segs[0] || 'kz', rest: segs.slice(1) };
+    }catch(e){ return null; }
+  }
+  function goParent(path){
+    try{ window.parent.location.href = path; }
+    catch(e){ window.location.href = path; }
+  }
   {
     const urlLang = new URLSearchParams(window.location.search).get('lang');
     if (urlLang && I18N[urlLang]) currentLang = urlLang;
@@ -4350,6 +4366,11 @@
     // (ненадёжно между браузерами)
     const langSelectLabel = document.getElementById('langSelectLabel');
     if(langSelectLabel) langSelectLabel.textContent = currentLang.toUpperCase();
+    // логотип ведёт на витрину того же языка: /kz, /ru, /en, /tr.
+    // Ссылка нужна и человеку (возврат на главную), и поиску —
+    // страницы приложения начинают ссылаться на витрину
+    const brandLink = document.getElementById('brandLink');
+    if(brandLink) brandLink.setAttribute('href', `/${currentLang}`);
     // строй в легенде тоже переводится (Оң бұрау / Прямой строй / ...)
     if(typeof applySongTuning === 'function') applySongTuning();
     // подписи струн (Н/В, L/U, ...) и заголовки «Часть N» вшиты в разметку
@@ -4371,6 +4392,16 @@
   const langSelect = document.getElementById('langSelect');
   langSelect.value = currentLang;
   langSelect.addEventListener('change', () => {
+    // Внутри страницы сайта смена языка — это переход на языковую версию
+    // ТОЙ ЖЕ страницы: /kz/tuner → /ru/tuner. Так адрес остаётся честным,
+    // а текст под тренажёром меняет язык вместе с ним.
+    if(isEmbedded){
+      const parts = parentPathParts();
+      if(parts){
+        goParent(`/${langSelect.value}/${parts.rest.join('/')}`);
+        return;
+      }
+    }
     currentLang = langSelect.value;
     applyLang();
   });
@@ -4716,6 +4747,8 @@
       return {
         id: row.id,
         title: row.title,
+        // slug нужен, чтобы открыть мелодию по ссылке со страницы /songs/{slug}
+        slug: row.slug || null,
         // переводы названия/автора: {ru,kz,en,tr}. Заполнены не у всех и не
         // для всех языков — недостающее берётся из title/author
         titleI18n: row.title_i18n || null,
@@ -4751,6 +4784,22 @@
       }
       songSelect.appendChild(opt);
     });
+
+    // Открытие конкретной мелодии по ссылке: /app/simulator.html?song=kelinshek
+    // Так страницы /{locale}/songs/{slug} показывают именно свою мелодию,
+    // а не первую из списка.
+    {
+      const urlSong = new URLSearchParams(window.location.search).get('song');
+      if(urlSong){
+        const idx = songs.findIndex(s => s.slug === urlSong);
+        if(idx >= 0){
+          currentSongIndex = idx;
+          songSelect.value = idx;
+        } else {
+          console.warn('[домбра] мелодия не найдена по slug:', urlSong);
+        }
+      }
+    }
 
     // если текущий выбор оказался заблокирован (например, только что вышли
     // из аккаунта) — переключаемся на первую доступную мелодию
@@ -6016,6 +6065,19 @@
   modeGroup.addEventListener('click', (e) => {
     const btn = e.target.closest('.seg');
     if(!btn) return;
+
+    // Внутри страницы сайта вкладка — это переход на другой адрес,
+    // а не переключение внутри рамки: иначе текст под тренажёром
+    // остался бы от прежнего режима.
+    if(isEmbedded && btn.dataset.mode !== currentMode){
+      const parts = parentPathParts();
+      const path = MODE_TO_PATH[btn.dataset.mode];
+      if(parts && path){
+        goParent(`/${parts.lang}/${path}`);
+        return;
+      }
+    }
+
     modeGroup.querySelectorAll('.seg').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const mode = btn.dataset.mode;
