@@ -1,53 +1,54 @@
-export default function Footer() {
+// app/components/Footer.jsx
+//
+// Ссылки строятся тем же навигационным хелпером, что и в шапке.
+// Раньше здесь были якоря #trainer и #tuner — блоков с такими именами
+// не существует, тренажёр и тюнер стали отдельными страницами,
+// и клик по этим ссылкам не делал ничего.
+
+import { FOOTER_LINKS } from "./data";
+import { navHref } from "./navHref";
+
+export default function Footer({ dict, locale, path = "" }) {
+  const isLanding = path === "";
+  const f = dict?.footer || {};
+  const nav = dict?.nav || {};
+  const label = (key) => f.links?.[key] || nav[key] || key;
+
   return (
     <footer className="bg-brand-ink px-5 py-9 pb-24 text-white lg:px-7">
       <div className="lg:mx-auto lg:max-w-[1180px]">
-        <div className="text-[22px] font-extrabold tracking-tight">
+        <a href={`/${locale}`} className="text-[22px] font-extrabold tracking-tight">
           dombyra<span className="text-brand-lime">.kz</span>
-        </div>
+        </a>
         <p className="mt-2.5 mb-6 max-w-[280px] font-brand text-[13px] font-medium leading-relaxed text-white/55">
-          Мастерская домбыры в Алматы. Традиция, собранная руками — для тех,
-          кто играет сегодня.
+          {f.tagline}
         </p>
+
         <div className="grid grid-cols-2 gap-6 lg:grid-cols-3">
-          <div className="flex flex-col gap-2.5">
-            <div className="font-brand text-[10.5px] font-bold tracking-[0.14em] text-white/40">
-              МАГАЗИН
+          {FOOTER_LINKS.map((col) => (
+            <div key={col.titleKey} className="flex flex-col gap-2.5">
+              <div className="font-brand text-[10.5px] font-bold tracking-[0.14em] text-white/40">
+                {f.columns?.[col.titleKey]}
+              </div>
+              {col.items.map((item) => (
+                <a
+                  key={item.labelKey}
+                  href={navHref(item, locale, isLanding)}
+                  className="font-brand text-[13.5px] font-medium text-white"
+                >
+                  {label(item.labelKey)}
+                </a>
+              ))}
             </div>
-            {[
-              ["#catalog", "Каталог"],
-              ["#catalog", "Аксессуары"],
-              ["#certificate", "Сертификат"],
-              ["#trainer", "Тренажёр"],
-              ["#tuner", "Тюнер"],
-            ].map(([href, label]) => (
-              <a key={label} href={href} className="font-brand text-[13.5px] font-medium text-white">
-                {label}
-              </a>
-            ))}
-          </div>
-          <div className="flex flex-col gap-2.5">
-            <div className="font-brand text-[10.5px] font-bold tracking-[0.14em] text-white/40">
-              О НАС
-            </div>
-            {[
-              ["#video", "Мастерская"],
-              ["#blog", "Журнал"],
-              ["#reviews", "Отзывы"],
-              ["#faq", "Доставка и гарантия"],
-            ].map(([href, label]) => (
-              <a key={label} href={href} className="font-brand text-[13.5px] font-medium text-white">
-                {label}
-              </a>
-            ))}
-          </div>
+          ))}
         </div>
+
         <div className="mt-7 flex flex-col gap-3.5 border-t border-white/12 pt-5">
           <a href="tel:+77001234567" className="font-brand text-lg font-bold text-brand-lime">
             +7 700 123 45 67
           </a>
           <div className="font-brand text-[13px] font-medium text-white/55">
-            Алматы, ул. Панфилова 98
+            {dict?.contacts?.address}
             <br />
             salem@dombyra.kz
           </div>
@@ -62,8 +63,9 @@ export default function Footer() {
             ))}
           </div>
         </div>
+
         <div className="mt-6 font-brand text-[11px] font-medium text-white/35">
-          © {new Date().getFullYear()} dombyra.kz · ИП «Домбыра Ателье» · Публичная оферта
+          © {new Date().getFullYear()} dombyra.kz · {f.legal}
         </div>
       </div>
     </footer>
