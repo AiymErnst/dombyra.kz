@@ -11,7 +11,11 @@
     "karaoke": "Karaoke",
     "why": "Neden biz",
     "reviews": "Yorumlar",
-    "blog": "Dergi"
+    "blog": "Dergi",
+    "openMenu": "Menüyü aç",
+    "closeMenu": "Kapat",
+    "songs": "Kuiler",
+    "language": "DİL"
   },
   "hero": {
     "badge": "КӘСІБИ САПАЛЫ ДОМБЫРАЛАР",
@@ -169,7 +173,64 @@
     },
     "ui": {
       "faq": "Sık sorulan sorular",
-      "tryAlso": "Ayrıca bakın"
+      "tryAlso": "Ayrıca bakın",
+      "noTranslation": "Bu dile henüz çevrilmedi"
+    },
+    "song": {
+      "indexTitle": "Kuiler ve şarkılar",
+      "indexLead": "Dombra tablaturaları. Herhangi bir eseri açın ve yavaş tempoda öğrenin.",
+      "indexMetaTitle": "Dombra Kuileri — Tablatura ve Notalar | dombyra.kz",
+      "indexMetaDesc": "Kazak dombrası için eser derlemesi: tablatura, yavaşlatılmış tempo ve her vuruşun sesi. Ücretsiz, üyeliksiz.",
+      "aboutHeading": "Eser hakkında",
+      "moreHeading": "Ayrıca bakın",
+      "tuningLabel": "Akort",
+      "difficultyLabel": "Zorluk",
+      "genreLabel": "Tür",
+      "tuningStandard": "Düz akort (G3 / D3)",
+      "tuningTeris": "Ters akort (G3 / C3)",
+      "metaSuffix": "dombra tablaturası",
+      "fallbackDesc": "Kazak dombrası için tablatura ve notalar."
+    },
+    "blog": {
+      "eyebrow": "DERGİ",
+      "homeTitle": "Satın almadan önce okuyun",
+      "indexTitle": "Dergi",
+      "indexLead": "Dombra üzerine yazılar: saz seçimi, bakım, kui kültürü.",
+      "indexMetaTitle": "Dergi — Dombra üzerine yazılar | dombyra.kz",
+      "indexMetaDesc": "Dombra seçimi, saz bakımı ve kui kültürü üzerine yazılar.",
+      "metaSuffix": "dombyra.kz dergisi",
+      "readMinutes": "dk",
+      "readMore": "Oku",
+      "backToIndex": "Tüm yazılar",
+      "categories": {
+        "guide": "Rehber",
+        "care": "Bakım",
+        "culture": "Kültür"
+      }
+    }
+  },
+  "contacts": {
+    "address": "Almatı, Panfilov cd. 98",
+    "hours": "Her gün 10:00 — 20:00"
+  },
+  "footer": {
+    "tagline": "Almatı’da bir dombra atölyesi. Elle kurulmuş bir gelenek — bugün çalanlar için.",
+    "legal": "Dombyra Atelier · Kamuya açık teklif",
+    "columns": {
+      "shop": "MAĞAZA",
+      "about": "HAKKIMIZDA"
+    },
+    "links": {
+      "catalog": "Katalog",
+      "certificate": "Sertifika",
+      "trainer": "Eğitmen",
+      "tuner": "Akort",
+      "karaoke": "Karaoke",
+      "blog": "Dergi",
+      "songs": "Kuiler",
+      "workshop": "Atölye",
+      "reviews": "Yorumlar",
+      "delivery": "Teslimat ve garanti"
     }
   }
 }

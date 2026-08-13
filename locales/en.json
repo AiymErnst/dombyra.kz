@@ -11,7 +11,11 @@
     "karaoke": "Karaoke",
     "why": "Why us",
     "reviews": "Reviews",
-    "blog": "Journal"
+    "blog": "Journal",
+    "openMenu": "Open menu",
+    "closeMenu": "Close",
+    "songs": "Kuis",
+    "language": "LANGUAGE"
   },
   "hero": {
     "badge": "КӘСІБИ САПАЛЫ ДОМБЫРАЛАР",
@@ -169,7 +173,64 @@
     },
     "ui": {
       "faq": "Frequently asked questions",
-      "tryAlso": "See also"
+      "tryAlso": "See also",
+      "noTranslation": "Not translated into this language yet"
+    },
+    "song": {
+      "indexTitle": "Kuis and songs",
+      "indexLead": "Dombra tablature. Open any piece and learn it at a slowed-down tempo.",
+      "indexMetaTitle": "Dombra Kuis — Tablature and Notes | dombyra.kz",
+      "indexMetaDesc": "A collection of kuis for the Kazakh dombra: tablature, slowed tempo and the sound of every stroke. Free, no sign-up.",
+      "aboutHeading": "About this piece",
+      "moreHeading": "See also",
+      "tuningLabel": "Tuning",
+      "difficultyLabel": "Difficulty",
+      "genreLabel": "Genre",
+      "tuningStandard": "Standard (G3 / D3)",
+      "tuningTeris": "Reverse (G3 / C3)",
+      "metaSuffix": "dombra tablature",
+      "fallbackDesc": "Tablature and notes for the Kazakh dombra."
+    },
+    "blog": {
+      "eyebrow": "JOURNAL",
+      "homeTitle": "Read before you buy",
+      "indexTitle": "Journal",
+      "indexLead": "Articles about the dombra: choosing an instrument, caring for it, what to listen to.",
+      "indexMetaTitle": "Journal — Articles about the Dombra | dombyra.kz",
+      "indexMetaDesc": "Articles on choosing a dombra, caring for the instrument and the culture of the kui.",
+      "metaSuffix": "dombyra.kz journal",
+      "readMinutes": "min",
+      "readMore": "Read",
+      "backToIndex": "All articles",
+      "categories": {
+        "guide": "Guide",
+        "care": "Care",
+        "culture": "Culture"
+      }
+    }
+  },
+  "contacts": {
+    "address": "Almaty, Panfilov st. 98",
+    "hours": "Daily 10:00 — 20:00"
+  },
+  "footer": {
+    "tagline": "A dombra workshop in Almaty. A tradition built by hand — for those who play today.",
+    "legal": "Dombyra Atelier · Public offer",
+    "columns": {
+      "shop": "SHOP",
+      "about": "ABOUT"
+    },
+    "links": {
+      "catalog": "Catalogue",
+      "certificate": "Certificate",
+      "trainer": "Trainer",
+      "tuner": "Tuner",
+      "karaoke": "Karaoke",
+      "blog": "Journal",
+      "songs": "Kuis",
+      "workshop": "Workshop",
+      "reviews": "Reviews",
+      "delivery": "Delivery & warranty"
     }
   }
 }
