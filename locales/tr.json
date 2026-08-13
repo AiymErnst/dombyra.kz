@@ -1,28 +1,175 @@
 {
   "meta": {
-    "title": "Домбыра — онлайн-тренажёр домбры | dombyra.kz",
-    "description": "Интерактивный тренажёр домбры: разучивай мелодии по грифу, играй в режиме караоке и настраивай инструмент. Для детей и взрослых."
+    "title": "Dombyra — Çevrimiçi Dombra Eğitmeni | dombyra.kz",
+    "description": "Etkileşimli dombra eğitmeni: eserleri sap üzerinden öğrenin, karaoke modunda çalın ve sazınızı akort edin. Çocuklar ve yetişkinler için."
   },
   "nav": {
-    "catalog": "Каталог",
-    "certificate": "Сертификат",
-    "trainer": "Тренажёр",
-    "tuner": "Тюнер",
-    "why": "Почему мы",
-    "reviews": "Отзывы",
-    "blog": "Журнал"
+    "catalog": "Katalog",
+    "certificate": "Sertifika",
+    "trainer": "Eğitmen",
+    "tuner": "Akort",
+    "karaoke": "Karaoke",
+    "why": "Neden biz",
+    "reviews": "Yorumlar",
+    "blog": "Dergi"
   },
   "hero": {
     "badge": "КӘСІБИ САПАЛЫ ДОМБЫРАЛАР",
-    "title": "Домбыра — твой голос",
+    "titleLine1": "Домбыра",
+    "titleLine2": "твой голос",
     "subtitle": "Мастерские инструменты из массива — собраны, отстроены и прослушаны вручную. Звук, который слышно с первой ноты.",
     "productName": "«АСЫЛ»",
     "productDesc": "ель / клён · 185 000 ₸",
     "cta": "Купить"
   },
   "stats": {
-    "since": { "year": "1998", "label": "с этого года работает топ-мастер" },
-    "launch": { "year": "2015", "label": "год запуска проекта dombyra.kz" },
-    "clients": { "value": "10 000+", "label": "клиентов по всему миру" }
+    "since": {
+      "year": "1998",
+      "label": "с этого года работает топ-мастер"
+    },
+    "launch": {
+      "year": "2015",
+      "label": "год запуска проекта dombyra.kz"
+    },
+    "clients": {
+      "value": "10 000+",
+      "label": "клиентов по всему миру"
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "Dombra Online — Akort, Tablatura ve Karaoke",
+      "description": "Kazak dombrasını çevrimiçi öğrenin: ücretsiz akort aleti, çalmalı etkileşimli tablatura ve mikrofonla çalışınızı denetleyen karaoke. Kayıt gerekmez.",
+      "h1": "Kazak dombrasını çevrimiçi öğrenin",
+      "lead": "Üç araç tek yerde: telleri mikrofonla akort edin, kuileri tablaturadan öğrenin, sonra kendi çalışınızı sınayın. Tamamı tarayıcıda, ücretsiz ve üyeliksiz.",
+      "blocks": [
+        {
+          "h": "Neden gerekli",
+          "p": "Dombraya yeni başlayanı üç şey zorlar: sazı akort etmek, notayı okumak ve kendi hatasını duymak. Bu site üçünü de çözer — öğretmensiz, evde, kendi hızınızda."
+        },
+        {
+          "h": "Nasıl çalışır",
+          "p": "Kuiler iki telli tablatura olarak yazılır: her sütun bir vuruş, sayılar basılacak perdelerdir. Çalarken imleç notadan notaya ilerler, tempoyu 0.4×’e kadar yavaşlatabilirsiniz."
+        },
+        {
+          "h": "Kimler için",
+          "p": "Sıfırdan başlayanlar, nota bilgisi olmayanlar ve aradan sonra dombraya dönenler için. Ayrıca öğretmenler için: tablatura ders ekranına rahatça yansıtılır."
+        }
+      ]
+    },
+    "tuner": {
+      "title": "Dombra Akort Aleti — Mikrofonla Çevrimiçi Akort",
+      "description": "Kazak dombranızı çevrimiçi akort edin: mikrofon telin sesini tanır ve ne kadar tiz veya pes olduğunu gösterir. Düz akort G3/D3 ve ters akort G3/C3. Ücretsiz.",
+      "h1": "Dombra akort aleti",
+      "lead": "Bir teli çekin — akort aleti sesi tanır ve doğru perdeden ne kadar uzakta olduğunu gösterir. İğne ortaya oturduğunda tel akortludur.",
+      "blocks": [
+        {
+          "h": "Dombra nasıl akort edilir",
+          "p": "Dombranın iki teli vardır. Standart akortta alt tel sol’e (G3, 196 Hz), üst tel re’ye (D3, 146,83 Hz) akortlanır. Mikrofonu açın, teli çekin ve iğne ortadaki yeşil banda oturana kadar burguyu yavaşça çevirin. Sesi tizleştirmek için burguyu kendinize doğru, pesleştirmek için ters yöne çevirin."
+        },
+        {
+          "h": "Düz ve ters akort",
+          "p": "Düz akort (G3/D3) en yaygınıdır, kuilerin çoğu buna göre yazılmıştır. Ters akortta (G3/C3) üst tel do’ya iner: bazı Kurmangazı kuileri ve eski eserler böyle çalınır. Her eserin hangi akortu gerektirdiği uygulamada eser sayfasında yazar."
+        },
+        {
+          "h": "Mikrofon neden gerekli",
+          "p": "Kulakla akort etmek beceri ister: yeni başlayan yarım ses ve daha fazla şaşabilir, akortsuz sazda çalışmak ise kulağı yanlış perdelere alıştırır. Mikrofon sesin gerçek frekansını ölçer ve sapmayı hertz cinsinden gösterir."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Dombra telleri hangi notalara akort edilir?",
+          "a": "Standart akortta alt (kalın) tel sol’e (G3, 196 Hz), üst tel re’ye (D3, 146,83 Hz) akortlanır; aralarında tam dörtlü vardır. Ters akortta üst tel do’ya (C3, 130,81 Hz) iner."
+        },
+        {
+          "q": "Mikrofonsuz akort edebilir miyim?",
+          "a": "Edebilirsiniz ama daha az hassas olur. Uygulama her tel için bir referans tonu çalar, kulakla eşleyebilirsiniz. Mikrofon yalnızca sayısal doğrulama ekler."
+        },
+        {
+          "q": "Telim neden akordunu tutmuyor?",
+          "a": "Yeni tel ilk günlerde esner ve pesleşir — bu normaldir, sık akort edin. Sürekli kayan tel genellikle burgunun iyi oturmadığını gösterir; çevirirken hafifçe içeri bastırın. Sıcaklık ve nem değişimleri de akordu bozar."
+        },
+        {
+          "q": "Ne sıklıkla yeniden akort etmeliyim?",
+          "a": "Sazı her elinize aldığınızda kontrol edin, teller oturduktan sonra ilk birkaç dakikalık çalıştan sonra bir kez daha bakın."
+        },
+        {
+          "q": "Akort aleti ücretli mi?",
+          "a": "Hayır, tamamen ücretsiz ve üyeliksiz. Mikrofon izni tarayıcı tarafından istenir, ses sunucuya gönderilmez — tüm işlem cihazınızda yapılır."
+        }
+      ]
+    },
+    "learn": {
+      "title": "Dombra Çalmayı Öğren — Kui Tablaturaları ve Notalar",
+      "description": "Dombrayı sıfırdan öğrenin: etkileşimli tablatura, yavaşlatılmış tempo, her vuruşun sesi ve sözlü eserler. Nota bilgisi gerekmez.",
+      "h1": "Dombra çalmayı öğren",
+      "lead": "Bir eser seçin, tempoyu yavaşlatın ve imleci takip edin. Nota bilgisine gerek yok — yalnızca perde numaraları ve vuruş yönleri.",
+      "blocks": [
+        {
+          "h": "Tablatura nasıl okunur",
+          "p": "Her nota iki sayıdan oluşan bir sütundur: üstteki alt tele, alttaki üst tele aittir. 0 açık teli belirtir. Altındaki işaret vuruş yönünü gösterir: aşağı ya da yukarı. Dikey çizgi ölçüleri ayırır, “×2” bölümün iki kez çalındığını gösterir."
+        },
+        {
+          "h": "Nereden başlamalı",
+          "p": "Birinci seviye eserlerle başlayın: alt pozisyonlarda kalır ve basit, yinelenen kalıplar kullanırlar. Tempoyu 0.4× yapın ve her nota net duyulacak şekilde çalın. Hız çabadan değil, düzenlilikten doğar."
+        },
+        {
+          "h": "Ne işe yarar",
+          "p": "Herhangi bir notaya dokunup tam oradan başlayabilirsiniz. Sonraki perde önceden vurgulanır, parmağınız hazırlanmaya vakit bulur. Sözlü eserlerde heceler notaların altında yazılıdır, çalarken söyleyebilirsiniz."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Dombrayı sıfırdan öğrenebilir miyim?",
+          "a": "Evet. Tablatura nota bilgisi gerektirmez: yalnızca perde numarasını ve vuruş yönünü görürsünüz. Duruş ve el pozisyonuyla başlayın, sonra en basit kuilere geçin."
+        },
+        {
+          "q": "Dombra tablaturasındaki sayılar ne anlama gelir?",
+          "a": "Sayı, o telde basılacak perdedir. Sıfır açık tel demektir, hiçbir yere basmazsınız. Aynı sütundaki iki sayı, iki telin birlikte vurulduğunu gösterir."
+        },
+        {
+          "q": "Bir eseri hangi tempoda öğrenmeliyim?",
+          "a": "Doğal geldiğinden daha yavaş. 0.4× yapın ve her notanın bir sonrakinden önce tınlamasına izin verin. Ancak hareket rahatladığında hızlanın."
+        }
+      ]
+    },
+    "karaoke": {
+      "title": "Dombra Karaoke — Çalışınızı Mikrofonla Denetleyin",
+      "description": "Dombra çalın, mikrofon her notayı dinleyip doğru çalıp çalmadığınızı denetlesin. Sonunda yüzdelik puan ve nota nota hata dökümü.",
+      "h1": "Dombra karaoke",
+      "lead": "Bir eseri çalın, mikrofon her vuruşu dinlesin. Sonunda hangi notaların tam, hangilerinin ıskalandığı görünür.",
+      "blocks": [
+        {
+          "h": "Nasıl çalışır",
+          "p": "İmleç notadan notaya ilerler, siz de dombrada o notayı çalarsınız. Mikrofon sesin frekansını ölçüp beklenen notayla karşılaştırır. Tam isabet yeşil, küçük sapma sarı, yanlış nota kırmızı olur."
+        },
+        {
+          "h": "Neden işe yarar",
+          "p": "Kendi hatasını duymak en zor beceridir. Yeni başlayan çoğu zaman komşu perdeye bastığını fark etmez. Karaoke hatayı gözle gösterir: bir turdan sonra hangi ölçüyü tekrarlayacağınızı bilirsiniz."
+        },
+        {
+          "h": "İpuçları",
+          "p": "Sessiz bir odada çalın; gürültü algılamayı şaşırtır. Önce dombrayı akort edin, akortsuz sazda puanlama anlamsızdır. Yavaş tempoyla başlayın."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Karaoke çalışımı nasıl denetliyor?",
+          "a": "Mikrofon sesin temel frekansını ölçer ve beklenen notanın frekansıyla karşılaştırır. Sapma küçükse nota doğru sayılır."
+        },
+        {
+          "q": "Sesim sunucuya gönderiliyor mu?",
+          "a": "Hayır. Mikrofon sesi tarayıcı içinde işlenir ve cihazınızdan çıkmaz."
+        },
+        {
+          "q": "Puanım neden düşük?",
+          "a": "Genellikle üç nedenden biri: dombra akortsuz, oda gürültülü ya da tempo çok hızlı. Önce akort aletinden geçin, sonra 0.4× hızda deneyin."
+        }
+      ]
+    },
+    "ui": {
+      "faq": "Sık sorulan sorular",
+      "tryAlso": "Ayrıca bakın"
+    }
   }
 }

@@ -1,28 +1,175 @@
 {
   "meta": {
-    "title": "Домбыра — онлайн-тренажёр домбры | dombyra.kz",
-    "description": "Интерактивный тренажёр домбры: разучивай мелодии по грифу, играй в режиме караоке и настраивай инструмент. Для детей и взрослых."
+    "title": "Dombyra — Online Kazakh Dombra Trainer | dombyra.kz",
+    "description": "Interactive dombra trainer: learn kuis from the fretboard, play in karaoke mode and tune your instrument. For children and adults."
   },
   "nav": {
-    "catalog": "Каталог",
-    "certificate": "Сертификат",
-    "trainer": "Тренажёр",
-    "tuner": "Тюнер",
-    "why": "Почему мы",
-    "reviews": "Отзывы",
-    "blog": "Журнал"
+    "catalog": "Catalogue",
+    "certificate": "Certificate",
+    "trainer": "Trainer",
+    "tuner": "Tuner",
+    "karaoke": "Karaoke",
+    "why": "Why us",
+    "reviews": "Reviews",
+    "blog": "Journal"
   },
   "hero": {
     "badge": "КӘСІБИ САПАЛЫ ДОМБЫРАЛАР",
-    "title": "Домбыра — твой голос",
+    "titleLine1": "Домбыра",
+    "titleLine2": "твой голос",
     "subtitle": "Мастерские инструменты из массива — собраны, отстроены и прослушаны вручную. Звук, который слышно с первой ноты.",
     "productName": "«АСЫЛ»",
     "productDesc": "ель / клён · 185 000 ₸",
     "cta": "Купить"
   },
   "stats": {
-    "since": { "year": "1998", "label": "с этого года работает топ-мастер" },
-    "launch": { "year": "2015", "label": "год запуска проекта dombyra.kz" },
-    "clients": { "value": "10 000+", "label": "клиентов по всему миру" }
+    "since": {
+      "year": "1998",
+      "label": "с этого года работает топ-мастер"
+    },
+    "launch": {
+      "year": "2015",
+      "label": "год запуска проекта dombyra.kz"
+    },
+    "clients": {
+      "value": "10 000+",
+      "label": "клиентов по всему миру"
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "Dombra Online — Tuner, Tablature and Karaoke",
+      "description": "Learn the Kazakh dombra online: a free tuner, interactive tablature with playback, and karaoke that checks your playing through the microphone. No sign-up.",
+      "h1": "Learn the Kazakh dombra online",
+      "lead": "Three tools in one place: tune the strings with your microphone, learn kuis from tablature, then check your own playing. All in the browser, free and without an account.",
+      "blocks": [
+        {
+          "h": "Why it exists",
+          "p": "Three things get in a beginner’s way on the dombra: tuning the instrument, reading notation, and hearing your own mistakes. This site handles all three — no teacher, at home, at your own pace."
+        },
+        {
+          "h": "How it works",
+          "p": "Kuis are written as two-string tablature: each column is one stroke, the numbers are the frets to press. During playback a cursor moves note to note, and you can slow the tempo down to 0.4×."
+        },
+        {
+          "h": "Who it is for",
+          "p": "Complete beginners, people who cannot read standard notation, and anyone returning to the dombra after a break. Teachers, too: the tablature projects well onto a classroom screen."
+        }
+      ]
+    },
+    "tuner": {
+      "title": "Dombra Tuner Online — Tune by Microphone, Free",
+      "description": "Tune your Kazakh dombra online: the microphone detects each string and shows how sharp or flat it is. Standard G3/D3 and reverse G3/C3 tunings. Free, no sign-up.",
+      "h1": "Dombra tuner online",
+      "lead": "Pluck a string and the tuner recognises the pitch and shows how far it sits from the target. When the needle rests in the centre, the string is in tune.",
+      "blocks": [
+        {
+          "h": "How to tune a dombra",
+          "p": "The dombra has two strings. In the standard tuning the lower string is tuned to G3 (196 Hz) and the upper to D3 (146.83 Hz). Switch on the microphone, pluck a string and turn the peg slowly until the needle settles in the green band at the centre. Turn the peg toward you to raise the pitch, away to lower it."
+        },
+        {
+          "h": "Standard and reverse tuning",
+          "p": "The standard tuning (G3/D3) is by far the most common and most kuis are written for it. In the reverse tuning (G3/C3) the upper string drops to C — some Kurmangazy kuis and older pieces are played this way. Each piece shows the tuning it needs on its page in the app."
+        },
+        {
+          "h": "Why the microphone matters",
+          "p": "Tuning by ear is a skill: beginners are often off by a semitone or more, and practising on an out-of-tune instrument trains the ear to the wrong pitches. The microphone measures the actual frequency and reports the error in hertz, so nothing is left to guesswork."
+        }
+      ],
+      "faq": [
+        {
+          "q": "What notes is a dombra tuned to?",
+          "a": "In the standard tuning the lower (thicker) string is tuned to G3 at 196 Hz and the upper string to D3 at 146.83 Hz, a perfect fourth apart. In the reverse tuning the upper string drops to C3 at 130.81 Hz."
+        },
+        {
+          "q": "Can I tune a dombra without a microphone?",
+          "a": "Yes, though less precisely. The app plays a reference tone for each string, so you can match it by ear. The microphone only adds a numeric readout to confirm you are exactly in tune."
+        },
+        {
+          "q": "Why does my string not hold its tuning?",
+          "a": "A new string stretches for the first few days and drifts flat — that is normal, retune often. A string that keeps slipping usually means the peg is not seated firmly; push it gently inward as you turn. Temperature and humidity swings detune the instrument too."
+        },
+        {
+          "q": "How often should I retune?",
+          "a": "Check the tuning every time you pick up the instrument, and again after the first few minutes of playing, once the strings have settled."
+        },
+        {
+          "q": "Is the tuner free?",
+          "a": "Yes, completely free and without an account. The browser asks for microphone permission, and the audio never leaves your device — all processing happens locally."
+        }
+      ]
+    },
+    "learn": {
+      "title": "Learn to Play the Dombra — Kui Tablature and Notes",
+      "description": "Learn the dombra from scratch: interactive tablature, slowed-down tempo, the sound of every stroke, and pieces with lyrics. No standard notation required.",
+      "h1": "Learn to play the dombra",
+      "lead": "Pick a piece, slow the tempo and follow the cursor. You do not need to read standard notation — only fret numbers and stroke directions.",
+      "blocks": [
+        {
+          "h": "How to read the tablature",
+          "p": "Each note is a column of two numbers: the upper one belongs to the lower string, the lower one to the upper string. A 0 means an open string. The mark underneath shows the stroke direction, down or up. A vertical line separates bars, and “×2” means the section is played twice."
+        },
+        {
+          "h": "Where to start",
+          "p": "Begin with level-one pieces: they stay in the lower positions and use simple repeating patterns. Set the tempo to 0.4× and play so that every note sounds clearly. Speed comes from evenness, not from effort."
+        },
+        {
+          "h": "What helps",
+          "p": "You can tap any note and start exactly from there. The next fret is highlighted in advance so your finger has time to prepare. Pieces with lyrics show the syllables under the notes, so you can play and sing along."
+        }
+      ],
+      "faq": [
+        {
+          "q": "Can I learn the dombra from scratch?",
+          "a": "Yes. Tablature needs no knowledge of standard notation: you only see the fret number and the stroke direction. Start with posture and hand position, then move to the simplest kuis."
+        },
+        {
+          "q": "What do the numbers in dombra tablature mean?",
+          "a": "A number is the fret to press on that string. Zero means an open string, so you press nothing. Two numbers in one column mean both strings are struck together."
+        },
+        {
+          "q": "How fast should I learn a piece?",
+          "a": "Slower than feels natural. Set 0.4× and let each note ring before the next one. Speed up only once the movement feels comfortable."
+        }
+      ]
+    },
+    "karaoke": {
+      "title": "Dombra Karaoke — Check Your Playing by Microphone",
+      "description": "Play the dombra while the microphone listens to every note and checks whether you hit it. You get a score and a note-by-note breakdown of mistakes.",
+      "h1": "Dombra karaoke",
+      "lead": "Play a piece while the microphone listens to every stroke. At the end you see which notes were accurate and where you missed.",
+      "blocks": [
+        {
+          "h": "How it works",
+          "p": "A cursor moves note to note while you play along on the dombra. The microphone measures the pitch and compares it with the expected note. An accurate hit turns green, a slight miss yellow, a wrong note red."
+        },
+        {
+          "h": "Why it helps",
+          "p": "Hearing your own mistakes is the hardest skill to build. Beginners often do not notice they are pressing the neighbouring fret. Karaoke makes the error visible: after a run you know exactly which bar to repeat."
+        },
+        {
+          "h": "Tips",
+          "p": "Play in a quiet room — background noise confuses the detection. Tune the dombra first, because scoring on an out-of-tune instrument is meaningless. Start at a slow tempo."
+        }
+      ],
+      "faq": [
+        {
+          "q": "How does the karaoke check my playing?",
+          "a": "The microphone measures the fundamental frequency of the sound and compares it with the expected note. If the deviation is small, the note counts as correct."
+        },
+        {
+          "q": "Is my audio sent to a server?",
+          "a": "No. The microphone audio is processed inside the browser and never leaves your device."
+        },
+        {
+          "q": "Why is my score low?",
+          "a": "Usually one of three reasons: the dombra is out of tune, the room is noisy, or the tempo is too fast. Run through the tuner first, then try again at 0.4× speed."
+        }
+      ]
+    },
+    "ui": {
+      "faq": "Frequently asked questions",
+      "tryAlso": "See also"
+    }
   }
 }
