@@ -114,12 +114,34 @@ export const VIDEOS = [
 // trainer/tuner ведут сразу на страницы инструмента (не на секции лендинга) —
 // остальные пункты остаются якорями, т.к. отдельных страниц под них нет
 export const NAV_LINKS = [
-  { href: "#catalog", key: "catalog" },
-  { href: "#certificate", key: "certificate" },
-  { href: "/learn", key: "trainer" },
-  { href: "/tuner", key: "tuner", badge: "FREE" },
-  { href: "/karaoke", key: "karaoke", badge: "FREE" },
-  { href: "#why", key: "why" },
-  { href: "#reviews", key: "reviews" },
-  { href: "#blog", key: "blog" },
+  { href: "#catalog",     key: "catalog",     type: "anchor" },
+  { href: "#certificate", key: "certificate", type: "anchor" },
+  { href: "/learn",       key: "trainer",     type: "page" },
+  { href: "/tuner",       key: "tuner",       type: "page", badge: "FREE" },
+  { href: "/karaoke",     key: "karaoke",     type: "page", badge: "FREE" },
+  { href: "/blog",        key: "blog",        type: "page" },
+  { href: "#why",         key: "why",         type: "anchor" },
+  { href: "#reviews",     key: "reviews",     type: "anchor" },
+];
+export const FOOTER_LINKS = [
+  {
+    titleKey: "shop",
+    items: [
+      { href: "#catalog",     labelKey: "catalog",     type: "anchor" },
+      { href: "#certificate", labelKey: "certificate", type: "anchor" },
+      { href: "/learn",       labelKey: "trainer",     type: "page" },
+      { href: "/tuner",       labelKey: "tuner",       type: "page" },
+      { href: "/karaoke",     labelKey: "karaoke",     type: "page" },
+    ],
+  },
+  {
+    titleKey: "about",
+    items: [
+      { href: "/blog",     labelKey: "blog",     type: "page" },
+      { href: "/songs",    labelKey: "songs",    type: "page" },
+      { href: "#video",    labelKey: "workshop", type: "anchor" },
+      { href: "#reviews",  labelKey: "reviews",  type: "anchor" },
+      { href: "#faq",      labelKey: "delivery", type: "anchor" },
+    ],
+  },
 ];
