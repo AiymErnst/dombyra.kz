@@ -13,8 +13,6 @@ import VideoSection from "./VideoSection";
 import LeadForm from "./LeadForm";
 import Footer from "./Footer";
 import StickyBuyBar from "./StickyBuyBar";
-import CatalogPreview from "./CatalogPreview";
-
 // locale и posts приходят от серверной страницы app/[locale]/page.jsx:
 // этот компонент клиентский и сам к базе обращаться не может.
 export default function LandingPage({ dict, locale, posts = [] }) {
@@ -23,14 +21,12 @@ export default function LandingPage({ dict, locale, posts = [] }) {
   const [playingVideo, setPlayingVideo] = useState(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const sentinelRef = useRef(null);
-
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
   }, [menuOpen]);
-
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
@@ -43,7 +39,6 @@ export default function LandingPage({ dict, locale, posts = [] }) {
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
-
   return (
     <div className="relative overflow-x-clip bg-white font-brand text-brand-ink">
       {/* path="" — признак главной: якоря работают как якоря.
