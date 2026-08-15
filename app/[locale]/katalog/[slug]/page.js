@@ -1,72 +1,69 @@
-import { createClient } from "@supabase/supabase-js";
+// app/[locale]/katalog/[slug]/page.js
 import { notFound } from "next/navigation";
+import { getDictionary } from "@/lib/i18n";
+import { getDombraBySlug } from "@/lib/dombras";
 import DombraGallery from "./DombraGallery";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
-
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
-  const { data: item } = await supabase
-    .from("dombras")
-    .select("name_ru, description_ru")
-    .eq("slug", params.slug)
-    .single();
-
+  const { slug } = await params;
+  const item = await getDombraBySlug(slug);
   if (!item) return {};
   return {
     title: `${item.name_ru} — dombyra.kz`,
-    description: item.description_ru,
+    description: item.description_ru || "",
   };
 }
 
 export default async function DombraPage({ params }) {
-  const { data: item, error } = await supabase
-    .from("dombras")
-    .select("*")
-    .eq("slug", params.slug)
-    .single();
+  const { locale, slug } = await params;
+  const dict = getDictionary(locale);
+  const item = await getDombraBySlug(slug);
 
-  if (error || !item) {
-    notFound();
-  }
+  if (!item) notFound();
+
+  const c = dict.catalogPage || {};
+  const name = locale === "kz" && item.name_kz ? item.name_kz : item.name_ru;
+  const description =
+    locale === "kz" && item.description_kz
+      ? item.description_kz
+      : item.description_ru;
 
   return (
-    <main className="mx-auto max-w-[1000px] px-4 py-12 grid grid-cols-1 md:grid-cols-2 gap-10">
-      <DombraGallery photos={item.photos} name={item.name_ru} />
+    <main className="grid grid-cols-1 gap-8 px-5 py-10 lg:mx-auto lg:max-w-[1180px] lg:grid-cols-2 lg:gap-14 lg:px-7 lg:py-16">
+      <DombraGallery photos={item.photos} name={name} dict={dict} />
 
       <div>
-        <h1 className="font-serif text-3xl text-brand-ink mb-2">
-          {item.name_ru}
+        <h1 className="font-brand text-[28px] font-extrabold uppercase leading-[1.05] tracking-[-0.03em] text-brand-ink lg:text-[42px]">
+          {name}
         </h1>
-        <p className="text-2xl text-amber-700 font-semibold mb-4">
-          от {item.base_price.toLocaleString("ru-RU")} ₸
+
+        <p className="mt-3 font-brand text-[22px] font-extrabold text-brand-blue lg:text-[28px]">
+          {c.priceFrom || "от"} {item.base_price.toLocaleString("ru-RU")} ₸
         </p>
 
-        <p className="text-sm text-brand-ink/60 border-l-2 border-amber-500 pl-3 mb-6">
-          Итоговая цена зависит от выбранной породы дерева, дополнительных
-          украшений и наличия серебряной накладки 925 пробы.
+        <p className="mt-4 border-l-2 border-brand-lime pl-3.5 font-brand text-[13px] font-medium leading-relaxed text-brand-ink/55">
+          {c.priceNoteShort ||
+            "Итоговая цена зависит от породы дерева, дополнительных украшений и серебряной накладки 925 пробы."}
         </p>
 
-        {item.description_ru && (
-          <p className="text-brand-ink/80 leading-relaxed mb-6">
-            {item.description_ru}
+        {description && (
+          <p className="mt-6 font-brand text-[15px] font-medium leading-relaxed text-brand-ink/70">
+            {description}
           </p>
         )}
 
         {item.wood_types?.length > 0 && (
-          <div className="mb-4">
-            <div className="text-sm font-medium text-brand-ink/70 mb-1.5">
-              Доступные породы дерева
+          <div className="mt-7">
+            <div className="mb-2 font-brand text-[11px] font-bold uppercase tracking-[0.12em] text-brand-ink/45">
+              {c.woodLabel || "Породы дерева"}
             </div>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               {item.wood_types.map((wood) => (
                 <span
                   key={wood}
-                  className="text-xs px-2.5 py-1 rounded-full bg-brand-ink/5 text-brand-ink/70"
+                  className="border border-brand-border bg-brand-bg px-3 py-1.5 font-brand text-[12px] font-bold text-brand-ink/70"
                 >
                   {wood}
                 </span>
@@ -75,25 +72,27 @@ export default async function DombraPage({ params }) {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-1.5 mb-8">
-          {item.has_silver_option && (
-            <span className="text-xs px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">
-              Есть вариант с серебром 925 пробы
-            </span>
-          )}
-          {item.has_decoration_option && (
-            <span className="text-xs px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">
-              Есть доп. украшения
-            </span>
-          )}
-        </div>
+        {(item.has_silver_option || item.has_decoration_option) && (
+          <div className="mt-5 flex flex-wrap gap-2">
+            {item.has_silver_option && (
+              <span className="border border-brand-border bg-brand-bg px-3 py-1.5 font-brand text-[12px] font-bold text-brand-blue">
+                {c.silverOption || "Вариант с серебром 925 пробы"}
+              </span>
+            )}
+            {item.has_decoration_option && (
+              <span className="border border-brand-border bg-brand-bg px-3 py-1.5 font-brand text-[12px] font-bold text-brand-blue">
+                {c.decorationOption || "Дополнительные украшения"}
+              </span>
+            )}
+          </div>
+        )}
 
-        {/* Замени на свою форму заказа / ссылку на WhatsApp / телефон */}
+        {/* TODO: замени на свой номер WhatsApp или ссылку на форму заказа */}
         <a
           href="https://wa.me/YOUR_NUMBER"
-          className="inline-block px-6 py-3 rounded-full bg-amber-600 text-white font-medium hover:bg-amber-700 transition-colors"
+          className="mt-9 inline-block bg-brand-ink px-7 py-3.5 font-brand text-[13px] font-bold uppercase tracking-[0.08em] text-white transition-opacity hover:opacity-85"
         >
-          Заказать / уточнить цену
+          {c.orderCta || "Заказать / уточнить цену"}
         </a>
       </div>
     </main>
