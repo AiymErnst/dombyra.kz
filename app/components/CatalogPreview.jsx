@@ -1,56 +1,88 @@
-import { Placeholder, Badge, Button } from "./ui";
-import { CATALOG } from "./data";
+import { createClient } from "@supabase/supabase-js";
+import Image from "next/image";
+import Link from "next/link";
 
-export default function CatalogPreview() {
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
+
+// раздел-превью на главной — id="catalog" совпадает с якорем в меню
+// (href="#catalog" в NAV_LINKS), поэтому клик по пункту меню сразу сюда
+// и проскроллит. Полный каталог со всеми товарами и пагинацией — на /katalog.
+export default async function CatalogPreview() {
+  const { data: items, error } = await supabase
+    .from("dombras")
+    .select("*")
+    .eq("in_stock", true)
+    .order("sort_order", { ascending: true })
+    .limit(3);
+
+  if (error) {
+    console.error("[превью каталога] ошибка загрузки:", error);
+  }
+
   return (
-    <section id="catalog" className="scroll-mt-16 bg-white pt-10 lg:mx-auto lg:max-w-[1180px]">
-      <div className="flex items-end justify-between gap-3 px-5 pb-1.5 lg:px-7">
-        <h2 className="font-brand text-[28px] font-extrabold uppercase tracking-[-0.025em] lg:text-[52px]">
-          Каталог
-        </h2>
-        <a
-          href="#catalog"
-          className="pb-1 font-brand text-xs font-bold uppercase tracking-[0.08em] text-brand-teal"
+    <section id="catalog" className="mx-auto max-w-[1200px] px-4 py-16">
+      <div className="flex items-end justify-between mb-8 gap-4 flex-wrap">
+        <div>
+          <h2 className="font-serif text-2xl md:text-3xl text-brand-ink mb-2">
+            Каталог домбр
+          </h2>
+          <p className="text-brand-ink/70">
+            Ручная работа, сертификат подлинности. Цена — от{" "}
+            <span className="text-amber-700 font-medium">100 000 ₸</span>,
+            зависит от дерева, украшений и серебряной накладки 925 пробы.
+          </p>
+        </div>
+        <Link
+          href="/katalog"
+          className="shrink-0 px-5 py-2.5 rounded-full border border-brand-ink/20 text-brand-ink/80 hover:border-amber-400 hover:text-amber-700 transition-colors text-sm whitespace-nowrap"
         >
-          все 47 →
-        </a>
+          Смотреть весь каталог →
+        </Link>
       </div>
-      <p className="px-5 font-brand text-sm font-medium text-brand-ink/60 lg:px-7">
-        Каждая домбыра — один экземпляр. Слушайте запись до покупки.
-      </p>
-      <div
-        data-row
-        className="flex gap-3 overflow-x-auto px-5 py-4 [scroll-snap-type:x_mandatory] lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-7"
-      >
-        {CATALOG.map((item) => (
-          <article
-            key={item.name}
-            className="w-[232px] flex-none border border-brand-border bg-white [scroll-snap-align:start] lg:w-auto"
-          >
-            <div className="relative h-[232px] bg-brand-bg lg:h-[300px]">
-              <Placeholder>Домбыра «{item.name}»</Placeholder>
-              {item.badge && (
-                <div className="pointer-events-none absolute left-0 top-0">
-                  <Badge>{item.badge}</Badge>
-                </div>
-              )}
-            </div>
-            <div className="p-4">
-              <div className="font-brand text-[17px] font-bold">{item.name}</div>
-              <div className="mt-1 font-brand text-xs font-medium text-brand-ink/50">
-                {item.subtitle}
+
+      {(!items || items.length === 0) ? (
+        <p className="text-brand-ink/50 text-sm">
+          Каталог пока пуст — добавьте домбры в Supabase (таблица{" "}
+          <code>dombras</code>).
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {items.map((item) => (
+            <Link
+              key={item.id}
+              href={`/katalog/${item.slug}`}
+              className="group block rounded-2xl border border-brand-ink/10 overflow-hidden hover:shadow-lg transition-shadow"
+            >
+              <div className="relative aspect-[4/3] bg-brand-ink/5">
+                {item.photos?.[0] ? (
+                  <Image
+                    src={item.photos[0]}
+                    alt={item.name_ru}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-brand-ink/30 text-sm">
+                    Нет фото
+                  </div>
+                )}
               </div>
-              <div className="mt-3 font-brand text-lg font-extrabold text-brand-blue">
-                {item.price}
+              <div className="p-4">
+                <h3 className="font-medium text-brand-ink mb-1">
+                  {item.name_ru}
+                </h3>
+                <p className="text-amber-700 font-semibold">
+                  от {item.base_price.toLocaleString("ru-RU")} ₸
+                </p>
               </div>
-            </div>
-          </article>
-        ))}
-      </div>
-      <div className="px-5 lg:px-7">
-        <Button className="w-full lg:w-auto">Перейти в каталог</Button>
-      </div>
-      <div className="h-16" />
+            </Link>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
