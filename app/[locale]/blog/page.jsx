@@ -3,21 +3,18 @@
 // Список статей. Хаб: собирает ссылки на все статьи, чтобы робот дошёл
 // до каждой за один переход от главной. Без него статьи были бы доступны
 // только из sitemap и индексировались бы заметно медленнее.
-
+//
+// Header и Footer здесь больше не рендерятся — они переехали в
+// app/[locale]/layout.jsx (через SiteChrome) и теперь есть на всех
+// страницах внутри локали. Если оставить их и здесь — задвоятся.
 import { locales, defaultLocale, getDictionary } from '@/lib/i18n';
 import { getPosts, pick } from '@/lib/posts';
-import Header from '@/app/components/Header';
-import Footer from '@/app/components/Footer';
-
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://dombyra.kz';
 const HREFLANG = { kz: 'kk-KZ', ru: 'ru-KZ', en: 'en', tr: 'tr-TR' };
-
 export const revalidate = 3600;
-
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
-
 export async function generateMetadata({ params }) {
   const { locale } = await params;
   const t = getDictionary(locale).pages.blog || {};
@@ -32,13 +29,11 @@ export async function generateMetadata({ params }) {
     alternates: { canonical: url, languages },
   };
 }
-
 export default async function BlogIndex({ params }) {
   const { locale } = await params;
   const dict = getDictionary(locale);
   const t = dict.pages.blog || {};
   const posts = await getPosts();
-
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -50,17 +45,13 @@ export default async function BlogIndex({ params }) {
       url: `${SITE}/${locale}/blog/${p.slug}`,
     })),
   };
-
   return (
     <>
       <script type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      {/* список переведён на все языки, поэтому available не передаём */}
-      <Header locale={locale} path="/blog" dict={dict} />
       <main className="post-page">
         <h1>{t.indexTitle}</h1>
         {t.indexLead && <p className="post-lead">{t.indexLead}</p>}
-
         <ul className="post-list">
           {posts.map((p) => (
             <li key={p.slug}>
@@ -75,8 +66,6 @@ export default async function BlogIndex({ params }) {
           ))}
         </ul>
       </main>
-
-      <Footer locale={locale} dict={dict} path="/blog" />
     </>
   );
 }
