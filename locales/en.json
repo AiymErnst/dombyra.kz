@@ -61,6 +61,11 @@
         }
       ]
     },
+    "catalog": {
+  "title": "Dombra Catalog",
+  "subtitle": "Handmade, with a certificate of authenticity. Price from 100,000 ₸, depending on the wood, decorations, and 925 silver plating.",
+  "viewAll": "View full catalog"
+},
     "tuner": {
       "title": "Dombra Tuner Online — Tune by Microphone, Free",
       "description": "Tune your Kazakh dombra online: the microphone detects each string and shows how sharp or flat it is. Standard G3/D3 and reverse G3/C3 tunings. Free, no sign-up.",
