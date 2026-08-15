@@ -237,9 +237,8 @@
       "reviews": "Reviews",
       "delivery": "Delivery & warranty"
     }
-  }
-},
-"catalogPage": {
+  },
+  "catalogPage": {
   "metaTitle": "Dombra Catalog — dombyra.kz",
   "metaDescription": "Handmade dombras with a certificate of authenticity. Price depends on wood type, decorations and 925 silver plating.",
   "title": "Dombra Catalog",
@@ -261,5 +260,6 @@
     { "slug": "kak-vybrat-dombru", "title": "How to choose your first dombra" },
     { "slug": "dombra-dlya-rebenka", "title": "A dombra for a child: where to start" },
     { "slug": "tuning-difference", "title": "Standard vs reverse tuning explained" }
-  ]
+    ]
+  }
 }
