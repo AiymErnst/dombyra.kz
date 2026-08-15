@@ -6,25 +6,33 @@ import { Placeholder } from "./ui";
 // (href="#catalog"). Полный каталог со всеми товарами — на /katalog.
 // Данные (items) приходят готовые пропсом сверху, из app/[locale]/page.jsx —
 // тот же паттерн, что у Blog с posts. Сам компонент ничего не грузит.
+//
+// dict?.catalog?.xxx с запасными текстами — на случай, если в
+// locales/*.json блок "catalog" ещё не добавлен: раньше без "?." это
+// роняло всю сборку на Vercel (TypeError: Cannot read properties of
+// undefined). Когда добавишь переводы в locales — просто подхватятся,
+// запасные тексты используются только пока их нет.
 export default function CatalogPreview({ dict, locale, items = [] }) {
   const localePrefix = locale ? `/${locale}` : "";
+  const c = dict?.catalog || {};
 
   return (
     <section id="catalog" className="px-5 py-10 lg:mx-auto lg:max-w-[1180px] lg:px-7 lg:py-16">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 lg:mb-8">
         <div>
           <h2 className="font-brand text-2xl font-extrabold uppercase tracking-[-0.02em] text-brand-ink lg:text-[36px]">
-            {dict.catalog.title}
+            {c.title || "Каталог домбр"}
           </h2>
           <p className="mt-1.5 max-w-[420px] font-brand text-[13px] font-medium leading-relaxed text-brand-ink/62 lg:text-[15px]">
-            {dict.catalog.subtitle}
+            {c.subtitle ||
+              "Ручная работа, сертификат подлинности. Цена от 100 000 ₸, зависит от дерева, украшений и серебряной накладки 925 пробы."}
           </p>
         </div>
         <Link
           href={`${localePrefix}/katalog`}
           className="shrink-0 whitespace-nowrap border border-brand-ink/20 px-5 py-2.5 font-brand text-[12px] font-bold tracking-[0.04em] text-brand-ink/80 transition-colors hover:border-brand-blue hover:text-brand-blue"
         >
-          {dict.catalog.viewAll} →
+          {c.viewAll || "Смотреть весь каталог"} →
         </Link>
       </div>
 
