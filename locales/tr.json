@@ -238,4 +238,28 @@
       "delivery": "Teslimat ve garanti"
     }
   }
+},
+"catalogPage": {
+  "metaTitle": "Dombra Kataloğu — dombyra.kz",
+  "metaDescription": "Orijinallik sertifikalı el yapımı dombralar. Fiyat ahşap türüne, süslemelere ve 925 ayar gümüş kaplamaya göre değişir.",
+  "title": "Dombra Kataloğu",
+  "lead": "Her dombra el yapımıdır ve orijinallik sertifikasıyla gelir.",
+  "priceNote": "Nihai fiyat seçilen ahşap türüne, ek süslemelere ve 925 ayar gümüş kaplamaya göre değişir — kesin fiyatı sipariş sırasında teyit edin.",
+  "priceNoteShort": "Nihai fiyat ahşap türüne, süslemelere ve 925 ayar gümüş kaplamaya göre değişir.",
+  "priceFrom": "başlangıç",
+  "silverTag": "gümüş 925",
+  "silverOption": "925 ayar gümüş seçeneği",
+  "decorationOption": "Ek süslemeler",
+  "woodLabel": "Ahşap türleri",
+  "orderCta": "Sipariş ver / fiyat sor",
+  "showMore": "Daha fazla göster",
+  "loading": "Yükleniyor…",
+  "empty": "Katalog şimdilik boş",
+  "noPhoto": "Dombra fotoğrafı",
+  "articlesTitle": "Seçmeden önce",
+  "articles": [
+    { "slug": "kak-vybrat-dombru", "title": "Yeni başlayanlar için dombra nasıl seçilir" },
+    { "slug": "dombra-dlya-rebenka", "title": "Çocuk için dombra: nereden başlamalı" },
+    { "slug": "tuning-difference", "title": "Düz ve ters akort arasındaki fark" }
+  ]
 }
