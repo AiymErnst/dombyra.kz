@@ -31,7 +31,7 @@ export default async function DombraPage({ params }) {
       : item.description_ru;
 
   return (
-    <main className="grid grid-cols-1 gap-8 px-5 py-10 lg:mx-auto lg:max-w-[1180px] lg:grid-cols-2 lg:gap-14 lg:px-7 lg:py-16">
+    <main className="grid w-full grid-cols-1 gap-8 px-5 py-10 lg:mx-auto lg:max-w-[1180px] lg:grid-cols-2 lg:gap-14 lg:px-7 lg:py-16">
       <DombraGallery photos={item.photos} name={name} dict={dict} />
 
       <div>
