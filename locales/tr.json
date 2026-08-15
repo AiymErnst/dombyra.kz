@@ -61,6 +61,11 @@
         }
       ]
     },
+    "catalog": {
+  "title": "Dombra Kataloğu",
+  "subtitle": "El yapımı, orijinallik sertifikalı. Fiyat 100.000 ₸'den başlar, ahşap türüne, süslemelere ve 925 ayar gümüş kaplamaya göre değişir.",
+  "viewAll": "Tüm kataloğu görüntüle"
+},
     "tuner": {
       "title": "Dombra Akort Aleti — Mikrofonla Çevrimiçi Akort",
       "description": "Kazak dombranızı çevrimiçi akort edin: mikrofon telin sesini tanır ve ne kadar tiz veya pes olduğunu gösterir. Düz akort G3/D3 ve ters akort G3/C3. Ücretsiz.",
