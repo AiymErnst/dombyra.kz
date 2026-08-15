@@ -237,9 +237,8 @@
       "reviews": "Yorumlar",
       "delivery": "Teslimat ve garanti"
     }
-  }
-},
-"catalogPage": {
+  }, 
+  "catalogPage": {
   "metaTitle": "Dombra Kataloğu — dombyra.kz",
   "metaDescription": "Orijinallik sertifikalı el yapımı dombralar. Fiyat ahşap türüne, süslemelere ve 925 ayar gümüş kaplamaya göre değişir.",
   "title": "Dombra Kataloğu",
@@ -261,5 +260,7 @@
     { "slug": "kak-vybrat-dombru", "title": "Yeni başlayanlar için dombra nasıl seçilir" },
     { "slug": "dombra-dlya-rebenka", "title": "Çocuk için dombra: nereden başlamalı" },
     { "slug": "tuning-difference", "title": "Düz ve ters akort arasındaki fark" }
-  ]
+
+    ]
+  }
 }
