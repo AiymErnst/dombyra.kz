@@ -1,51 +1,58 @@
-import { createClient } from "@supabase/supabase-js";
+// app/[locale]/katalog/page.js
+//
+// Страница каталога. Данные берём здесь, на сервере (как главная берёт
+// posts), и передаём готовыми в клиентскую сетку KatalogGrid.
+import { getDictionary } from "@/lib/i18n";
+import { getDombras } from "@/lib/dombras";
 import KatalogGrid from "./KatalogGrid";
 import CatalogArticleLinks from "./CatalogArticleLinks";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+export const revalidate = 3600;
 
 const PAGE_SIZE = 9;
 
-export const metadata = {
-  title: "Каталог домбр — dombyra.kz",
-  description:
-    "Домбры ручной работы с сертификатом подлинности. Цена зависит от породы дерева, дополнительных украшений и серебряной накладки 925 пробы.",
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  const dict = getDictionary(locale);
+  const c = dict.catalogPage || {};
+  return {
+    title: c.metaTitle || "Каталог домбр — dombyra.kz",
+    description: c.metaDescription || "",
+  };
+}
 
-export const revalidate = 60;
-
-export default async function KatalogPage() {
-  const { data: items, error, count } = await supabase
-    .from("dombras")
-    .select("*", { count: "exact" })
-    .eq("in_stock", true)
-    .order("sort_order", { ascending: true })
-    .range(0, PAGE_SIZE - 1);
-
-  if (error) {
-    console.error("[каталог] ошибка загрузки:", error);
-  }
+export default async function KatalogPage({ params }) {
+  const { locale } = await params;
+  const dict = getDictionary(locale);
+  const { items, total } = await getDombras(PAGE_SIZE, 0);
+  const c = dict.catalogPage || {};
 
   return (
-    <main className="mx-auto max-w-[1200px] px-4 py-12">
-      <h1 className="font-serif text-3xl md:text-4xl text-brand-ink mb-2">
-        Каталог домбр
+    <main className="px-5 py-10 lg:mx-auto lg:max-w-[1180px] lg:px-7 lg:py-16">
+      <h1 className="font-brand text-[32px] font-extrabold uppercase leading-[1.02] tracking-[-0.03em] text-brand-ink lg:text-[56px]">
+        {c.title || "Каталог домбр"}
       </h1>
-      <p className="text-brand-ink/70 max-w-2xl mb-3">
-        Каждая домбра — ручная работа с сертификатом подлинности.
-      </p>
-      <p className="text-sm text-brand-ink/60 max-w-2xl mb-10 border-l-2 border-amber-500 pl-3">
-        Итоговая цена зависит от выбранной породы дерева, дополнительных
-        украшений и наличия серебряной накладки 925 пробы — точную стоимость
-        уточняйте при заказе.
+
+      <p className="mt-3 max-w-[520px] font-brand text-[15px] font-medium leading-relaxed text-brand-ink/62 lg:text-[17px]">
+        {c.lead || "Каждая домбра — ручная работа с сертификатом подлинности."}
       </p>
 
-      <KatalogGrid initialItems={items || []} totalCount={count || 0} />
+      <p className="mt-5 max-w-[560px] border-l-2 border-brand-lime pl-3.5 font-brand text-[13px] font-medium leading-relaxed text-brand-ink/55 lg:text-[14px]">
+        {c.priceNote ||
+          "Итоговая цена зависит от выбранной породы дерева, дополнительных украшений и наличия серебряной накладки 925 пробы — точную стоимость уточняйте при заказе."}
+      </p>
 
-      <CatalogArticleLinks />
+      <div className="mt-10 lg:mt-14">
+        <KatalogGrid
+          initialItems={items}
+          totalCount={total}
+          pageSize={PAGE_SIZE}
+          locale={locale}
+          dict={dict}
+        />
+      </div>
+
+      <CatalogArticleLinks dict={dict} locale={locale} />
     </main>
   );
 }

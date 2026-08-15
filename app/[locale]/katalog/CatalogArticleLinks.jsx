@@ -1,26 +1,27 @@
 import Link from "next/link";
 
-// Пока просто статичный список — когда появится таблица articles в
-// Supabase, легко заменить на выборку оттуда (по тегу "каталог" или
-// похожему), сама вёрстка блока не изменится.
-const ARTICLES = [
-  { title: "Как выбрать домбру новичку", href: "/blog/kak-vybrat-dombru" },
-  { title: "Домбра для ребёнка: с чего начать", href: "/blog/dombra-dlya-rebenka" },
-  { title: "Оң бұрау и теріс бұрау — в чём разница", href: "/blog/tuning-difference" },
-];
+// Ссылки на статьи под каталогом. Заголовки и адреса берём из dict —
+// так на каждом языке можно вести на свою версию статьи (или вообще
+// показывать разный набор). Если в locales блока articles нет —
+// секция просто не отрисуется, ничего не сломается.
+export default function CatalogArticleLinks({ dict, locale }) {
+  const localePrefix = locale ? `/${locale}` : "";
+  const c = dict?.catalogPage || {};
+  const articles = c.articles || [];
 
-export default function CatalogArticleLinks() {
+  if (articles.length === 0) return null;
+
   return (
-    <section className="mt-16 pt-8 border-t border-brand-ink/10">
-      <h2 className="text-lg font-medium text-brand-ink mb-4">
-        Прежде чем выбрать
+    <section className="mt-16 border-t border-brand-border pt-8 lg:mt-24">
+      <h2 className="mb-5 font-brand text-[18px] font-extrabold uppercase tracking-[-0.01em] text-brand-ink lg:text-[22px]">
+        {c.articlesTitle || "Прежде чем выбрать"}
       </h2>
-      <div className="flex flex-col sm:flex-row gap-3">
-        {ARTICLES.map((a) => (
+      <div className="flex flex-col gap-3 sm:flex-row">
+        {articles.map((a) => (
           <Link
-            key={a.href}
-            href={a.href}
-            className="flex-1 px-4 py-3 rounded-xl border border-brand-ink/10 text-brand-ink/80 hover:border-amber-400 hover:text-amber-700 transition-colors text-sm"
+            key={a.slug}
+            href={`${localePrefix}/blog/${a.slug}`}
+            className="flex-1 border border-brand-border px-4 py-3.5 font-brand text-[13px] font-medium text-brand-ink/75 transition-colors hover:border-brand-blue hover:text-brand-blue"
           >
             {a.title} →
           </Link>
