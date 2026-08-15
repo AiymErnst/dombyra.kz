@@ -28,7 +28,7 @@ export default async function KatalogPage({ params }) {
   const c = dict.catalogPage || {};
 
   return (
-    <main className="px-5 py-10 lg:mx-auto lg:max-w-[1180px] lg:px-7 lg:py-16">
+    <main className="w-full px-5 py-10 lg:mx-auto lg:max-w-[1180px] lg:px-7 lg:py-16">
       <h1 className="font-brand text-[32px] font-extrabold uppercase leading-[1.02] tracking-[-0.03em] text-brand-ink lg:text-[56px]">
         {c.title || "Каталог домбр"}
       </h1>
