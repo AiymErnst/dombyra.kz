@@ -13,6 +13,7 @@ import VideoSection from "./VideoSection";
 import LeadForm from "./LeadForm";
 import Footer from "./Footer";
 import StickyBuyBar from "./StickyBuyBar";
+import CatalogPreview from "./CatalogPreview";
 
 // locale и posts приходят от серверной страницы app/[locale]/page.jsx:
 // этот компонент клиентский и сам к базе обращаться не может.
