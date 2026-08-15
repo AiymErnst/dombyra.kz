@@ -238,4 +238,28 @@
       "delivery": "Delivery & warranty"
     }
   }
+},
+"catalogPage": {
+  "metaTitle": "Dombra Catalog — dombyra.kz",
+  "metaDescription": "Handmade dombras with a certificate of authenticity. Price depends on wood type, decorations and 925 silver plating.",
+  "title": "Dombra Catalog",
+  "lead": "Every dombra is handmade and comes with a certificate of authenticity.",
+  "priceNote": "The final price depends on the chosen wood type, additional decorations and 925 silver plating — please confirm the exact price when ordering.",
+  "priceNoteShort": "The final price depends on wood type, decorations and 925 silver plating.",
+  "priceFrom": "from",
+  "silverTag": "silver 925",
+  "silverOption": "925 silver option available",
+  "decorationOption": "Additional decorations",
+  "woodLabel": "Wood types",
+  "orderCta": "Order / ask for price",
+  "showMore": "Show more",
+  "loading": "Loading…",
+  "empty": "The catalog is empty for now",
+  "noPhoto": "Dombra photo",
+  "articlesTitle": "Before you choose",
+  "articles": [
+    { "slug": "kak-vybrat-dombru", "title": "How to choose your first dombra" },
+    { "slug": "dombra-dlya-rebenka", "title": "A dombra for a child: where to start" },
+    { "slug": "tuning-difference", "title": "Standard vs reverse tuning explained" }
+  ]
 }
