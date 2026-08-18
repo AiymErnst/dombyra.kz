@@ -1,19 +1,26 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'xzfllkdpvqzteddigqhx.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
+  },
   async redirects() {
     return [
       // старые адреса режимов без префикса → язык по умолчанию
       { source: '/tuner',   destination: '/ru/tuner',   permanent: true },
       { source: '/learn',   destination: '/ru/learn',   permanent: true },
       { source: '/karaoke', destination: '/ru/karaoke', permanent: true },
-
       // ЗДЕСЬ добавить адреса, унаследованные от Tilda.
       // Список берётся из Search Console, Вебмастера и sitemap.xml Tilda —
       // карту сайта сохраните ДО отключения, потом она пропадёт.
       // { source: '/page12345678.html', destination: '/ru/tuner', permanent: true },
     ];
   },
-
   async headers() {
     return [
       {
@@ -34,5 +41,4 @@ const nextConfig = {
     ];
   },
 };
-
 export default nextConfig;
