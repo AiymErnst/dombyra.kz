@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Hero from "./Hero";
 import CatalogPreview from "./CatalogPreview";
+import ForWhom from "./ForWhom";
 import Certificate from "./Certificate";
 import TrainerPromo from "./TrainerPromo";
 import WhyUs from "./WhyUs";
@@ -40,6 +41,7 @@ export default function LandingPage({ dict, locale, posts = [], catalogItems = [
     <div className="relative overflow-x-clip bg-white font-brand text-brand-ink">
       <Hero sentinelRef={sentinelRef} dict={dict} locale={locale} />
       <CatalogPreview dict={dict} locale={locale} items={catalogItems} />
+      <ForWhom dict={dict} locale={locale} />
       <Certificate dict={dict} locale={locale} />
       <TrainerPromo dict={dict} locale={locale} />
       <WhyUs dict={dict} locale={locale} />
