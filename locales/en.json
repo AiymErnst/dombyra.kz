@@ -18,28 +18,28 @@
     "language": "LANGUAGE"
   },
   "hero": {
-    "badge": "КӘСІБИ САПАЛЫ ДОМБЫРАЛАР",
-    "titleLine1": "Домбыра",
-    "titleLine2": "твой голос",
-    "subtitle": "Мастерские инструменты из массива — собраны, отстроены и прослушаны вручную. Звук, который слышно с первой ноты.",
-    "productName": "«АСЫЛ»",
-    "productDesc": "ель / клён · 185 000 ₸",
-    "cta": "Купить"
+  "badge": "PROFESSIONAL QUALITY DOMBRAS",
+  "titleLine1": "Dombyra",
+  "titleLine2": "is your voice",
+  "subtitle": "Handcrafted solid-wood instruments — assembled, tuned and tested by hand. A sound you can hear from the very first note.",
+  "productName": "«ASYL»",
+  "productDesc": "spruce / maple · 185,000 ₸",
+  "cta": "Buy"
+},
+"stats": {
+  "since": {
+    "year": "1998",
+    "label": "the year our master luthier started"
   },
-  "stats": {
-    "since": {
-      "year": "1998",
-      "label": "с этого года работает топ-мастер"
-    },
-    "launch": {
-      "year": "2015",
-      "label": "год запуска проекта dombyra.kz"
-    },
-    "clients": {
-      "value": "10 000+",
-      "label": "клиентов по всему миру"
-    }
+  "launch": {
+    "year": "2015",
+    "label": "dombyra.kz was launched"
   },
+  "clients": {
+    "value": "10,000+",
+    "label": "customers worldwide"
+  }
+},
   "pages": {
     "home": {
       "title": "Dombra Online — Tuner, Tablature and Karaoke",
