@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Placeholder } from "./ui";
+import CatalogPreviewCard from "./CatalogPreviewCard";
 
 // раздел-превью на главной — id="catalog" совпадает с якорем в меню
 // (href="#catalog"). Полный каталог со всеми товарами — на /katalog.
@@ -36,38 +36,32 @@ export default function CatalogPreview({ dict, locale, items = [] }) {
         </Link>
       </div>
 
+      {/* приглашение прочитать статью — особенно важно для тех, кто
+          покупает домбру впервые и не знает, на что смотреть при выборе */}
+      <Link
+        href={`${localePrefix}/blog/${c.articleSlug || "kak-vybrat-dombru"}`}
+        className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-l-2 border-brand-lime bg-brand-bg px-4 py-3 transition-colors hover:bg-brand-bg/70 lg:mb-8"
+      >
+        <span className="font-brand text-[13px] font-medium text-brand-ink/70 lg:text-[14px]">
+          {c.articleCallout ||
+            "Впервые покупаете домбру? Прочитайте статью, прежде чем выбирать."}
+        </span>
+        <span className="whitespace-nowrap font-brand text-[13px] font-bold text-brand-blue lg:text-[14px]">
+          {c.articleLinkText || "Как выбрать домбру"} →
+        </span>
+      </Link>
+
       {items.length === 0 ? (
         <Placeholder>Каталог домбр — карточки товаров</Placeholder>
       ) : (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
-            <Link
+            <CatalogPreviewCard
               key={item.id}
-              href={`${localePrefix}/katalog/${item.slug}`}
-              className="group block border border-brand-border overflow-hidden transition-shadow hover:shadow-lg"
-            >
-              <div className="relative aspect-[4/3] bg-brand-bg">
-                {item.photos?.[0] ? (
-                  <Image
-                    src={item.photos[0]}
-                    alt={item.name_ru}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
-                ) : (
-                  <Placeholder>Фото домбры</Placeholder>
-                )}
-              </div>
-              <div className="p-4">
-                <h3 className="font-brand text-[15px] font-bold text-brand-ink">
-                  {item.name_ru}
-                </h3>
-                <p className="mt-1 font-brand text-[15px] font-extrabold text-brand-blue">
-                  от {item.base_price.toLocaleString("ru-RU")} ₸
-                </p>
-              </div>
-            </Link>
+              item={item}
+              localePrefix={localePrefix}
+              priceFrom={c.priceFrom || "от"}
+            />
           ))}
         </div>
       )}
