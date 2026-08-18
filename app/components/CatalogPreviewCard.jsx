@@ -1,10 +1,15 @@
 "use client";
 // app/components/CatalogPreviewCard.jsx
 //
-// Одна карточка домбры на главной, с мини-галереей: если фото несколько —
-// точки-индикаторы внизу (клик по точке — десктоп) и свайп пальцем прямо
-// по фото (мобильный, привычный жест как в сторис). Обычный тап без
-// свайпа по-прежнему уводит на страницу товара.
+// Одна карточка домбры на главной, с мини-галереей — два разных способа
+// листать фото под разные устройства:
+//   • Веб (мышь, hover) — тонкие сегменты сверху (как у Lamoda/OZON):
+//     двигаешь курсор по фото по горизонтали — переключается на нужный
+//     сегмент, без клика вообще.
+//   • Мобильный (палец) — свайп по фото + точки снизу как запасной
+//     способ, hover там не работает физически.
+// Показываются только нужные элементы под конкретное устройство через
+// Tailwind (lg: = веб), лишнее не мешает и не путает.
 import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,6 +36,24 @@ export default function CatalogPreviewCard({ item, localePrefix, priceFrom }) {
     goTo(i);
   }
 
+  // ---- веб: переключение по движению курсора ----
+  function handleMouseMove(e) {
+    if (!hasMultiple) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const relX = e.clientX - rect.left;
+    const segment = Math.min(
+      photos.length - 1,
+      Math.max(0, Math.floor((relX / rect.width) * photos.length))
+    );
+    setActiveIndex(segment);
+  }
+
+  function handleMouseLeave() {
+    if (!hasMultiple) return;
+    setActiveIndex(0); // курсор ушёл с карточки — возвращаемся к обложке
+  }
+
+  // ---- мобильный: свайп пальцем ----
   function handleTouchStart(e) {
     if (!hasMultiple) return;
     touchStartX.current = e.touches[0].clientX;
@@ -69,6 +92,8 @@ export default function CatalogPreviewCard({ item, localePrefix, priceFrom }) {
     >
       <div
         className="relative aspect-[3/4] touch-pan-y bg-brand-bg"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -78,7 +103,7 @@ export default function CatalogPreviewCard({ item, localePrefix, priceFrom }) {
             src={photos[activeIndex]}
             alt={item.name_ru}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover"
             sizes="(max-width: 768px) 100vw, 33vw"
           />
         ) : (
@@ -87,8 +112,25 @@ export default function CatalogPreviewCard({ item, localePrefix, priceFrom }) {
           </div>
         )}
 
+        {/* веб: тонкие сегменты сверху, как у Lamoda — переключение
+            движением курсора, без клика вообще */}
         {hasMultiple && (
-          <div className="absolute inset-x-0 bottom-2.5 flex justify-center gap-1.5">
+          <div className="absolute inset-x-2 top-2 hidden gap-1 lg:flex">
+            {photos.map((_, i) => (
+              <div
+                key={i}
+                className={`h-[3px] flex-1 rounded-full transition-colors ${
+                  i === activeIndex ? "bg-white" : "bg-white/40"
+                }`}
+                style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.12)" }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* мобильный: точки снизу, тап — hover там физически не работает */}
+        {hasMultiple && (
+          <div className="absolute inset-x-0 bottom-2.5 flex justify-center gap-1.5 lg:hidden">
             {photos.map((_, i) => (
               <button
                 key={i}
