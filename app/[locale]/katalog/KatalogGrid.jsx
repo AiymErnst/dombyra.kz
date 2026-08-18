@@ -47,7 +47,7 @@ export default function KatalogGrid({
             href={`${localePrefix}/katalog/${item.slug}`}
             className="group block overflow-hidden border border-brand-border transition-shadow hover:shadow-lg"
           >
-            <div className="relative aspect-[4/3] bg-brand-bg">
+            <div className="relative aspect-[3/4] bg-brand-bg">
               {item.photos?.[0] ? (
                 <Image
                   src={item.photos[0]}
