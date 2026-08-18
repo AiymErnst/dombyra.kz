@@ -10,7 +10,7 @@ export default function DombraGallery({ photos, name, dict }) {
 
   if (!photos || photos.length === 0) {
     return (
-      <div className="aspect-square">
+      <div className="aspect-[3/4]">
         <Placeholder>{c.noPhoto || "Фото домбры"}</Placeholder>
       </div>
     );
@@ -18,7 +18,7 @@ export default function DombraGallery({ photos, name, dict }) {
 
   return (
     <div>
-      <div className="relative aspect-square overflow-hidden border border-brand-border bg-brand-bg">
+      <div className="relative aspect-[3/4] overflow-hidden border border-brand-border bg-brand-bg">
         <Image
           src={photos[activeIndex]}
           alt={`${name} — ${activeIndex + 1}`}
