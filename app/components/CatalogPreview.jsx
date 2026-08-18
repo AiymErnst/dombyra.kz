@@ -18,6 +18,22 @@ export default function CatalogPreview({ dict, locale, items = [] }) {
 
   return (
     <section id="catalog" className="px-5 py-10 lg:mx-auto lg:max-w-[1180px] lg:px-7 lg:py-16">
+      {/* приглашение прочитать статью — стоит ДО заголовка раздела и
+          намеренно: тот, кто впервые покупает домбру, должен увидеть его
+          первым, ещё до самого каталога */}
+      <Link
+        href={`${localePrefix}/blog/${c.articleSlug || "kak-vybrat-dombru"}`}
+        className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-l-2 border-brand-lime bg-brand-bg px-4 py-3 transition-colors hover:bg-brand-bg/70 lg:mb-8"
+      >
+        <span className="font-brand text-[13px] font-medium text-brand-ink/70 lg:text-[14px]">
+          {c.articleCallout ||
+            "Впервые покупаете домбру? Прочитайте статью, прежде чем выбирать."}
+        </span>
+        <span className="whitespace-nowrap font-brand text-[13px] font-bold text-brand-blue lg:text-[14px]">
+          {c.articleLinkText || "Как выбрать домбру"} →
+        </span>
+      </Link>
+
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 lg:mb-8">
         <div>
           <h2 className="font-brand text-2xl font-extrabold uppercase tracking-[-0.02em] text-brand-ink lg:text-[36px]">
@@ -35,21 +51,6 @@ export default function CatalogPreview({ dict, locale, items = [] }) {
           {c.viewAll || "Смотреть весь каталог"} →
         </Link>
       </div>
-
-      {/* приглашение прочитать статью — особенно важно для тех, кто
-          покупает домбру впервые и не знает, на что смотреть при выборе */}
-      <Link
-        href={`${localePrefix}/blog/${c.articleSlug || "kak-vybrat-dombru"}`}
-        className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-l-2 border-brand-lime bg-brand-bg px-4 py-3 transition-colors hover:bg-brand-bg/70 lg:mb-8"
-      >
-        <span className="font-brand text-[13px] font-medium text-brand-ink/70 lg:text-[14px]">
-          {c.articleCallout ||
-            "Впервые покупаете домбру? Прочитайте статью, прежде чем выбирать."}
-        </span>
-        <span className="whitespace-nowrap font-brand text-[13px] font-bold text-brand-blue lg:text-[14px]">
-          {c.articleLinkText || "Как выбрать домбру"} →
-        </span>
-      </Link>
 
       {items.length === 0 ? (
         <Placeholder>Каталог домбр — карточки товаров</Placeholder>

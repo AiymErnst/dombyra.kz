@@ -1,33 +1,78 @@
 "use client";
 // app/components/CatalogPreviewCard.jsx
 //
-// Одна карточка домбры на главной, с мини-галереей: если фото несколько,
-// внизу точки-индикаторы, клик по точке листает фото прямо в карточке,
-// не уходя со страницы. Клик по самой картинке — обычный переход на
-// страницу товара (как и был).
-import { useState } from "react";
+// Одна карточка домбры на главной, с мини-галереей: если фото несколько —
+// точки-индикаторы внизу (клик по точке — десктоп) и свайп пальцем прямо
+// по фото (мобильный, привычный жест как в сторис). Обычный тап без
+// свайпа по-прежнему уводит на страницу товара.
+import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+
+const SWIPE_THRESHOLD = 40; // px, минимальное движение пальца, чтобы считать это свайпом, а не тапом
 
 export default function CatalogPreviewCard({ item, localePrefix, priceFrom }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const photos = item.photos || [];
   const hasMultiple = photos.length > 1;
 
+  const touchStartX = useRef(null);
+  const wasSwipe = useRef(false);
+
+  function goTo(i) {
+    setActiveIndex((i + photos.length) % photos.length);
+  }
+
   function showDot(e, i) {
     // точка сидит поверх ссылки-обёртки — без этого клик по точке
     // вместо переключения фото уводил бы на страницу товара
     e.preventDefault();
     e.stopPropagation();
-    setActiveIndex(i);
+    goTo(i);
+  }
+
+  function handleTouchStart(e) {
+    if (!hasMultiple) return;
+    touchStartX.current = e.touches[0].clientX;
+    wasSwipe.current = false;
+  }
+
+  function handleTouchMove(e) {
+    if (!hasMultiple || touchStartX.current === null) return;
+    const delta = e.touches[0].clientX - touchStartX.current;
+    if (Math.abs(delta) > 10) wasSwipe.current = true;
+  }
+
+  function handleTouchEnd(e) {
+    if (!hasMultiple || touchStartX.current === null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(delta) > SWIPE_THRESHOLD) {
+      goTo(delta < 0 ? activeIndex + 1 : activeIndex - 1);
+    }
+  }
+
+  function handleClick(e) {
+    // если только что был свайп — гасим переход по ссылке, это было
+    // листание фото, а не намерение открыть карточку товара
+    if (wasSwipe.current) {
+      e.preventDefault();
+      wasSwipe.current = false;
+    }
   }
 
   return (
     <Link
       href={`${localePrefix}/katalog/${item.slug}`}
+      onClick={handleClick}
       className="group block border border-brand-border overflow-hidden transition-shadow hover:shadow-lg"
     >
-      <div className="relative aspect-[3/4] bg-brand-bg">
+      <div
+        className="relative aspect-[3/4] touch-pan-y bg-brand-bg"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         {photos[activeIndex] ? (
           <Image
             src={photos[activeIndex]}
