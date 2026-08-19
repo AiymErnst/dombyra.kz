@@ -238,6 +238,17 @@
       "delivery": "Delivery & warranty"
     }
   },
+  "cards": [
+  { "ph": "GIF: fret hints", "caption": "Frets light up in the tempo of the melody" },
+  { "ph": "GIF: pitch check", "caption": "The trainer hears wrong notes and corrects you" },
+  { "ph": "GIF: progress and melodies", "caption": "Track your progress across 40 melodies" }
+],
+  "karaokeSteps": [
+  { "num": "01", "title": "Turn on the microphone", "desc": "One click — and the trainer hears your dombra" },
+  { "num": "02", "title": "Watch the highlighting", "desc": "Frets light up in the tempo of the melody" },
+  { "num": "03", "title": "See mistakes instantly", "desc": "A wrong note lights up red" },
+  { "num": "04", "title": "Play your favorite kuis", "desc": "From simple melodies to complex pieces" }
+],
   "catalogPage": {
   "metaTitle": "Dombra Catalog — dombyra.kz",
   "metaDescription": "Handmade dombras with a certificate of authenticity. Price depends on wood type, decorations and 925 silver plating.",
