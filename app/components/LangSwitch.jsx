@@ -51,6 +51,12 @@ export default function LangSwitch({ locale, path = "", available, dict, size = 
           <Link
             key={l}
             href={`/${l}${path}`}
+            // scroll={false}: Next.js по умолчанию прокручивает к началу
+            // ИЗМЕНИВШЕГОСЯ участка страницы. На страницах тренажёра сам
+            // тренажёр лежит в layout и не меняется — меняется только текст
+            // под ним, и страница прыгала вниз, к этому тексту. При смене
+            // языка правильнее остаться на том же месте.
+            scroll={false}
             className={`${cls} text-brand-ink/45 hover:text-brand-blue`}
           >
             {LABEL[l]}
