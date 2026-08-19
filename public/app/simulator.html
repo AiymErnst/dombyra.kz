@@ -12,6 +12,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+    /* Фирменный шрифт логотипа. Файл лежит в public/fonts/ репозитория,
+       поэтому путь абсолютный от корня сайта — так он найдётся и когда
+       simulator.html открыт напрямую, и когда он внутри iframe на /learn.
+       ВАЖНО: поменяй имя файла ниже на своё, если оно другое. */
+    @font-face{
+      font-family:'Zexo';
+      src:url('/fonts/zexo.woff2') format('woff2');
+      font-weight:normal;
+      font-style:normal;
+      font-display:swap;
+    }
     :root{
     /* ===== Базовые фирменные цвета ===== */
     --wine:#3a0f1a;
@@ -2740,6 +2751,13 @@
     text-decoration:none;
     flex:0 0 auto;
   }
+  /* ВРЕМЕННО: логотип скрыт, но место под него сохранено — раскладка
+     шапки не сдвигается, вернуть можно удалив этот один блок.
+     visibility:hidden (а не display:none) как раз и держит место. */
+  .brand{
+    visibility:hidden;
+    pointer-events:none;
+  }
   .brand-mark{
     width:30px;
     height:30px;
@@ -2749,10 +2767,14 @@
     justify-content:center;
     background:var(--gold);
     color:#fff;
+    /* буква D вместо прежнего SVG-знака */
+    font-family:'Zexo', 'Playfair Display', serif;
+    font-size:18px;
+    line-height:1;
+    padding-bottom:1px; /* оптическое центрирование буквы в квадрате */
   }
-  .brand-mark svg{ width:17px; height:17px; }
   .brand-name{
-    font-family:'Playfair Display', serif;
+    font-family:'Zexo', 'Playfair Display', serif;
     font-size:18px;
     letter-spacing:0.02em;
     color:var(--light-text-dark);
@@ -3435,11 +3457,7 @@
   <div class="sticky-top-shell">
   <div class="top-bar">
     <a class="brand" id="brandLink" href="/kz" aria-label="dombyra.kz">
-      <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-          <path d="M5 19 L19 5"></path><path d="M5 5 L12 12"></path>
-        </svg>
-      </span>
+      <span class="brand-mark" aria-hidden="true">D</span>
       <span class="brand-name">dombyra</span>
     </a>
     <div class="seg-group" id="modeGroup">
@@ -4708,6 +4726,7 @@
     // колонки пробуем по убыванию: если в базе ещё не завели author или
     // tuning_key, не роняем загрузку мелодий целиком, а тихо откатываемся
     const COLUMN_SETS = [
+      'id, title, author, sections, tuning_key, tuning_bottom_freq, tuning_top_freq',
       'id, title, author, sections, tuning_key',
       'id, title, sections, tuning_key',
       'id, title, sections'
@@ -4772,7 +4791,11 @@
         // (Соль/Ре), если в базе для песни ничего не указано
         // строй берём сперва из каталога — он приходит и для закрытых
         // премиум-мелодий, у которых full отсутствует
-        tuningKey: row.tuning_key || (full && full.tuning_key) || 'standard'
+        tuningKey: row.tuning_key || (full && full.tuning_key) || 'standard',
+        // частоты в Гц прямо у песни — если заполнены обе, они
+        // перебивают tuning_key (см. applySongTuning)
+        tuningBottomFreq: row.tuning_bottom_freq ?? (full && full.tuning_bottom_freq) ?? null,
+        tuningTopFreq: row.tuning_top_freq ?? (full && full.tuning_top_freq) ?? null
       };
     });
 
@@ -4936,21 +4959,105 @@
 
   // применяет строй текущей выбранной мелодии (song.tuningKey) — вызывается
   // при загрузке списка мелодий и при каждой смене выбранной мелодии
+  // Частота (Гц) → название ноты вида "G3", "C#4".
+  // Нужна, когда строй задан произвольными герцами прямо у песни:
+  // без названия ноты не подписать лады на грифе.
+  // Опорная точка — A4 = 440 Гц, дальше по полутонам (12 на октаву).
+  const NOTE_NAMES_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  function freqToNoteName(freq){
+    if(!freq || freq <= 0) return 'G3';
+    const semitonesFromA4 = Math.round(12 * Math.log2(freq / 440));
+    const midi = 69 + semitonesFromA4;              // 69 = MIDI-номер A4
+    const name = NOTE_NAMES_SHARP[((midi % 12) + 12) % 12];
+    const octave = Math.floor(midi / 12) - 1;
+    return name + octave;
+  }
+
+  // Определяет, задействована ли у мелодии каждая струна — сканирует
+  // реальные ноты (sections/steps), а не колонки настроя. Так надёжнее:
+  // не нужно ничего дополнительно заполнять в Supabase на каждую мелодию,
+  // легенда сама подстраивается под то, что реально сыграно.
+  // Если данных нет (мелодия заблокирована/без нот) — считаем обе струны
+  // задействованными, чтобы не спрятать легенду по ошибке.
+  function songStringUsage(song){
+    if(!song || !song.sections || !song.sections.length) return { bottom: true, top: true };
+    let hasBottom = false, hasTop = false;
+    for(const sec of song.sections){
+      for(const st of sec.steps){
+        if(st.bottom !== null) hasBottom = true;
+        if(st.top !== null) hasTop = true;
+        if(hasBottom && hasTop) return { bottom: true, top: true };
+      }
+    }
+    if(!hasBottom && !hasTop) return { bottom: true, top: true };
+    return { bottom: hasBottom, top: hasTop };
+  }
+
+  // применяет строй текущей выбранной мелодии — вызывается при загрузке
+  // списка мелодий и при каждой смене выбранной мелодии.
+  //
+  // Приоритет: если у песни заполнены ОБЕ колонки tuning_bottom_freq и
+  // tuning_top_freq — используются они (произвольный строй в герцах).
+  // Иначе берётся готовый строй по tuning_key (standard / teris / ...).
   function applySongTuning(){
     const song = songs[currentSongIndex];
     const key = (song && song.tuningKey) || 'standard';
     const tuning = TUNINGS[key] || TUNINGS.standard;
-    OPEN_FREQ_BOTTOM = tuning.bottom.freq;
-    OPEN_FREQ_TOP = tuning.top.freq;
-    topNotes = buildFretNoteNames(tuning.top.note);
-    bottomNotes = buildFretNoteNames(tuning.bottom.note);
-    // строй в легенде нотного блока — у каждой мелодии он свой,
-    // задаётся колонкой tuning_key в Supabase
+
+    // Каждая струна переопределяется НЕЗАВИСИМО: можно заполнить только
+    // tuning_bottom_freq — тогда поменяется только нижняя, верхняя
+    // останется из tuning_key. Раньше требовались обе сразу, и при
+    // заполнении одной ничего не менялось.
+    const customBottom = Number(song && song.tuningBottomFreq) || 0;
+    const customTop = Number(song && song.tuningTopFreq) || 0;
+    const hasCustomBottom = customBottom > 0;
+    const hasCustomTop = customTop > 0;
+    const hasCustom = hasCustomBottom || hasCustomTop;
+
+    OPEN_FREQ_BOTTOM = hasCustomBottom ? customBottom : tuning.bottom.freq;
+    OPEN_FREQ_TOP = hasCustomTop ? customTop : tuning.top.freq;
+
+    const bottomNote = hasCustomBottom ? freqToNoteName(OPEN_FREQ_BOTTOM) : tuning.bottom.note;
+    const topNote = hasCustomTop ? freqToNoteName(OPEN_FREQ_TOP) : tuning.top.note;
+    topNotes = buildFretNoteNames(topNote);
+    bottomNotes = buildFretNoteNames(bottomNote);
+
+    // струна, которая в этой мелодии вообще не звучит — её настройку в
+    // легенде не показываем (например, мелодия только на нижней струне)
+    const usage = songStringUsage(song);
+
+    // строй в легенде нотного блока — у каждой мелодии он свой.
+    // Если хоть одна струна задана в герцах — показываем ноты и частоты,
+    // иначе название готового строя из словаря переводов.
     document.querySelectorAll('.legend-tuning').forEach(el => {
+      if(!usage.bottom && !usage.top){
+        // не должно случаться (см. фолбэк в songStringUsage), но на
+        // всякий случай прячем блок целиком, а не показываем пустоту
+        el.hidden = true;
+        return;
+      }
       el.hidden = false;
-      el.innerHTML = `<b>${t(tuning.labelKey)}</b> — `
-        + `${tuning.bottom.note}\u00a0/\u00a0${tuning.top.note}`;
-      el.title = `${tuning.bottom.name} / ${tuning.top.name}`;
+      const fmt = (v) => Number(v.toFixed(2));
+      // полное слово (нижняя/верхняя струна — из локали) добавляется только
+      // когда показываем ОДНУ струну. Раньше тут была короткая буква (Н/А),
+      // но она сливалась с буквой ноты (напр. «А: А3») и было неясно, что
+      // это метка струны, а не часть названия ноты — поэтому теперь полное
+      // слово и в скобках, отдельно от ноты.
+      const oneStringSuffix = (usage.bottom && !usage.top) ? ` (${t('legendBottom')})`
+        : (usage.top && !usage.bottom) ? ` (${t('legendTop')})` : '';
+      if(hasCustom){
+        const notes = [], freqs = [], titleBits = [];
+        if(usage.bottom){ notes.push(bottomNote); freqs.push(`${fmt(OPEN_FREQ_BOTTOM)}\u00a0Гц`); titleBits.push(`${fmt(OPEN_FREQ_BOTTOM)} Hz`); }
+        if(usage.top){ notes.push(topNote); freqs.push(`${fmt(OPEN_FREQ_TOP)}\u00a0Гц`); titleBits.push(`${fmt(OPEN_FREQ_TOP)} Hz`); }
+        el.innerHTML = `<b>${notes.join('\u00a0/\u00a0')}</b> — ${freqs.join('\u00a0/\u00a0')}${oneStringSuffix}`;
+        el.title = titleBits.join(' / ');
+      } else {
+        const notes = [], names = [];
+        if(usage.bottom){ notes.push(tuning.bottom.note); names.push(tuning.bottom.name); }
+        if(usage.top){ notes.push(tuning.top.note); names.push(tuning.top.name); }
+        el.innerHTML = `<b>${t(tuning.labelKey)}</b> — ${notes.join('\u00a0/\u00a0')}${oneStringSuffix}`;
+        el.title = names.join(' / ');
+      }
     });
     // перерисовываем гриф, чтобы data-note у ладов обновились под новый строй
     if(typeof render === 'function' && currentMode !== 'tuner') render();
