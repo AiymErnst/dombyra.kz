@@ -8,6 +8,7 @@
 // нельзя — получится русский текст под казахским адресом, а поисковик
 // сочтёт это дублем.
 
+import Link from "next/link";
 import { locales } from "@/lib/i18n";
 
 const LABEL = { kz: "KZ", ru: "RU", en: "EN", tr: "TR" };
@@ -47,13 +48,13 @@ export default function LangSwitch({ locale, path = "", available, dict, size = 
           );
         }
         return (
-          <a
+          <Link
             key={l}
             href={`/${l}${path}`}
             className={`${cls} text-brand-ink/45 hover:text-brand-blue`}
           >
             {LABEL[l]}
-          </a>
+          </Link>
         );
       })}
     </nav>

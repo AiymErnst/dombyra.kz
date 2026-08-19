@@ -2,14 +2,21 @@
 //
 // Общая страница для трёх режимов: тюнер, обучение, караоке.
 // Серверный компонент — весь текст попадает в HTML до отправки в браузер,
-// поэтому его видит поисковый робот. Тренажёр подключается ниже отдельным
-// клиентским компонентом.
+// поэтому его видит поисковый робот.
 //
-// Шапки здесь нет намеренно: её рисует сам тренажёр внутри iframe.
-// Вторая шапка от страницы дала бы две панели одна над другой.
+// Сам тренажёр (<Trainer>) здесь больше не рендерится — он переехал в
+// app/[locale]/(trainer)/layout.jsx, общий для /tuner, /learn, /karaoke,
+// и не пересоздаётся при переходах между ними. Здесь остаётся только
+// SEO-текст под тренажёром — это лёгкая часть, пересоздавать её при
+// каждом переходе не жалко.
+//
+// Шапки здесь нет намеренно: раньше её рисовал сам тренажёр внутри
+// iframe, теперь эта отдельная шапка тренажёра убрана совсем — управляет
+// режимом обычная шапка сайта (SiteChrome), тренажёр больше не рисует
+// вкладки режимов сам.
 
+import Link from 'next/link';
 import { locales, defaultLocale } from '@/lib/i18n';
-import TrainerFrame from './TrainerFrame';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://dombyra.kz';
 
@@ -21,10 +28,6 @@ const CATEGORY = {
   learn: 'EducationalApplication',
   karaoke: 'EducationalApplication',
 };
-
-// Режим страницы → параметр ?mode= для тренажёра.
-// В simulator.html «обучение» называется normal.
-const TRAINER_MODE = { tuner: 'tuner', learn: 'normal', karaoke: 'karaoke' };
 
 /**
  * Метаданные страницы режима. Вызывается из page.jsx каждого режима.
@@ -108,9 +111,9 @@ export default function ModePage({ locale, mode, dict }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Тренажёр первым: человек пришёл настраивать домбру, а не читать.
-          Текст ниже — для тех, кому нужны подробности, и для поиска. */}
-      <TrainerFrame mode={TRAINER_MODE[mode]} locale={locale} title={t.h1} />
+      {/* Сам тренажёр рисуется выше по дереву, в (trainer)/layout.jsx —
+          он общий для всех трёх режимов и не пересоздаётся при переходах.
+          Здесь только SEO-текст под ним. */}
 
       <main className="mode-page">
         <h1>{t.h1}</h1>
@@ -138,12 +141,12 @@ export default function ModePage({ locale, mode, dict }) {
         <nav className="mode-also" aria-label={ui.tryAlso || ''}>
           <h2>{ui.tryAlso || ''}</h2>
           {others.map((m) => (
-            <a key={m} href={`/${locale}/${m}`}>
+            <Link key={m} href={`/${locale}/${m}`}>
               <b>{dict.pages[m].h1}</b>
               <span>{dict.pages[m].lead}</span>
-            </a>
+            </Link>
           ))}
-          <a href={`/${locale}`}>{nav.catalog || 'dombyra.kz'}</a>
+          <Link href={`/${locale}`}>{nav.catalog || 'dombyra.kz'}</Link>
         </nav>
       </main>
     </>
