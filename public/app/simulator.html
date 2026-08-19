@@ -155,7 +155,7 @@
       overflow-y:hidden;
     }
   }
-  body{
+  .dombra-trainer{
     margin:0;
     min-height:100vh;
     overflow-x:hidden;
@@ -188,7 +188,7 @@
     flex:1 1 auto;
     min-height:0;
   }
-  body.web-compact .content-shell{
+  .dombra-trainer.web-compact .content-shell{
     max-width:1100px;
   }
   .sticky-top-shell{
@@ -220,7 +220,7 @@
     border-radius:20px;
   }
   /* тёмная тема — та же карточка, свои цвета */
-  body:not(.light-mode) .top-bar{
+  .dombra-trainer:not(.light-mode) .top-bar{
     background:rgba(var(--black-rgb),0.28);
     border-color:rgba(var(--gold-rgb),0.18);
   }
@@ -245,7 +245,7 @@
     text-align:center;
     letter-spacing:0.03em;
   }
-  body.karaoke-mode{
+  .dombra-trainer.karaoke-mode{
     background:
       radial-gradient(ellipse at 30% 0%, var(--bg-karaoke-1) 0%, transparent 50%),
       radial-gradient(ellipse at 80% 100%, var(--bg-karaoke-2) 0%, transparent 50%),
@@ -464,7 +464,7 @@
   }
   /* показ/скрытие грифа теперь чекбоксом в настройках (не отдельной
      кнопкой над нотами — та тоже отъедала высоту экрана) */
-  body.fretboard-collapsed #stage{
+  .dombra-trainer.fretboard-collapsed #stage{
     display:none;
   }
   .stage svg{
@@ -488,7 +488,7 @@
     white-space:nowrap;
     pointer-events:none;
   }
-  body.horizontal-mode{
+  .dombra-trainer.horizontal-mode{
     padding-left:6px;
     padding-right:6px;
   }
@@ -565,11 +565,11 @@
     text-anchor:middle;
     opacity:0.85;
   }
-  body.light-mode .fret-note-label rect{
+  .dombra-trainer.light-mode .fret-note-label rect{
     fill:var(--cream);
     stroke:rgba(var(--gold-rgb),0.6);
   }
-  body.light-mode .fret-note-label text{
+  .dombra-trainer.light-mode .fret-note-label text{
     fill:var(--wine-deep);
   }
   .body-flare{
@@ -762,11 +762,11 @@
     font-family:'Inter', sans-serif;
     pointer-events:none;
   }
-  body.light-mode .finger-badge-bg{
+  .dombra-trainer.light-mode .finger-badge-bg{
     fill:var(--gold);
     stroke:var(--white);
   }
-  body.light-mode .finger-badge-text{
+  .dombra-trainer.light-mode .finger-badge-text{
     fill:var(--white);
   }
   /* .two-col-wrap теперь сам скроллящийся контейнер на всю ширину экрана —
@@ -820,7 +820,7 @@
   .settings-trigger:hover{
     background:rgba(var(--black-rgb),0.4);
   }
-  body.light-mode .settings-trigger{
+  .dombra-trainer.light-mode .settings-trigger{
     color:var(--light-text-dark);
     background:rgba(var(--white-rgb),0.8);
     border-color:rgba(var(--block-border-rgb),0.45);
@@ -866,14 +866,14 @@
     visibility:visible;
     pointer-events:auto;
   }
-  body.karaoke-mode .floating-play-bar{
+  .dombra-trainer.karaoke-mode .floating-play-bar{
     background:linear-gradient(180deg, rgba(var(--panel-tint-karaoke-rgb),0.14), rgba(var(--panel-tint-karaoke-rgb),0.05));
   }
-  body.tuner-mode .floating-play-bar{
+  .dombra-trainer.tuner-mode .floating-play-bar{
     visibility:hidden;
     pointer-events:none;
   }
-  body.light-mode .floating-play-bar{
+  .dombra-trainer.light-mode .floating-play-bar{
     background:linear-gradient(180deg, rgba(var(--white-rgb),0.9), rgba(var(--white-rgb),0.78));
   }
   .floating-play-bar-inner{
@@ -906,7 +906,7 @@
     border-radius:999px;
     overflow:visible;
   }
-  body.light-mode .playback-progress-track{
+  .dombra-trainer.light-mode .playback-progress-track{
     background:rgba(var(--black-rgb),0.1);
   }
   .playback-progress-fill{
@@ -1043,7 +1043,7 @@
     min-width:0;
     min-height:340px;
   }
-  body.karaoke-mode .col-block{
+  .dombra-trainer.karaoke-mode .col-block{
     background:linear-gradient(180deg, rgba(var(--panel-tint-karaoke-rgb),0.06), rgba(var(--panel-tint-karaoke-rgb),0.015));
   }
   /* старый блок с названием ноты под нотным листом больше не используется —
@@ -1205,7 +1205,7 @@
     background:rgba(var(--black-rgb),0.55);
     backdrop-filter:blur(4px);
   }
-  body.light-mode .tab-labels{
+  .dombra-trainer.light-mode .tab-labels{
     background:rgba(var(--white-rgb),0.75);
   }
   .tab-labels .tab-lane{
@@ -1227,7 +1227,7 @@
     overflow:hidden;
     transition:background .12s ease, border-color .12s ease;
   }
-  body.karaoke-mode .tab-note{
+  .dombra-trainer.karaoke-mode .tab-note{
     background:var(--tab-note-bg-karaoke);
     border-color:rgba(var(--white-rgb),0.07);
   }
@@ -1322,19 +1322,19 @@
   }
 
   .tab-note.great,
-  body.karaoke-mode .tab-note.great {
+  .dombra-trainer.karaoke-mode .tab-note.great {
     background:rgba(var(--grade-great-glow-rgb),0.9) !important;
     border-color:rgba(var(--grade-great-glow-soft-rgb),0.6) !important;
   }
   .tab-note.great .tab-lane.filled{ color:var(--grade-great-text); }
   .tab-note.ok,
-  body.karaoke-mode .tab-note.ok {
+  .dombra-trainer.karaoke-mode .tab-note.ok {
     background:rgba(var(--grade-ok-glow-rgb),0.9) !important;
     border-color:rgba(var(--grade-ok-glow-soft-rgb),0.6) !important;
   }
   .tab-note.ok .tab-lane.filled{ color:var(--grade-ok-text); }
   .tab-note.miss,
-  body.karaoke-mode .tab-note.miss {
+  .dombra-trainer.karaoke-mode .tab-note.miss {
     background:rgba(var(--grade-miss-glow-rgb),0.9) !important;
     border-color:rgba(var(--grade-miss-glow-soft-rgb),0.6) !important;
   }
@@ -1502,7 +1502,7 @@
   }
 
   /* ========== ТЮНЕР ========== */
-  body.tuner-mode {
+  .dombra-trainer.tuner-mode {
     background:
       radial-gradient(ellipse at 50% -5%, var(--tuner-bg-1) 0%, var(--tuner-bg-2) 55%, var(--tuner-bg-3) 100%);
     padding-bottom:24px;
@@ -1517,7 +1517,7 @@
     display: none;
   }
   /* В режиме тюнера: грид, фон с сеткой, панель видна */
-  body.tuner-mode #tuner-row {
+  .dombra-trainer.tuner-mode #tuner-row {
     display: grid;
     grid-template-columns: minmax(0, 620px) 1fr;
     gap: 24px;
@@ -1529,7 +1529,7 @@
     background: transparent;
   }
   /* Сетка через псевдоэлемент — чтобы можно было наложить маску по краям */
-  body.tuner-mode #tuner-row::before {
+  .dombra-trainer.tuner-mode #tuner-row::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -1543,13 +1543,13 @@
     mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
     z-index: 0;
   }
-  body.tuner-mode #tuner-row > * { position: relative; z-index: 1; }
-  body.tuner-mode #tuner-wrap {
+  .dombra-trainer.tuner-mode #tuner-row > * { position: relative; z-index: 1; }
+  .dombra-trainer.tuner-mode #tuner-wrap {
     display: block;
   }
-  body.tuner-mode .two-col-wrap { display: none !important; }
-  body.tuner-mode #stage { display: none !important; }
-  body.tuner-mode #songBar { display: none !important; }
+  .dombra-trainer.tuner-mode .two-col-wrap { display: none !important; }
+  .dombra-trainer.tuner-mode #stage { display: none !important; }
+  .dombra-trainer.tuner-mode #songBar { display: none !important; }
 
   /* ===== Видимость контента по режиму — через класс на body, а не через
      точечные style.display из JS. Раньше setMode() дёргал ~10 разных
@@ -1561,28 +1561,28 @@
   #karaokePlayRow{
     display:none;
   }
-  body.karaoke-mode #normalRightContent,
-  body.karaoke-mode #normalPlayRow,
-  body.tuner-mode #normalRightContent,
-  body.tuner-mode #normalPlayRow{
+  .dombra-trainer.karaoke-mode #normalRightContent,
+  .dombra-trainer.karaoke-mode #normalPlayRow,
+  .dombra-trainer.tuner-mode #normalRightContent,
+  .dombra-trainer.tuner-mode #normalPlayRow{
     display:none;
   }
-  body.karaoke-mode #karaokeRightContent{
+  .dombra-trainer.karaoke-mode #karaokeRightContent{
     display:block;
   }
-  body.karaoke-mode #karaokePlayRow{
+  .dombra-trainer.karaoke-mode #karaokePlayRow{
     display:flex;
   }
-  body.karaoke-mode #loopRow{
+  .dombra-trainer.karaoke-mode #loopRow{
     display:none;
   }
-  body.tuner-mode #karaokeRightContent,
-  body.tuner-mode #karaokePlayRow{
+  .dombra-trainer.tuner-mode #karaokeRightContent,
+  .dombra-trainer.tuner-mode #karaokePlayRow{
     display:none;
   }
 
   @media (max-width: 700px) {
-    body.tuner-mode #tuner-row {
+    .dombra-trainer.tuner-mode #tuner-row {
       grid-template-columns: 1fr;
       min-height: unset;
     }
@@ -1590,7 +1590,7 @@
     .tuner-needle-ball { width: 40px; height: 40px; font-size: 12px; }
   }
   #tunerStage { display: none; width: 100%; align-self: center; }
-  body.tuner-mode #tunerStage { display: block; }
+  .dombra-trainer.tuner-mode #tunerStage { display: block; }
   #tunerNeckSvg { display: block; width: 100%; height: auto; }
   /* на мобильном иллюстрация грифа с рукой в тюнере не показывается —
      сразу после табов идут кнопки строя и карточки струн, экономим место.
@@ -1602,7 +1602,7 @@
      ломает sticky непредсказуемо). Возвращаюсь к проверенному варианту —
      запертая body + один явный скроллящийся блок (.two-col-wrap), это
      подтверждённо работает (уже проверено на мобильном). ===== */
-  body{
+  .dombra-trainer{
     height:100vh;
     height:100dvh;
     min-height:0;
@@ -1625,7 +1625,7 @@
      tuner-row (кнопки строя, карточки струн, слайдер, Бастау). Десктопное
      align-items:center центрировало бы контент по вертикали внутри
      растянутой на весь экран колонки, поэтому явно прижимаем к началу. */
-  body.tuner-mode #tuner-row{
+  .dombra-trainer.tuner-mode #tuner-row{
     flex:1 1 auto;
     min-height:0;
     align-items:flex-start;
@@ -1644,34 +1644,34 @@
      читалась на глаз, особенно у высоты нот в пару пикселей). БЕЗ
      zoom/transform — оба давали баг рендеринга (белый прямоугольник) в
      связке с fixed/sticky/blur. Всё завязано на один класс
-     body.web-compact (выставляет JS, см. updateWebCompactClass) — если
+     .dombra-trainer.web-compact (выставляет JS, см. updateWebCompactClass) — если
      менять процент ещё раз, значения ниже надо пересчитывать все вместе,
      они все от одного и того же коэффициента. ===== */
-  body.web-compact .stage.horizontal{
+  .dombra-trainer.web-compact .stage.horizontal{
     max-width:1100px;
   }
   /* four individual max-width overrides removed — .content-shell теперь
      единолично задаёт ширину и для обычного, и для сжатого веб-режима
-     (см. body.web-compact .content-shell{max-width:1100px} выше), эти
+     (см. .dombra-trainer.web-compact .content-shell{max-width:1100px} выше), эти
      четыре блока просто width:100% внутри неё */
-  body.web-compact .tab-lane{
+  .dombra-trainer.web-compact .tab-lane{
     height:19px;
     font-size:13px;
   }
-  body.web-compact .tab-stroke{
+  .dombra-trainer.web-compact .tab-stroke{
     height:15px;
     font-size:11px;
   }
-  body.web-compact .col-block{
+  .dombra-trainer.web-compact .col-block{
     padding:18px 21px;
   }
-  body.web-compact .two-col-wrap-inner{
+  .dombra-trainer.web-compact .two-col-wrap-inner{
     gap:9px;
   }
-  body.web-compact .floating-play-bar-inner{
+  .dombra-trainer.web-compact .floating-play-bar-inner{
     max-width:1080px;
   }
-  body.web-compact .floating-play-bar .floating-speed-row{
+  .dombra-trainer.web-compact .floating-play-bar .floating-speed-row{
     width:255px;
   }
   /* кнопки/элементы шапки и строки мелодии — раньше сжималась только
@@ -1679,39 +1679,39 @@
      оставались исходного размера (padding/font-size — отдельные от
      ширины контейнера свойства). Теперь пропорционально (~85%,
      тот же коэффициент 1100/1300) уменьшены и они. */
-  body.web-compact .seg{
+  .dombra-trainer.web-compact .seg{
     padding:5px 12px;
     font-size:11px;
   }
-  body.web-compact .lang-select-label{
+  .dombra-trainer.web-compact .lang-select-label{
     font-size:11px;
     left:10px;
   }
-  body.web-compact .lang-select{
+  .dombra-trainer.web-compact .lang-select{
     font-size:11px;
     padding:7px 20px 7px 10px;
   }
-  body.web-compact .auth-btn{
+  .dombra-trainer.web-compact .auth-btn{
     font-size:10px;
     padding:7px 12px;
   }
-  body.web-compact #themeToggle{
+  .dombra-trainer.web-compact #themeToggle{
     width:29px;
     height:29px;
     font-size:14px;
   }
-  body.web-compact .song-picker-trigger{
+  .dombra-trainer.web-compact .song-picker-trigger{
     min-height:34px;
     font-size:14px;
     padding:4px 13px;
   }
-  body.web-compact .song-picker-trigger-author{ font-size:11px; }
-  body.web-compact .settings-trigger{
+  .dombra-trainer.web-compact .song-picker-trigger-author{ font-size:11px; }
+  .dombra-trainer.web-compact .settings-trigger{
     width:46px;
     font-size:14px;
   }
   @media (max-width:640px), (orientation:landscape) and (max-height:640px){
-    body.tuner-mode #tunerStage{
+    .dombra-trainer.tuner-mode #tunerStage{
       display:none;
     }
   }
@@ -1720,7 +1720,7 @@
      обычным элементом раскладки вместо fixed, подсказка про гриф и
      минимальная высота карточки с нотами больше не нужны. Стоит здесь,
      ПОСЛЕ остальных правил #tuner-row, чтобы гарантированно их перебить
-     (иначе body.tuner-mode #tuner-row{min-height:60vh} выше по каскаду
+     (иначе .dombra-trainer.tuner-mode #tuner-row{min-height:60vh} выше по каскаду
      выигрывает у одинаковых по специфичности селекторов). ===== */
   @media (max-width:640px), (orientation:landscape) and (max-height:640px){
     /* на мобильном панель Play больше не fixed (см. ниже), а обычный
@@ -1742,7 +1742,7 @@
     /* панель Play на мобильном — НЕ position:fixed, а обычный последний
        элемент flex-колонки body (как у конкурента: footer.playerbar —
        просто последний блок, а не "прибитый" к viewport). Раз документ
-       целиком не скроллится (см. body{overflow:hidden} выше), Safari
+       целиком не скроллится (см. .dombra-trainer{overflow:hidden} выше), Safari
        физически нечего прятать/двигать — адресная строка не "гуляет".
        Плюс это разом снимает все проблемы, которые были у fixed-версии
        (задержка позиционирования при display↔none, дрожание при скролле). */
@@ -1755,7 +1755,7 @@
       width:100%;
       padding-bottom:env(safe-area-inset-bottom);
     }
-    body.tuner-mode .floating-play-bar{
+    .dombra-trainer.tuner-mode .floating-play-bar{
       display:none;
     }
     /* рамка карточки с нотами раньше всегда была минимум 340px высотой,
@@ -2003,7 +2003,7 @@
 
 
   /* Тёмная сетка тюнера в светлом режиме */
-  body.light-mode #tuner-row::before {
+  .dombra-trainer.light-mode #tuner-row::before {
     background-image:
       linear-gradient(rgba(var(--black-rgb),0.05) 1px, transparent 1px),
       linear-gradient(90deg, rgba(var(--black-rgb),0.05) 1px, transparent 1px);
@@ -2011,13 +2011,13 @@
   }
 
   /* Рука на тюнере в светлой теме */
-  body.light-mode #tunerNeckSvg .s0,
-  body.light-mode #tunerNeckSvg .s1,
-  body.light-mode #tunerNeckSvg .s2 {
+  .dombra-trainer.light-mode #tunerNeckSvg .s0,
+  .dombra-trainer.light-mode #tunerNeckSvg .s1,
+  .dombra-trainer.light-mode #tunerNeckSvg .s2 {
     stroke: var(--light-neck-detail) !important;
   }
-  body.light-mode .tab-note.playing,
-  body.light-mode .tab-note.current{
+  .dombra-trainer.light-mode .tab-note.playing,
+  .dombra-trainer.light-mode .tab-note.current{
     outline: 2.5px solid var(--light-neck-wood);
     outline-offset: -2px;
   }
@@ -2039,87 +2039,87 @@
     padding: 0;
   }
   #themeToggle:hover { background: rgba(var(--gold-rgb),0.15); }
-  body.light-mode #themeToggle {
+  .dombra-trainer.light-mode #themeToggle {
     background: rgba(var(--black-rgb),0.07);
     border-color: rgba(var(--black-rgb),0.14);
     color: var(--light-text-strong);
   }
 
   /* ══ СВЕТЛЫЙ РЕЖИМ ══ */
-  body.light-mode {
+  .dombra-trainer.light-mode {
     background:
       radial-gradient(ellipse at 30% 0%, var(--light-normal-bg-1) 0%, var(--light-normal-bg-2) 50%, var(--light-normal-bg-3) 100%),
       var(--white);
     color: var(--light-ink);
   }
-  body.light-mode.karaoke-mode {
+  .dombra-trainer.light-mode.karaoke-mode {
     background:
       radial-gradient(ellipse at 30% 0%, var(--light-karaoke-bg-1) 0%, var(--light-karaoke-bg-2) 60%, var(--light-karaoke-bg-3) 100%),
       var(--white);
   }
 
   /* Топ-бар */
-  body.light-mode .seg-group {
+  .dombra-trainer.light-mode .seg-group {
     background: rgba(var(--black-rgb),0.06);
     border-color: rgba(var(--black-rgb),0.1);
   }
-  body.light-mode .seg { color: rgba(var(--black-rgb),0.45); }
-  body.light-mode .seg.active {
+  .dombra-trainer.light-mode .seg { color: rgba(var(--black-rgb),0.45); }
+  .dombra-trainer.light-mode .seg.active {
     background: rgba(var(--black-rgb),0.82);
     color: var(--white);
   }
-  body.light-mode .seg:hover:not(.active) {
+  .dombra-trainer.light-mode .seg:hover:not(.active) {
     background: rgba(var(--black-rgb),0.06);
     color: rgba(var(--black-rgb),0.7);
   }
 
   /* Заголовок */
-  body.light-mode h1 { color: var(--light-text-dark); }
-  body.light-mode .sub { color: var(--light-text-muted); }
+  .dombra-trainer.light-mode h1 { color: var(--light-text-dark); }
+  .dombra-trainer.light-mode .sub { color: var(--light-text-muted); }
 
   /* Гриф */
-  body.light-mode .frame { stroke: rgba(var(--block-border-rgb),0.25); opacity: 1; }
-  body.light-mode .neck { fill: var(--light-neck-wood); }
-  body.light-mode .string-line { stroke: var(--light-string); opacity: 0.5; }
-  body.light-mode .fret-line { stroke: var(--gold); }
-  body.light-mode .fret-marker { fill: var(--white); }
-  body.light-mode .fret-num { fill: var(--light-fret-num); }
-  body.light-mode .dot { fill: var(--wine-deep); stroke: var(--gold-soft); }
-  body.light-mode .dot:hover { fill: var(--gold); }
-  body.light-mode .dot.active { fill: var(--gold); stroke: var(--light-dot-active); }
+  .dombra-trainer.light-mode .frame { stroke: rgba(var(--block-border-rgb),0.25); opacity: 1; }
+  .dombra-trainer.light-mode .neck { fill: var(--light-neck-wood); }
+  .dombra-trainer.light-mode .string-line { stroke: var(--light-string); opacity: 0.5; }
+  .dombra-trainer.light-mode .fret-line { stroke: var(--gold); }
+  .dombra-trainer.light-mode .fret-marker { fill: var(--white); }
+  .dombra-trainer.light-mode .fret-num { fill: var(--light-fret-num); }
+  .dombra-trainer.light-mode .dot { fill: var(--wine-deep); stroke: var(--gold-soft); }
+  .dombra-trainer.light-mode .dot:hover { fill: var(--gold); }
+  .dombra-trainer.light-mode .dot.active { fill: var(--gold); stroke: var(--light-dot-active); }
   /* body-flare: always var(--wine-deep) var(--wine-deep), same as dots */
-  body.light-mode .body-flare { fill: var(--light-neck-wood); stroke: none; }
+  .dombra-trainer.light-mode .body-flare { fill: var(--light-neck-wood); stroke: none; }
   /* frame-label: same as dark mode - var(--cream-muted) */
 
   /* Панель-инфо */
-  body.light-mode .panel {
+  .dombra-trainer.light-mode .panel {
     background: linear-gradient(180deg, rgba(var(--gold-rgb),0.08), rgba(var(--gold-rgb),0.02));
     border-color: rgba(var(--gold-rgb),0.35);
   }
-  body.light-mode .panel .note { color: var(--gold); }
-  body.light-mode .panel .hint,
-  body.light-mode .panel .meta { color: var(--light-text-body); }
-  body.light-mode .panel .meta b { color: var(--light-text-strong); }
+  .dombra-trainer.light-mode .panel .note { color: var(--gold); }
+  .dombra-trainer.light-mode .panel .hint,
+  .dombra-trainer.light-mode .panel .meta { color: var(--light-text-body); }
+  .dombra-trainer.light-mode .panel .meta b { color: var(--light-text-strong); }
 
   /* col-block */
-  body.light-mode .col-block {
+  .dombra-trainer.light-mode .col-block {
     background: linear-gradient(180deg, rgba(var(--panel-tint-normal-rgb),0.07), rgba(var(--panel-tint-normal-rgb),0.01));
     border-color: rgba(var(--block-border-rgb),0.25);
   }
-  body.light-mode.karaoke-mode .col-block {
+  .dombra-trainer.light-mode.karaoke-mode .col-block {
     background: linear-gradient(180deg, rgba(var(--panel-tint-karaoke-rgb),0.07), rgba(var(--panel-tint-karaoke-rgb),0.01));
     border-color: rgba(var(--block-border-rgb),0.25);
   }
 
   /* Выпадающие списки */
-  body.light-mode select {
+  .dombra-trainer.light-mode select {
     color: var(--light-text-strong);
     background: rgba(var(--white-rgb),0.8);
     border-color: rgba(var(--light-accent-rgb),0.4);
   }
-  body.light-mode select option { background: var(--white); color: var(--light-text-strong); }
+  .dombra-trainer.light-mode select option { background: var(--white); color: var(--light-text-strong); }
 
-  body.light-mode .lang-select{
+  .dombra-trainer.light-mode .lang-select{
     background-color:rgba(var(--white-rgb),0.8);
     background-image:linear-gradient(45deg, transparent 50%, var(--light-text-strong) 50%), linear-gradient(135deg, var(--light-text-strong) 50%, transparent 50%);
     background-position:calc(100% - 14px) center, calc(100% - 9px) center;
@@ -2130,106 +2130,106 @@
   }
 
   /* Скорость и чекбоксы */
-  body.light-mode .speed-row { color: var(--light-text-body); }
-  body.light-mode .speed-row span { color: var(--gold); }
+  .dombra-trainer.light-mode .speed-row { color: var(--light-text-body); }
+  .dombra-trainer.light-mode .speed-row span { color: var(--gold); }
 
   /* Кнопки */
-  body.light-mode .play-btn {
+  .dombra-trainer.light-mode .play-btn {
     box-shadow: none;
   }
-  body.light-mode .stop-btn {
+  .dombra-trainer.light-mode .stop-btn {
     color: var(--light-text-strong);
     border-color: var(--light-stop-btn-shadow);
     background: rgba(var(--black-rgb),0.04);
   }
-  body.light-mode .stop-btn:hover:not(:disabled) { background: rgba(var(--black-rgb),0.08); }
+  .dombra-trainer.light-mode .stop-btn:hover:not(:disabled) { background: rgba(var(--black-rgb),0.08); }
 
   /* Скраббер / нотный лист */
-  body.light-mode .tab-sheet { }
-  body.light-mode .tab-section-title { color: var(--gold); }
-  body.light-mode .tab-note {
+  .dombra-trainer.light-mode .tab-sheet { }
+  .dombra-trainer.light-mode .tab-section-title { color: var(--gold); }
+  .dombra-trainer.light-mode .tab-note {
     background: rgba(var(--white-rgb),0.7);
     border-color: rgba(var(--gold-rgb),0.25);
   }
-  body.light-mode .tab-note:hover { background: rgba(var(--gold-rgb),0.15); }
-  body.light-mode .tab-lane { color: var(--light-text-body); }
-  body.light-mode .tab-lane.filled { color: var(--light-text-strong); }
-  body.light-mode .tab-stroke { color: var(--gold); }
-  body.light-mode .tab-lyric { color: var(--cream-muted); }
-  body.light-mode .tab-labels .tab-lane,
-  body.light-mode .tab-labels .tab-stroke { color: var(--gold); }
-  body.light-mode .tab-note.selected-start {
+  .dombra-trainer.light-mode .tab-note:hover { background: rgba(var(--gold-rgb),0.15); }
+  .dombra-trainer.light-mode .tab-lane { color: var(--light-text-body); }
+  .dombra-trainer.light-mode .tab-lane.filled { color: var(--light-text-strong); }
+  .dombra-trainer.light-mode .tab-stroke { color: var(--gold); }
+  .dombra-trainer.light-mode .tab-lyric { color: var(--cream-muted); }
+  .dombra-trainer.light-mode .tab-labels .tab-lane,
+  .dombra-trainer.light-mode .tab-labels .tab-stroke { color: var(--gold); }
+  .dombra-trainer.light-mode .tab-note.selected-start {
     background: var(--gold) !important;
     border-color: transparent !important;
   }
-  body.light-mode .tab-note.selected-start .tab-lane,
-  body.light-mode .tab-note.selected-start .tab-stroke {
+  .dombra-trainer.light-mode .tab-note.selected-start .tab-lane,
+  .dombra-trainer.light-mode .tab-note.selected-start .tab-stroke {
     color: var(--tab-stroke-selected) !important;
   }
-  body.light-mode .scrub-seg {
+  .dombra-trainer.light-mode .scrub-seg {
     background: rgba(var(--white-rgb),0.6);
     border-right-color: rgba(var(--black-rgb),0.08);
   }
-  body.light-mode .scrub-seg:hover { background: rgba(var(--gold-rgb),0.15); }
-  body.light-mode .scrub-cell { color: var(--light-text-body); }
-  body.light-mode .scrub-cell.filled { color: var(--light-text-strong); }
-  body.light-mode .scrub-track { border-color: rgba(var(--gold-rgb),0.35); }
-  body.light-mode .scrub-side-labels { color: var(--gold); }
-  body.light-mode .scrub-label { color: var(--light-text-body); }
-  body.light-mode .scrub-label span { color: var(--gold); }
+  .dombra-trainer.light-mode .scrub-seg:hover { background: rgba(var(--gold-rgb),0.15); }
+  .dombra-trainer.light-mode .scrub-cell { color: var(--light-text-body); }
+  .dombra-trainer.light-mode .scrub-cell.filled { color: var(--light-text-strong); }
+  .dombra-trainer.light-mode .scrub-track { border-color: rgba(var(--gold-rgb),0.35); }
+  .dombra-trainer.light-mode .scrub-side-labels { color: var(--gold); }
+  .dombra-trainer.light-mode .scrub-label { color: var(--light-text-body); }
+  .dombra-trainer.light-mode .scrub-label span { color: var(--gold); }
 
   /* Легенда */
-  body.light-mode .tab-legend { color: var(--light-text-body); }
+  .dombra-trainer.light-mode .tab-legend { color: var(--light-text-body); }
 
   /* Параграф и панель */
   /* stage-caption: same as dark mode - var(--cream-muted) */
 
   /* Тюнер в светлом режиме */
-  body.light-mode.tuner-mode {
+  .dombra-trainer.light-mode.tuner-mode {
     background: radial-gradient(ellipse at 30% 0%, var(--light-bg-1) 0%, var(--light-bg-2) 60%, var(--light-bg-3) 100%);
   }
-  body.light-mode #tunerLayoutInner {
+  .dombra-trainer.light-mode #tunerLayoutInner {
     background: none;
   }
-  body.light-mode .tuner-tuning-btns {
+  .dombra-trainer.light-mode .tuner-tuning-btns {
     background: rgba(var(--black-rgb),0.06);
     border-color: rgba(var(--black-rgb),0.1);
   }
-  body.light-mode .tuner-tuning-btn {
+  .dombra-trainer.light-mode .tuner-tuning-btn {
     color: rgba(var(--black-rgb),0.45);
     background: transparent;
   }
-  body.light-mode .tuner-tuning-btn.active {
+  .dombra-trainer.light-mode .tuner-tuning-btn.active {
     background: rgba(var(--black-rgb),0.82);
     color: var(--white);
   }
-  body.light-mode .tuner-str-btn {
+  .dombra-trainer.light-mode .tuner-str-btn {
     background: rgba(var(--white-rgb),0.7);
     border-color: rgba(var(--light-accent-rgb),0.3);
     color: var(--light-text-strong);
   }
-  body.light-mode .tuner-str-btn.active {
+  .dombra-trainer.light-mode .tuner-str-btn.active {
     border-color: var(--gold);
     background: rgba(var(--gold-rgb),0.12);
   }
-  body.light-mode .tuner-note-big { color: var(--light-text-strong); }
-  body.light-mode .tuner-verdict { color: var(--light-text-body); }
-  body.light-mode .tuner-track-bg { background: rgba(var(--black-rgb),0.08); }
-  body.light-mode .tuner-needle-ball {
+  .dombra-trainer.light-mode .tuner-note-big { color: var(--light-text-strong); }
+  .dombra-trainer.light-mode .tuner-verdict { color: var(--light-text-body); }
+  .dombra-trainer.light-mode .tuner-track-bg { background: rgba(var(--black-rgb),0.08); }
+  .dombra-trainer.light-mode .tuner-needle-ball {
     background: var(--white);
     border-color: var(--light-needle-gray);
     color: var(--light-text-strong);
   }
-  body.light-mode .tuner-needle-line { background: var(--light-needle-gray); }
-  body.light-mode .tuner-start-btn { box-shadow: none; }
-  body.light-mode .tuner-status { color: var(--light-text-muted); }
+  .dombra-trainer.light-mode .tuner-needle-line { background: var(--light-needle-gray); }
+  .dombra-trainer.light-mode .tuner-start-btn { box-shadow: none; }
+  .dombra-trainer.light-mode .tuner-status { color: var(--light-text-muted); }
 
   /* Строка скорости */
-  body.light-mode input[type="range"] { accent-color: var(--gold); }
+  .dombra-trainer.light-mode input[type="range"] { accent-color: var(--gold); }
 
   /* Счётчик */
-  body.light-mode .countdown-overlay { background: var(--light-countdown-bg); }
-  body.light-mode .countdown-overlay span { color: var(--gold); }  /* ===== Кнопка-триггер вместо select ===== */
+  .dombra-trainer.light-mode .countdown-overlay { background: var(--light-countdown-bg); }
+  .dombra-trainer.light-mode .countdown-overlay span { color: var(--gold); }  /* ===== Кнопка-триггер вместо select ===== */
   .sr-only-select{
     position:absolute;
     width:1px; height:1px;
@@ -2300,7 +2300,7 @@
     color:var(--gold);
     flex:0 0 auto;
   }
-  body.light-mode .song-picker-trigger{
+  .dombra-trainer.light-mode .song-picker-trigger{
     color:var(--light-text-dark);
     background:rgba(var(--white-rgb),0.8);
     border-color:rgba(var(--block-border-rgb),0.45);
@@ -2330,7 +2330,7 @@
     overflow:hidden;
     box-shadow:0 20px 60px rgba(var(--black-rgb),0.5);
   }
-  body.light-mode .song-modal{
+  .dombra-trainer.light-mode .song-modal{
     background:var(--light-bg-2);
     color:var(--light-text-dark);
   }
@@ -2352,7 +2352,7 @@
     padding:12px 16px;
   }
   .song-search-input::placeholder{ color:var(--cream-muted); }
-  body.light-mode .song-search-input{
+  .dombra-trainer.light-mode .song-search-input{
     color:var(--light-text-dark);
     background:rgba(var(--white-rgb),0.9);
   }
@@ -2448,21 +2448,21 @@
     padding-bottom:9px;
     font-weight:600;
   }
-  body.light-mode .section-list{
+  .dombra-trainer.light-mode .section-list{
     background:rgba(var(--white-rgb),0.8);
     border-color:rgba(var(--light-accent-rgb),0.4);
   }
-  body.light-mode .section-list-item{
+  .dombra-trainer.light-mode .section-list-item{
     color:var(--light-text-strong);
   }
-  body.light-mode .section-list-item:hover{
+  .dombra-trainer.light-mode .section-list-item:hover{
     background:rgba(var(--black-rgb),0.05);
   }
-  body.light-mode .song-chip{
+  .dombra-trainer.light-mode .song-chip{
     color:var(--light-text-body);
     background:rgba(var(--white-rgb),0.7);
   }
-  body.light-mode .song-chip.active{
+  .dombra-trainer.light-mode .song-chip.active{
     color:var(--white);
     background:var(--brand-blue);
     border-color:var(--brand-blue);
@@ -2486,7 +2486,7 @@
     border-radius:999px;
     padding:6px 10px;
   }
-  body.light-mode .song-sort-select{ color:var(--light-text-dark); background:rgba(var(--white-rgb),0.8); }
+  .dombra-trainer.light-mode .song-sort-select{ color:var(--light-text-dark); background:rgba(var(--white-rgb),0.8); }
 
   .song-modal-top{
     flex:0 0 auto;
@@ -2518,7 +2518,7 @@
     cursor:pointer;
     white-space:nowrap;
   }
-  body.light-mode .song-top-item{ color:var(--light-text-dark); }
+  .dombra-trainer.light-mode .song-top-item{ color:var(--light-text-dark); }
 
   .song-modal-list{
     flex:1 1 auto;
@@ -2551,8 +2551,8 @@
   .song-row.selected{ background:rgba(var(--gold-rgb),0.18); }
   .song-row.locked{ cursor:default; opacity:0.55; }
   .song-row.locked:hover{ background:transparent; }
-  body.light-mode .song-row:hover{ background:rgba(var(--light-accent-rgb),0.08); }
-  body.light-mode .song-row.selected{ background:rgba(var(--brand-blue-rgb),0.12); }
+  .dombra-trainer.light-mode .song-row:hover{ background:rgba(var(--light-accent-rgb),0.08); }
+  .dombra-trainer.light-mode .song-row.selected{ background:rgba(var(--brand-blue-rgb),0.12); }
 
   .song-row-main{ flex:1; min-width:0; }
   .song-row-title{
@@ -2563,7 +2563,7 @@
     overflow:hidden;
     text-overflow:ellipsis;
   }
-  body.light-mode .song-row-title{ color:var(--light-text-dark); }
+  .dombra-trainer.light-mode .song-row-title{ color:var(--light-text-dark); }
   .song-row-author{
     font-size:12.5px;
     font-weight:400;
@@ -2574,7 +2574,7 @@
     overflow:hidden;
     text-overflow:ellipsis;
   }
-  body.light-mode .song-row-author{ color:var(--light-text-dark); opacity:0.7; }
+  .dombra-trainer.light-mode .song-row-author{ color:var(--light-text-dark); opacity:0.7; }
   /* Шкала сложности: рисуем кружки на CSS, а не символами ⬤/○ —
      у этих глифов разный размер и базовая линия, ряд получается рваным */
   .difficulty-dots{
@@ -2633,7 +2633,7 @@
     border-radius:6px;
     padding:2px 7px;
   }
-  body.light-mode .song-row-badge{ color:var(--light-text-muted); background:rgba(var(--light-accent-rgb),0.1); }
+  .dombra-trainer.light-mode .song-row-badge{ color:var(--light-text-muted); background:rgba(var(--light-accent-rgb),0.1); }
   .song-row-lock{
     flex:0 0 auto;
     font-size:12px;
@@ -2681,7 +2681,7 @@
      темы ссылаются на --gold / --light-text-* / --block-border-rgb,
      поэтому перекрашиваются сами, без переписывания каждого правила.
      ══════════════════════════════════════════════════════════════════ */
-  body.light-mode{
+  .dombra-trainer.light-mode{
     /* акцент: вместо золота — индиго */
     --gold:#5b4be8;
     --gold-rgb:91,75,232;
@@ -2721,7 +2721,7 @@
       var(--page-1) !important;
     color:var(--light-ink);
   }
-  body.light-mode.karaoke-mode{
+  .dombra-trainer.light-mode.karaoke-mode{
     /* караоке — тот же лавандовый, но с тёплым розовым подсветом сверху */
     --page-1:#f0e9fb;
     --page-2:#fdf2fb;
@@ -2729,7 +2729,7 @@
       radial-gradient(ellipse at 25% -10%, var(--page-2) 0%, var(--page-1) 55%, var(--page-1) 100%),
       var(--page-1) !important;
   }
-  body.light-mode.tuner-mode{
+  .dombra-trainer.light-mode.tuner-mode{
     --page-1:#eaf0fc;
     --page-2:#f5f8fe;
     background:
@@ -2738,7 +2738,7 @@
   }
 
   /* ── Шапка: отдельная белая карточка, как в дашборде ── */
-  body.light-mode .top-bar{
+  .dombra-trainer.light-mode .top-bar{
     background:var(--surface);
     border-color:var(--hairline);
     box-shadow:var(--card-shadow);
@@ -2783,24 +2783,24 @@
      На узких экранах ниже остаётся только знак без надписи */
 
   /* ── Переключатель режимов ── */
-  body.light-mode .seg-group{
+  .dombra-trainer.light-mode .seg-group{
     background:var(--surface-2);
     border-color:var(--hairline);
   }
-  body.light-mode .seg{ color:var(--light-text-muted); }
-  body.light-mode .seg.active{
+  .dombra-trainer.light-mode .seg{ color:var(--light-text-muted); }
+  .dombra-trainer.light-mode .seg.active{
     background:var(--gold);
     color:#fff;
   }
-  body.light-mode .seg:hover:not(.active){
+  .dombra-trainer.light-mode .seg:hover:not(.active){
     background:rgba(91,75,232,0.07);
     color:var(--gold);
   }
 
   /* ── Кнопки шапки ── */
-  body.light-mode .auth-btn-premium{ background:var(--gold); color:#fff; }
-  body.light-mode #themeToggle,
-  body.light-mode .lang-select{
+  .dombra-trainer.light-mode .auth-btn-premium{ background:var(--gold); color:#fff; }
+  .dombra-trainer.light-mode #themeToggle,
+  .dombra-trainer.light-mode .lang-select{
     background:var(--surface-2);
     border-color:var(--hairline);
     color:var(--light-text-body);
@@ -2817,90 +2817,90 @@
     margin-right:auto;
     margin-top:4px;
   }
-  body.light-mode .song-picker-trigger,
-  body.light-mode .settings-trigger{
+  .dombra-trainer.light-mode .song-picker-trigger,
+  .dombra-trainer.light-mode .settings-trigger{
     background:var(--surface);
     border:1px solid var(--hairline);
     box-shadow:var(--card-shadow);
     color:var(--light-text-dark);
   }
-  body.light-mode .song-picker-trigger:hover,
-  body.light-mode .settings-trigger:hover{
+  .dombra-trainer.light-mode .song-picker-trigger:hover,
+  .dombra-trainer.light-mode .settings-trigger:hover{
     border-color:rgba(91,75,232,0.3);
     background:var(--surface);
   }
-  body.light-mode .song-picker-trigger-author{ color:var(--light-text-muted); opacity:1; }
+  .dombra-trainer.light-mode .song-picker-trigger-author{ color:var(--light-text-muted); opacity:1; }
 
   /* ── Карточки: гриф, таблатура, тюнер ── */
-  body.light-mode .stage,
-  body.light-mode .col-block,
-  body.light-mode.karaoke-mode .col-block,
-  body.light-mode #tunerStage{
+  .dombra-trainer.light-mode .stage,
+  .dombra-trainer.light-mode .col-block,
+  .dombra-trainer.light-mode.karaoke-mode .col-block,
+  .dombra-trainer.light-mode #tunerStage{
     background:var(--surface) !important;
     border:1px solid var(--hairline) !important;
     box-shadow:var(--card-shadow);
   }
-  body.light-mode #tuner-row::before{ display:none; }
+  .dombra-trainer.light-mode #tuner-row::before{ display:none; }
 
   /* ── Ноты ── */
-  body.light-mode .tab-note{
+  .dombra-trainer.light-mode .tab-note{
     background:var(--surface-2);
     border-color:var(--hairline);
   }
-  body.light-mode .tab-section + .tab-section{
+  .dombra-trainer.light-mode .tab-section + .tab-section{
     border-top-color:var(--hairline);
   }
-  body.light-mode .tab-section-title{
+  .dombra-trainer.light-mode .tab-section-title{
     color:var(--gold);
     opacity:1;
     font-weight:600;
   }
-  body.light-mode .tab-bar-divider{ background:var(--hairline); }
+  .dombra-trainer.light-mode .tab-bar-divider{ background:var(--hairline); }
 
   /* ── Панель Play ── */
-  body.light-mode .floating-play-bar{
+  .dombra-trainer.light-mode .floating-play-bar{
     background:var(--surface) !important;
     border:1px solid var(--hairline);
     box-shadow:0 -2px 20px rgba(60,50,140,0.06);
   }
-  body.light-mode .play-btn{ background:var(--gold); color:#fff; }
-  body.light-mode .play-btn.icon-only.is-playing{
+  .dombra-trainer.light-mode .play-btn{ background:var(--gold); color:#fff; }
+  .dombra-trainer.light-mode .play-btn.icon-only.is-playing{
     background:var(--surface-2);
     color:var(--gold);
   }
-  body.light-mode .playback-progress-track{ background:rgba(91,75,232,0.12); }
-  body.light-mode .playback-progress-fill{ background:var(--gold); }
+  .dombra-trainer.light-mode .playback-progress-track{ background:rgba(91,75,232,0.12); }
+  .dombra-trainer.light-mode .playback-progress-fill{ background:var(--gold); }
 
   /* ── Модалки и чипы ── */
-  body.light-mode .song-modal,
-  body.light-mode .settings-modal{
+  .dombra-trainer.light-mode .song-modal,
+  .dombra-trainer.light-mode .settings-modal{
     background:var(--surface);
     border:1px solid var(--hairline);
     box-shadow:0 18px 50px rgba(60,50,140,0.16);
   }
-  body.light-mode .song-chip{
+  .dombra-trainer.light-mode .song-chip{
     background:var(--surface-2);
     border-color:var(--hairline);
     color:var(--light-text-body);
   }
-  body.light-mode .song-chip.active{
+  .dombra-trainer.light-mode .song-chip.active{
     background:var(--gold);
     border-color:var(--gold);
     color:#fff;
   }
-  body.light-mode .song-chip.active .difficulty-dot{
+  .dombra-trainer.light-mode .song-chip.active .difficulty-dot{
     border-color:rgba(255,255,255,0.7);
   }
-  body.light-mode .song-chip.active .difficulty-dot.is-on{
+  .dombra-trainer.light-mode .song-chip.active .difficulty-dot.is-on{
     background:#fff;
     border-color:#fff;
   }
-  body.light-mode .song-row-badge{
+  .dombra-trainer.light-mode .song-row-badge{
     background:rgba(91,75,232,0.09);
     color:var(--gold);
   }
-  body.light-mode .song-row.selected{ background:rgba(91,75,232,0.1); }
-  body.light-mode .song-row:hover{ background:rgba(91,75,232,0.06); }
+  .dombra-trainer.light-mode .song-row.selected{ background:rgba(91,75,232,0.1); }
+  .dombra-trainer.light-mode .song-row:hover{ background:rgba(91,75,232,0.06); }
 
   /* ── Правки по фидбэку: гриф остаётся деревянным, акцент — точечный ── */
 
@@ -2917,13 +2917,13 @@
   /* Гриф в светлой теме: дерево + золотые лады + белые точки-ориентиры.
      Правила выше берут var(--gold), а он в светлой теме фиолетовый —
      поэтому здесь задаём золото буквально. */
-  body.light-mode .fret-line{ stroke:#c9a227; }
-  body.light-mode .fret-marker{ fill:#ffffff; }
-  body.light-mode .dot{ fill:#280a12; stroke:#e6c96a; }
-  body.light-mode .dot:hover{ fill:#c9a227; }
-  body.light-mode .dot.active{ fill:#c9a227; stroke:#e6c96a; }
-  body.light-mode .string-line{ stroke:#e6c96a; opacity:0.75; }
-  body.light-mode .frame-label{ fill:var(--light-text-muted); }
+  .dombra-trainer.light-mode .fret-line{ stroke:#c9a227; }
+  .dombra-trainer.light-mode .fret-marker{ fill:#ffffff; }
+  .dombra-trainer.light-mode .dot{ fill:#280a12; stroke:#e6c96a; }
+  .dombra-trainer.light-mode .dot:hover{ fill:#c9a227; }
+  .dombra-trainer.light-mode .dot.active{ fill:#c9a227; stroke:#e6c96a; }
+  .dombra-trainer.light-mode .string-line{ stroke:#e6c96a; opacity:0.75; }
+  .dombra-trainer.light-mode .frame-label{ fill:var(--light-text-muted); }
 
   /* Блок грифа ниже и уже — освобождаем высоту под ноты */
   .stage.horizontal{
@@ -2938,19 +2938,19 @@
   /* ── Активная нота: белый текст и белая стрелка удара ── */
   .tab-note.selected-start .tab-lane,
   .tab-note.selected-start .tab-stroke,
-  body.light-mode .tab-note.selected-start .tab-lane,
-  body.light-mode .tab-note.selected-start .tab-stroke{
+  .dombra-trainer.light-mode .tab-note.selected-start .tab-lane,
+  .dombra-trainer.light-mode .tab-note.selected-start .tab-stroke{
     color:#ffffff !important;
     opacity:1;
   }
 
   /* ── Подписи: «Часть N» и Н/В — чёрным, а не акцентным цветом ── */
-  body.light-mode .tab-section-title{ color:var(--light-text-dark); }
-  body.light-mode .tab-labels .tab-lane,
-  body.light-mode .tab-labels .tab-stroke{ color:var(--light-text-dark); }
+  .dombra-trainer.light-mode .tab-section-title{ color:var(--light-text-dark); }
+  .dombra-trainer.light-mode .tab-labels .tab-lane,
+  .dombra-trainer.light-mode .tab-labels .tab-stroke{ color:var(--light-text-dark); }
 
   /* ── Меньше фиолетового: теги и уровни получают свои оттенки ── */
-  body.light-mode{
+  .dombra-trainer.light-mode{
     --tag-teal:#0e8f8f;
     --tag-amber:#b8791b;
     --tag-rose:#c2418a;
@@ -2962,29 +2962,29 @@
   }
   /* жанровые бейджи чередуются по трём оттенкам — список перестаёт быть
      сплошной фиолетовой стеной */
-  body.light-mode .song-row-badge{
+  .dombra-trainer.light-mode .song-row-badge{
     background:rgba(14,143,143,0.1);
     color:var(--tag-teal);
   }
-  body.light-mode .song-row-badge:nth-of-type(2){
+  .dombra-trainer.light-mode .song-row-badge:nth-of-type(2){
     background:rgba(184,121,27,0.12);
     color:var(--tag-amber);
   }
-  body.light-mode .song-row-badge:nth-of-type(3){
+  .dombra-trainer.light-mode .song-row-badge:nth-of-type(3){
     background:rgba(194,65,138,0.1);
     color:var(--tag-rose);
   }
-  body.light-mode .song-picker-trigger-meta .song-row-badge{
+  .dombra-trainer.light-mode .song-picker-trigger-meta .song-row-badge{
     background:rgba(14,143,143,0.1);
     color:var(--tag-teal);
   }
   /* шкала сложности — тёплая, отдельная от фиолетового акцента */
-  body.light-mode .difficulty-dot{ border-color:rgba(208,160,32,0.5); }
-  body.light-mode .difficulty-dot.is-on{
+  .dombra-trainer.light-mode .difficulty-dot{ border-color:rgba(208,160,32,0.5); }
+  .dombra-trainer.light-mode .difficulty-dot.is-on{
     background:var(--level-3);
     border-color:var(--level-3);
   }
-  body.light-mode .song-chip.active{
+  .dombra-trainer.light-mode .song-chip.active{
     background:var(--level-3);
     border-color:var(--level-3);
   }
@@ -2993,12 +2993,12 @@
 
   /* Кнопка «Остановить» в тюнере: на светлом фоне прозрачно-белая заливка
      была практически невидима — даём явный контур и тёмный текст */
-  body.light-mode .tuner-start-btn.running{
+  .dombra-trainer.light-mode .tuner-start-btn.running{
     background:#ffffff;
     color:#2b2b3d;
     border:1.5px solid rgba(43,43,61,0.35);
   }
-  body.light-mode .tuner-start-btn.running:hover{
+  .dombra-trainer.light-mode .tuner-start-btn.running:hover{
     background:#f2f1fb;
     border-color:rgba(43,43,61,0.6);
   }
@@ -3012,40 +3012,40 @@
 
   /* Жанры выбранной мелодии — те же три оттенка, что в списке,
      а не сплошной бирюзовый */
-  body.light-mode .song-picker-trigger-meta .song-row-badge:nth-of-type(1){
+  .dombra-trainer.light-mode .song-picker-trigger-meta .song-row-badge:nth-of-type(1){
     background:rgba(14,143,143,0.1); color:var(--tag-teal);
   }
-  body.light-mode .song-picker-trigger-meta .song-row-badge:nth-of-type(2){
+  .dombra-trainer.light-mode .song-picker-trigger-meta .song-row-badge:nth-of-type(2){
     background:rgba(184,121,27,0.12); color:var(--tag-amber);
   }
-  body.light-mode .song-picker-trigger-meta .song-row-badge:nth-of-type(3){
+  .dombra-trainer.light-mode .song-picker-trigger-meta .song-row-badge:nth-of-type(3){
     background:rgba(194,65,138,0.1); color:var(--tag-rose);
   }
 
   /* Слово песни под активной нотой было серым и тонуло в фиолетовом фоне */
   .tab-note.selected-start .tab-lyric,
-  body.light-mode .tab-note.selected-start .tab-lyric{
+  .dombra-trainer.light-mode .tab-note.selected-start .tab-lyric{
     color:#ded9fb !important;
     opacity:1;
   }
 
   /* Нота, всплывающая при нажатии на лад: в светлой теме подложка съехала
      в тёмный (переопределённый --cream), текст стал тёмным на тёмном */
-  body.light-mode .fret-note-label rect{
+  .dombra-trainer.light-mode .fret-note-label rect{
     fill:#ffffff;
     stroke:rgba(201,162,39,0.75);
   }
-  body.light-mode .fret-note-label text{
+  .dombra-trainer.light-mode .fret-note-label text{
     fill:#3a2a08;
   }
 
   /* Отсчёт перед стартом: тёмное затемнение и белые цифры */
   .countdown-overlay,
-  body.light-mode .countdown-overlay{
+  .dombra-trainer.light-mode .countdown-overlay{
     background:rgba(12,10,30,0.72) !important;
   }
   .countdown-overlay span,
-  body.light-mode .countdown-overlay span{
+  .dombra-trainer.light-mode .countdown-overlay span{
     color:#ffffff !important;
     /* золотой ореол от прежней палитры на белых цифрах выглядел грязно */
     text-shadow:none !important;
@@ -3065,13 +3065,13 @@
     background:rgba(var(--gold-rgb),0.12);
     color:var(--gold);
   }
-  body.light-mode .song-picker-trigger-icon{
+  .dombra-trainer.light-mode .song-picker-trigger-icon{
     background:rgba(14,143,143,0.12);
     color:var(--tag-teal);
   }
   .song-picker-trigger-icon svg{ width:18px; height:18px; }
-  body.web-compact .song-picker-trigger-icon{ width:30px; height:30px; }
-  body.web-compact .song-picker-trigger-icon svg{ width:16px; height:16px; }
+  .dombra-trainer.web-compact .song-picker-trigger-icon{ width:30px; height:30px; }
+  .dombra-trainer.web-compact .song-picker-trigger-icon svg{ width:16px; height:16px; }
   @media (max-width:480px){
     .song-picker-trigger-icon{ width:30px; height:30px; }
     .song-picker-trigger-icon svg{ width:16px; height:16px; }
@@ -3095,22 +3095,22 @@
      оставалась приглушённо-серой и на красном/зелёном фоне пропадала. */
   .tab-note.great .tab-lyric,
   .tab-note.great .tab-stroke,
-  body.light-mode .tab-note.great .tab-lyric,
-  body.light-mode .tab-note.great .tab-stroke{
+  .dombra-trainer.light-mode .tab-note.great .tab-lyric,
+  .dombra-trainer.light-mode .tab-note.great .tab-stroke{
     color:var(--grade-great-text) !important;
     opacity:1;
   }
   .tab-note.ok .tab-lyric,
   .tab-note.ok .tab-stroke,
-  body.light-mode .tab-note.ok .tab-lyric,
-  body.light-mode .tab-note.ok .tab-stroke{
+  .dombra-trainer.light-mode .tab-note.ok .tab-lyric,
+  .dombra-trainer.light-mode .tab-note.ok .tab-stroke{
     color:var(--grade-ok-text) !important;
     opacity:1;
   }
   .tab-note.miss .tab-lyric,
   .tab-note.miss .tab-stroke,
-  body.light-mode .tab-note.miss .tab-lyric,
-  body.light-mode .tab-note.miss .tab-stroke{
+  .dombra-trainer.light-mode .tab-note.miss .tab-lyric,
+  .dombra-trainer.light-mode .tab-note.miss .tab-stroke{
     color:var(--grade-miss-text) !important;
     opacity:1;
   }
@@ -3208,8 +3208,8 @@
 
   /* Тень у панели выбора мелодии и кнопки настроек: на светлом фоне она
      создавала «наслоение» карточек, а вокруг и так есть контур */
-  body.light-mode .song-picker-trigger,
-  body.light-mode .settings-trigger{
+  .dombra-trainer.light-mode .song-picker-trigger,
+  .dombra-trainer.light-mode .settings-trigger{
     box-shadow:none;
   }
 
@@ -3256,9 +3256,9 @@
     background:var(--gold);
     border-color:var(--gold);
   }
-  body.light-mode .difficulty-scale-dot{ border-color:rgba(208,160,32,0.55); }
-  body.light-mode .difficulty-scale-dot:hover{ border-color:var(--level-3); }
-  body.light-mode .difficulty-scale-dot.is-on{
+  .dombra-trainer.light-mode .difficulty-scale-dot{ border-color:rgba(208,160,32,0.55); }
+  .dombra-trainer.light-mode .difficulty-scale-dot:hover{ border-color:var(--level-3); }
+  .dombra-trainer.light-mode .difficulty-scale-dot.is-on{
     background:var(--level-3);
     border-color:var(--level-3);
   }
@@ -3306,12 +3306,12 @@
   /* Шестерёнка своим акцентом — янтарным, парой к бирюзовой ноте.
      Оба оттенка уже используются в жанровых бейджах, палитра не растёт. */
   .settings-trigger{ color:var(--gold-soft); }
-  body.light-mode .settings-trigger{
+  .dombra-trainer.light-mode .settings-trigger{
     color:var(--tag-teal);
     background:rgba(14,143,143,0.1);
     border-color:rgba(14,143,143,0.25);
   }
-  body.light-mode .settings-trigger:hover{
+  .dombra-trainer.light-mode .settings-trigger:hover{
     background:rgba(14,143,143,0.18);
     border-color:rgba(14,143,143,0.45);
   }
@@ -3358,33 +3358,33 @@
      теме она стала фиолетовой и читалась как вторая рамка внутри карточки —
      у карточки контур уже есть, эта лишняя. */
   .frame,
-  body.light-mode .frame{ stroke:none; }
+  .dombra-trainer.light-mode .frame{ stroke:none; }
 
   /* ── Финальные правки цвета ── */
 
   /* Подписи в нотном блоке — тем же приглушённым тоном, что и легенда
      «Н — нижняя струна», а не чёрным: это служебные метки, не контент */
-  body.light-mode .tab-section-title,
-  body.light-mode .tab-labels .tab-lane,
-  body.light-mode .tab-labels .tab-stroke{
+  .dombra-trainer.light-mode .tab-section-title,
+  .dombra-trainer.light-mode .tab-labels .tab-lane,
+  .dombra-trainer.light-mode .tab-labels .tab-stroke{
     color:var(--light-text-body);
   }
   /* стрелки удара у самих нот — тоже приглушённо */
-  body.light-mode .tab-note .tab-stroke{ color:var(--light-text-body); }
+  .dombra-trainer.light-mode .tab-note .tab-stroke{ color:var(--light-text-body); }
 
   /* Кнопка настроек — чёрно-белая, нейтральная */
-  body.light-mode .settings-trigger{
+  .dombra-trainer.light-mode .settings-trigger{
     color:#1b1b34;
     background:#ffffff;
     border-color:rgba(27,27,52,0.22);
   }
-  body.light-mode .settings-trigger:hover{
+  .dombra-trainer.light-mode .settings-trigger:hover{
     background:#f4f4f8;
     border-color:rgba(27,27,52,0.45);
   }
 
   /* Попап настроек — нейтральная серо-чёрная гамма вместо фиолетовой */
-  body.light-mode #settingsModalOverlay .song-modal{
+  .dombra-trainer.light-mode #settingsModalOverlay .song-modal{
     --gold:#3a3a4d;
     --gold-rgb:58,58,77;
     --gold-soft:#6b6b80;
@@ -3393,16 +3393,16 @@
     --light-accent-rgb:58,58,77;
     border-color:rgba(27,27,52,0.14);
   }
-  body.light-mode #settingsModalOverlay .speed-row{ color:#4a4a60; }
-  body.light-mode #settingsModalOverlay .speed-row span{ color:#1b1b34; }
-  body.light-mode #settingsModalOverlay label{ color:#1b1b34; }
-  body.light-mode #settingsModalOverlay select{
+  .dombra-trainer.light-mode #settingsModalOverlay .speed-row{ color:#4a4a60; }
+  .dombra-trainer.light-mode #settingsModalOverlay .speed-row span{ color:#1b1b34; }
+  .dombra-trainer.light-mode #settingsModalOverlay label{ color:#1b1b34; }
+  .dombra-trainer.light-mode #settingsModalOverlay select{
     color:#1b1b34;
     border-color:rgba(27,27,52,0.22);
     background-color:#ffffff;
   }
-  body.light-mode #settingsModalOverlay input[type="checkbox"]{ accent-color:#3a3a4d; }
-  body.light-mode #settingsModalOverlay input[type="range"]{ accent-color:#3a3a4d; }
+  .dombra-trainer.light-mode #settingsModalOverlay input[type="checkbox"]{ accent-color:#3a3a4d; }
+  .dombra-trainer.light-mode #settingsModalOverlay input[type="range"]{ accent-color:#3a3a4d; }
 
   /* Классические знаки удара — SVG одного размера вместо разнокалиберных
      символов ⊓ и V */
@@ -3442,8 +3442,8 @@
   .song-bar:not(.song-bar--in-player){ margin-bottom:8px; }
 
   /* тёмная тема — те же карточки, свои цвета */
-  body:not(.light-mode) .stage,
-  body:not(.light-mode) #tunerStage{
+  .dombra-trainer:not(.light-mode) .stage,
+  .dombra-trainer:not(.light-mode) #tunerStage{
     background:rgba(var(--black-rgb),0.18);
     border:1px solid rgba(var(--block-border-rgb),0.25);
   }
@@ -3451,7 +3451,7 @@
 
 </style>
 </head>
-<body>
+<body class="dombra-trainer">
 
   <div class="content-shell">
   <div class="sticky-top-shell">
@@ -3877,6 +3877,13 @@
      Если CDN недоступен, второй голос сам падает на синтез-заглушку. -->
 <script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.min.js"></script>
 <script>
+  // Раньше все режимы/темы переключались классами на document.body — это
+  // работало, только пока тренажёр был единственным содержимым страницы
+  // (внутри iframe). Теперь так же переключаем классы на этом элементе —
+  // и тренажёр можно будет встроить прямо в страницу сайта, не пересекаясь
+  // с её собственными стилями.
+  const root = document.querySelector('.dombra-trainer');
+
   // ==== Supabase: подключение и авторизация ====
   // ВАЖНО: SUPABASE_ANON_KEY — публичный ключ (publishable), его можно
   // спокойно хранить прямо в этом файле — доступ к платным мелодиям
@@ -4349,7 +4356,7 @@
   {
     const urlLang = new URLSearchParams(window.location.search).get('lang');
     if (urlLang && I18N[urlLang]) currentLang = urlLang;
-    if (isEmbedded) document.body.classList.add('is-embedded');
+    if (isEmbedded) root.classList.add('is-embedded');
   }
   const t = key => I18N[currentLang][key] || key;
 
@@ -4557,13 +4564,13 @@
     // aspect-ratio wrapper so absolute overlay math lines up with rendered svg box
     stage.style.aspectRatio = `${W} / ${H}`;
     stage.classList.toggle('horizontal', orient === 'horizontal');
-    document.body.classList.toggle('horizontal-mode', orient === 'horizontal');
+    root.classList.toggle('horizontal-mode', orient === 'horizontal');
 
     labelTop.style.display = 'none';
     labelBottom.style.display = 'none';
 
     svg.querySelectorAll('.dot').forEach(dot => {
-      if(document.body.classList.contains('tuner-mode')){
+      if(root.classList.contains('tuner-mode')){
         dot.style.display = 'none'; // в тюнере точки не нужны
         return;
       }
@@ -5012,7 +5019,6 @@
     const customTop = Number(song && song.tuningTopFreq) || 0;
     const hasCustomBottom = customBottom > 0;
     const hasCustomTop = customTop > 0;
-    const hasCustom = hasCustomBottom || hasCustomTop;
 
     OPEN_FREQ_BOTTOM = hasCustomBottom ? customBottom : tuning.bottom.freq;
     OPEN_FREQ_TOP = hasCustomTop ? customTop : tuning.top.freq;
@@ -5026,9 +5032,8 @@
     // легенде не показываем (например, мелодия только на нижней струне)
     const usage = songStringUsage(song);
 
-    // строй в легенде нотного блока — у каждой мелодии он свой.
-    // Если хоть одна струна задана в герцах — показываем ноты и частоты,
-    // иначе название готового строя из словаря переводов.
+    // строй в легенде нотного блока — у каждой мелодии он свой. Каждая
+    // задействованная струна — отдельной строкой: "Название - Нота (Частота Гц)"
     document.querySelectorAll('.legend-tuning').forEach(el => {
       if(!usage.bottom && !usage.top){
         // не должно случаться (см. фолбэк в songStringUsage), но на
@@ -5038,26 +5043,18 @@
       }
       el.hidden = false;
       const fmt = (v) => Number(v.toFixed(2));
-      // полное слово (нижняя/верхняя струна — из локали) добавляется только
-      // когда показываем ОДНУ струну. Раньше тут была короткая буква (Н/А),
-      // но она сливалась с буквой ноты (напр. «А: А3») и было неясно, что
-      // это метка струны, а не часть названия ноты — поэтому теперь полное
-      // слово и в скобках, отдельно от ноты.
-      const oneStringSuffix = (usage.bottom && !usage.top) ? ` (${t('legendBottom')})`
-        : (usage.top && !usage.bottom) ? ` (${t('legendTop')})` : '';
-      if(hasCustom){
-        const notes = [], freqs = [], titleBits = [];
-        if(usage.bottom){ notes.push(bottomNote); freqs.push(`${fmt(OPEN_FREQ_BOTTOM)}\u00a0Гц`); titleBits.push(`${fmt(OPEN_FREQ_BOTTOM)} Hz`); }
-        if(usage.top){ notes.push(topNote); freqs.push(`${fmt(OPEN_FREQ_TOP)}\u00a0Гц`); titleBits.push(`${fmt(OPEN_FREQ_TOP)} Hz`); }
-        el.innerHTML = `<b>${notes.join('\u00a0/\u00a0')}</b> — ${freqs.join('\u00a0/\u00a0')}${oneStringSuffix}`;
-        el.title = titleBits.join(' / ');
-      } else {
-        const notes = [], names = [];
-        if(usage.bottom){ notes.push(tuning.bottom.note); names.push(tuning.bottom.name); }
-        if(usage.top){ notes.push(tuning.top.note); names.push(tuning.top.name); }
-        el.innerHTML = `<b>${t(tuning.labelKey)}</b> — ${notes.join('\u00a0/\u00a0')}${oneStringSuffix}`;
-        el.title = names.join(' / ');
+      const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+      const lines = [], titleBits = [];
+      if(usage.bottom){
+        lines.push(`${cap(t('legendBottom'))} - ${bottomNote} (${fmt(OPEN_FREQ_BOTTOM)}\u00a0Гц)`);
+        titleBits.push(`${fmt(OPEN_FREQ_BOTTOM)} Hz`);
       }
+      if(usage.top){
+        lines.push(`${cap(t('legendTop'))} - ${topNote} (${fmt(OPEN_FREQ_TOP)}\u00a0Гц)`);
+        titleBits.push(`${fmt(OPEN_FREQ_TOP)} Hz`);
+      }
+      el.innerHTML = lines.join('<br>');
+      el.title = titleBits.join(' / ');
     });
     // перерисовываем гриф, чтобы data-note у ладов обновились под новый строй
     if(typeof render === 'function' && currentMode !== 'tuner') render();
@@ -5402,10 +5399,10 @@
   // тот же порог "это веб или мобильный", что и в noteWidth() — держим на
   // классе body, а не в CSS-медиазапросе, чтобы не зависеть от того,
   // сработает ли сам медиазапрос (гриф/ноты уменьшены именно через этот
-  // класс: body.web-compact в CSS)
+  // класс: .dombra-trainer.web-compact в CSS)
   function updateWebCompactClass(){
     const shortSide = Math.min(window.innerWidth, window.innerHeight);
-    document.body.classList.toggle('web-compact', shortSide > 640);
+    root.classList.toggle('web-compact', shortSide > 640);
   }
   updateWebCompactClass();
   window.addEventListener('resize', updateWebCompactClass);
@@ -5422,7 +5419,7 @@
   // на мобильном сама строка настройки скрыта через CSS, а грифа там нет.
   const fretboardToggle = document.getElementById('fretboardToggle');
   fretboardToggle.addEventListener('change', () => {
-    document.body.classList.toggle('fretboard-collapsed', !fretboardToggle.checked);
+    root.classList.toggle('fretboard-collapsed', !fretboardToggle.checked);
   });
 
   // чекбоксы звука: домбра и второй голос глушатся независимо, выбор
@@ -6211,9 +6208,9 @@
     // видимость всех блоков (гриф/тюнер, панели, Play-бар) переключается
     // через CSS-правила по классу на body — один атомарный переход,
     // без пачки отдельных style.display из JS (см. комментарий у CSS)
-    document.body.classList.remove('karaoke-mode', 'tuner-mode');
-    if(mode === 'karaoke') document.body.classList.add('karaoke-mode');
-    else if(mode === 'tuner') document.body.classList.add('tuner-mode');
+    root.classList.remove('karaoke-mode', 'tuner-mode');
+    if(mode === 'karaoke') root.classList.add('karaoke-mode');
+    else if(mode === 'tuner') root.classList.add('tuner-mode');
 
     if(mode === 'karaoke'){
       resetStringHighlight();
@@ -6902,12 +6899,12 @@ function setCharState(state){
   (function(){
     // Restore saved theme
     if(localStorage.getItem('dombraTheme') === 'light'){
-      document.body.classList.add('light-mode');
+      root.classList.add('light-mode');
       setThemeIcon(true);
     }
   })();
   themeToggle.addEventListener('click', () => {
-    const isLight = document.body.classList.toggle('light-mode');
+    const isLight = root.classList.toggle('light-mode');
     setThemeIcon(isLight);
     localStorage.setItem('dombraTheme', isLight ? 'light' : 'dark');
   });
