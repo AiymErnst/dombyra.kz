@@ -144,17 +144,17 @@
     --light-stop-btn-shadow:rgba(42,26,8,0.25);
   }
 
-  *{box-sizing:border-box;}
-  html{
-    overflow-x:hidden;
-    max-width:100%;
-  }
-  @media (max-width:640px), (orientation:landscape) and (max-height:640px){
-    html{
-      height:100%;
-      overflow-y:hidden;
-    }
-  }
+  /* box-sizing раньше стоял на * — то есть на ВСЕЙ странице. Пока тренажёр
+     жил в отдельном документе внутри iframe, это никого не задевало, а
+     теперь его стили попадают в общий <head> сайта. Ограничиваем себя
+     своим поддеревом. */
+  .dombra-trainer, .dombra-trainer *{box-sizing:border-box;}
+  /* Правила для html/body убраны намеренно: раньше тренажёр запирал
+     прокрутку всего документа (html{overflow-y:hidden}), потому что был
+     единственным содержимым страницы в iframe. Теперь над ним шапка
+     сайта, под ним SEO-текст — запирать документ нельзя, иначе страницу
+     физически невозможно прокрутить. Свою внутреннюю раскладку тренажёр
+     держит на .dombra-trainer ниже. */
   .dombra-trainer{
     margin:0;
     min-height:100vh;
@@ -1633,10 +1633,32 @@
     padding-bottom:12px;
   }
   @media (max-width:640px), (orientation:landscape) and (max-height:640px){
-    /* на мобильном панель Play не fixed (см. ниже) — большой запас снизу
-       под неё уже не нужен, оставляем компактный */
+    /* ===== Мобильный: app-shell СНЯТ =====
+       Раньше тренажёр был единственным содержимым страницы (iframe), и
+       запертая высота 100dvh + внутренний скролл были правильным решением.
+       Теперь над ним шапка сайта, под ним SEO-текст: если оставить
+       height:100dvh + overflow:hidden, нижняя часть тренажёра (панель Play)
+       уезжает под нижнюю кромку экрана на высоту шапки, и добраться до неё
+       нечем — сам блок не скроллится, а страницу он скроллить не пускает.
+       Поэтому на мобильном тренажёр — обычный блок по высоте содержимого,
+       а прокручивается сама страница. Гриф на мобильном и так скрыт
+       (#stage{display:none}), так что закреплять сверху нечего. */
+    .dombra-trainer{
+      height:auto;
+      min-height:0;
+      overflow:visible;
+      /* запас снизу под фиксированную панель Play, чтобы она не
+         перекрывала последние ноты */
+      padding-bottom:calc(96px + env(safe-area-inset-bottom));
+    }
     .two-col-wrap{
+      flex:0 0 auto;
+      overflow-y:visible;
       padding-bottom:12px;
+    }
+    .dombra-trainer.tuner-mode #tuner-row{
+      flex:0 0 auto;
+      overflow-y:visible;
     }
   }
   /* ===== Веб-версия: масштаб заметно компактнее (65% от исходных
@@ -1739,21 +1761,15 @@
     #handRow{
       display:none !important;
     }
-    /* панель Play на мобильном — НЕ position:fixed, а обычный последний
-       элемент flex-колонки body (как у конкурента: footer.playerbar —
-       просто последний блок, а не "прибитый" к viewport). Раз документ
-       целиком не скроллится (см. .dombra-trainer{overflow:hidden} выше), Safari
-       физически нечего прятать/двигать — адресная строка не "гуляет".
-       Плюс это разом снимает все проблемы, которые были у fixed-версии
-       (задержка позиционирования при display↔none, дрожание при скролле). */
+    /* Панель Play на мобильном СНОВА position:fixed (базовое правило выше).
+       Раньше здесь стоял position:static — это было верно, пока документ
+       целиком не скроллился (iframe с запертой высотой): панель была
+       последним элементом колонки и всегда стояла внизу экрана.
+       Теперь страница скроллится, и static-панель уезжала бы вверх вместе
+       с содержимым — а её надо держать внизу экрана. Оставляем fixed из
+       базового правила, здесь только запас под вырез экрана. */
     .floating-play-bar{
-      position:static;
-      left:auto;
-      right:auto;
-      bottom:auto;
-      flex:0 0 auto;
-      width:100%;
-      padding-bottom:env(safe-area-inset-bottom);
+      padding-bottom:calc(6px + env(safe-area-inset-bottom));
     }
     .dombra-trainer.tuner-mode .floating-play-bar{
       display:none;
@@ -3818,12 +3834,12 @@
 
         <div class="speed-row floating-speed-row">
           <label for="speedSlider" data-i18n="speedLabel">Скорость</label>
-          <input type="range" id="speedSlider" min="3" max="300" value="40" step="1" list="speedTicks">
+          <input type="range" id="speedSlider" min="3" max="300" value="100" step="1" list="speedTicks">
           <datalist id="speedTicks">
             <option value="100"></option>
             <option value="200"></option>
           </datalist>
-          <span id="speedVal">0.4×</span>
+          <span id="speedVal">1×</span>
         </div>
       </div>
 
