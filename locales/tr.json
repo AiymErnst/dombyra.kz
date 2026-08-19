@@ -238,6 +238,17 @@
       "delivery": "Teslimat ve garanti"
     }
   }, 
+  "cards": [
+  { "ph": "GIF: perde ipuçları", "caption": "Perdeler ezginin temposunda yanar" },
+  { "ph": "GIF: ses kontrolü", "caption": "Eğitmen yanlış notaları duyar ve düzeltir" },
+  { "ph": "GIF: ilerleme ve ezgiler", "caption": "40 ezgi boyunca ilerlemenizi takip edin" }
+],
+  "karaokeSteps": [
+  { "num": "01", "title": "Mikrofonu aç", "desc": "Tek tıkla — eğitmen dombranızı duyar" },
+  { "num": "02", "title": "Işıklandırmayı takip et", "desc": "Perdeler ezginin temposunda yanar" },
+  { "num": "03", "title": "Hataları anında gör", "desc": "Yanlış nota kırmızı yanar" },
+  { "num": "04", "title": "Sevdiğiniz küyleri çalın", "desc": "Basit ezgilerden karmaşık parçalara kadar" }
+],
   "catalogPage": {
   "metaTitle": "Dombra Kataloğu — dombyra.kz",
   "metaDescription": "Orijinallik sertifikalı el yapımı dombralar. Fiyat ahşap türüne, süslemelere ve 925 ayar gümüş kaplamaya göre değişir.",
