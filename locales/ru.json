@@ -239,6 +239,17 @@
     }
   }
 },
+"cards": [
+  { "ph": "GIF: подсказки по ладам", "caption": "Подсветка ладов в темпе мелодии" },
+  { "ph": "GIF: проверка звука", "caption": "Тренажёр слышит фальшь и поправляет" },
+  { "ph": "GIF: прогресс и мелодии", "caption": "Прогресс по 40 мелодиям" }
+],
+"karaokeSteps": [
+  { "num": "01", "title": "Turn on the microphone", "desc": "One click — and the trainer hears your dombra" },
+  { "num": "02", "title": "Watch the highlighting", "desc": "Frets light up in the tempo of the melody" },
+  { "num": "03", "title": "See mistakes instantly", "desc": "A wrong note lights up red" },
+  { "num": "04", "title": "Play your favorite kuis", "desc": "From simple melodies to complex pieces" }
+],
 "catalogPage": {
   "metaTitle": "Каталог домбр — dombyra.kz",
   "metaDescription": "Домбры ручной работы с сертификатом подлинности. Цена зависит от породы дерева, украшений и серебряной накладки 925 пробы.",
