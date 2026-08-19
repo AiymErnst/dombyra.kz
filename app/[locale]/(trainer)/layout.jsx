@@ -40,11 +40,11 @@ export default function TrainerLayout({ children }) {
         locale={locale}
         onModeChange={(newMode) => {
           const target = `/${locale}/${MODE_TO_PATH[newMode] || DEFAULT_MODE_PATH}`;
-          if (target !== pathname) router.push(target);
+          if (target !== pathname) router.push(target, { scroll: false });
         }}
         onLocaleChange={(newLocale) => {
           const target = `/${newLocale}/${modePath}`;
-          if (target !== pathname) router.push(target);
+          if (target !== pathname) router.push(target, { scroll: false });
         }}
       />
       {children}
