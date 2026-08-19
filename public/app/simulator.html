@@ -3877,12 +3877,18 @@
      Если CDN недоступен, второй голос сам падает на синтез-заглушку. -->
 <script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.min.js"></script>
 <script>
+// Раньше это был скрипт, выполняющийся один раз при загрузке страницы —
+// он был единственным содержимым body внутри iframe. Теперь это функция:
+// React (см. Trainer.jsx) вызывает её один раз при монтировании и получает
+// обратно объект с setMode/setLocale/setSong/destroy — так тренажёр можно
+// встроить прямо в страницу сайта и управлять им как обычным компонентом,
+// без пересоздания при переходах между /tuner, /learn, /karaoke.
+function mountDombraTrainer(container, opts = {}) {
   // Раньше все режимы/темы переключались классами на document.body — это
   // работало, только пока тренажёр был единственным содержимым страницы
-  // (внутри iframe). Теперь так же переключаем классы на этом элементе —
-  // и тренажёр можно будет встроить прямо в страницу сайта, не пересекаясь
-  // с её собственными стилями.
-  const root = document.querySelector('.dombra-trainer');
+  // (внутри iframe). Теперь так же переключаем классы на переданном
+  // контейнере — тренажёр не пересекается со стилями остальной страницы.
+  const root = container;
 
   // ==== Supabase: подключение и авторизация ====
   // ВАЖНО: SUPABASE_ANON_KEY — публичный ключ (publishable), его можно
@@ -4318,47 +4324,30 @@
   };
   let currentLang = 'kz';
 
-  // ── Язык и режим встраивания ──
-  // Когда тренажёр открыт внутри страницы сайта (/kz/tuner и т.п.), язык
-  // задаёт страница параметром ?lang=. Свой переключатель в этом случае
-  // прячем: он менял бы интерфейс, не меняя URL, и получалось бы
-  // состояние «адрес /kz/tuner, а внутри русский» — его нет ни в одном
-  // адресе, поисковик такое не увидит, а пользователь запутается.
-  // Переключатель языка на самой странице делает настоящий переход.
-  const isEmbedded = (() => {
-    try { return window.self !== window.top; }
-    catch (e) { return true; }   // доступ к top закрыт — значит точно в iframe
-  })();
-
-  // ── Навигация родительской страницы из тренажёра ──
-  // Внутри iframe переключение вкладок и языка меняло только содержимое
-  // рамки: адрес страницы оставался прежним, текст под тренажёром — от
-  // другого режима, а язык страницы не совпадал с языком тренажёра.
-  // Теперь эти действия ведут саму страницу: /kz/tuner, /ru/learn и т.д.
-  // Домен один, поэтому доступ к parent.location разрешён.
-  const MODE_TO_PATH = { tuner: 'tuner', normal: 'learn', karaoke: 'karaoke' };
-
-  // Программный клик по вкладке (открытие ?mode=tuner при загрузке) НЕ должен
-  // уводить родительскую страницу: мы уже на ней. Иначе получалась петля —
-  // страница уходит на тот же адрес, iframe перезагружается, снова кликает.
-  let suppressParentNav = false;
-
-  function parentPathParts(){
-    try{
-      const segs = window.parent.location.pathname.split('/').filter(Boolean);
-      return { lang: segs[0] || 'kz', rest: segs.slice(1) };
-    }catch(e){ return null; }
-  }
-  function goParent(path){
-    try{ window.parent.location.href = path; }
-    catch(e){ window.location.href = path; }
-  }
+  // ── Язык и переключение режима ──
+  // Раньше это работало через отдельный document тренажёра внутри iframe:
+  // смена языка/режима внутри iframe уводила РОДИТЕЛЬСКУЮ страницу на
+  // /kz/tuner, /ru/learn и т.п. (window.parent.location) — иначе адрес
+  // страницы не совпадал с тем, что показывает тренажёр.
+  //
+  // Теперь тренажёр смонтирован прямо на странице, отдельного document
+  // нет — вместо навигации родителя просто сообщаем об этом самой
+  // странице через колбэки (opts.onModeChange / opts.onLocaleChange).
+  // Она обновляет URL через router.push (без перезагрузки) и настоящий
+  // переход браузера — вызывает setMode()/setLocale() ниже, а не клик.
+  //
+  // suppressModeCallback — programmatic setMode() (в ответ на переход
+  // ПО ССЫЛКЕ извне) не должен снова дёргать onModeChange, иначе
+  // получится петля: страница сказала «режим сменился» → тренажёр
+  // говорит «режим сменился» → страница снова...
+  let suppressModeCallback = false;
+  let suppressLocaleCallback = false;
   {
-    const urlLang = new URLSearchParams(window.location.search).get('lang');
+    const urlLang = opts.locale || new URLSearchParams(window.location.search).get('lang');
     if (urlLang && I18N[urlLang]) currentLang = urlLang;
-    if (isEmbedded) root.classList.add('is-embedded');
   }
   const t = key => I18N[currentLang][key] || key;
+
 
   // ── Стиль обозначения ударов ──
   // Стрелки ↓↑ понятнее новичку, классические ⊓/V привычнее тем, кто читал
@@ -4422,19 +4411,15 @@
   const langSelect = document.getElementById('langSelect');
   langSelect.value = currentLang;
   langSelect.addEventListener('change', () => {
-    // Внутри страницы сайта смена языка — это переход на языковую версию
-    // ТОЙ ЖЕ страницы: /kz/tuner → /ru/tuner. Так адрес остаётся честным,
-    // а текст под тренажёром меняет язык вместе с ним.
-    if(isEmbedded){
-      const parts = parentPathParts();
-      if(parts && parts.lang !== langSelect.value){
-        goParent(`/${langSelect.value}/${parts.rest.join('/')}`);
-        return;
-      }
-    }
+    // Сообщаем странице, что язык сменился ПОЛЬЗОВАТЕЛЕМ — она обновит
+    // адрес (/kz/tuner → /ru/tuner) через router.push, без перезагрузки.
+    // Сам интерфейс тренажёра переключаем сразу же, не дожидаясь ответа
+    // от страницы — так смена языка ощущается мгновенной.
+    if(opts.onLocaleChange && !suppressLocaleCallback) opts.onLocaleChange(langSelect.value);
     currentLang = langSelect.value;
     applyLang();
   });
+
 
   const svg = document.getElementById('neckSvg');
   const panel = document.getElementById('panel');
@@ -4822,19 +4807,9 @@
 
     // Открытие конкретной мелодии по ссылке: /app/simulator.html?song=kelinshek
     // Так страницы /{locale}/songs/{slug} показывают именно свою мелодию,
-    // а не первую из списка.
-    {
-      const urlSong = new URLSearchParams(window.location.search).get('song');
-      if(urlSong){
-        const idx = songs.findIndex(s => s.slug === urlSong);
-        if(idx >= 0){
-          currentSongIndex = idx;
-          songSelect.value = idx;
-        } else {
-          console.warn('[домбра] мелодия не найдена по slug:', urlSong);
-        }
-      }
-    }
+    // а не первую из списка. Обёрнуто в функцию — её же дёргает setSong()
+    // из публичного API (см. конец файла), чтобы не дублировать логику.
+    selectSongBySlug(opts.song || new URLSearchParams(window.location.search).get('song'));
 
     // если текущий выбор оказался заблокирован (например, только что вышли
     // из аккаунта) — переключаемся на первую доступную мелодию
@@ -5588,6 +5563,21 @@
     }
   }
 
+  // Выбор мелодии по slug — переиспользуется и при открытии по ссылке
+  // (?song=... при первой загрузке), и из публичного setSong() API.
+  // Дёргаем 'change' на самом select, чтобы не дублировать логику его
+  // обработчика (остановка playback, пересборка табов, применение строя).
+  function selectSongBySlug(slug){
+    if(!slug) return;
+    const idx = songs.findIndex(s => s.slug === slug);
+    if(idx < 0){
+      console.warn('[домбра] мелодия не найдена по slug:', slug);
+      return;
+    }
+    songSelect.value = idx;
+    songSelect.dispatchEvent(new Event('change'));
+  }
+
   songSelect.addEventListener('change', () => {
     if(isPlaying) stopPlayback();
     if(karaokeRunning) stopKaraoke();
@@ -6175,25 +6165,16 @@
     const btn = e.target.closest('.seg');
     if(!btn) return;
 
-    // Внутри страницы сайта вкладка — это переход на другой адрес,
-    // а не переключение внутри рамки: иначе текст под тренажёром
-    // остался бы от прежнего режима.
-    if(isEmbedded && !suppressParentNav && btn.dataset.mode !== currentMode){
-      const parts = parentPathParts();
-      const path = MODE_TO_PATH[btn.dataset.mode];
-      const target = parts && path ? `/${parts.lang}/${path}` : null;
-      // вторая защита: если уже на нужном адресе, переход не нужен
-      const alreadyThere = parts && parts.rest.join('/') === path;
-      if(target && !alreadyThere){
-        goParent(target);
-        return;
-      }
-    }
-
     modeGroup.querySelectorAll('.seg').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const mode = btn.dataset.mode;
     if(mode === currentMode) return;
+
+    // Сообщаем странице, что режим сменился ПОЛЬЗОВАТЕЛЕМ (не программным
+    // setMode() снаружи) — она обновит адрес (/kz/tuner → /kz/learn) через
+    // router.push и подменит текст под тренажёром. Сам тренажёр переключаем
+    // сразу же ниже, не дожидаясь ответа — иначе была бы пауза на переходе.
+    if(opts.onModeChange && !suppressModeCallback) opts.onModeChange(mode);
 
     saveModeState();
     if(typeof setPlaybackProgress === 'function') setPlaybackProgress(0);
@@ -7422,25 +7403,66 @@ function launchFireworks(){
 
   if(!fwAnimId) fwLoop();
 }
-  // Открытие сразу в нужном режиме по ссылке (?mode=tuner, ?mode=karaoke) —
-  // так страницы /kz/tuner и /kz/karaoke открывают тренажёр в своём режиме.
+  // Открытие сразу в нужном режиме — из opts.mode (страница передаёт его
+  // из своего URL: /kz/tuner → mode:'tuner') с фолбэком на ?mode= в адресе
+  // (для случая, когда файл открыт отдельно, без React-обёртки).
   //
   // Вызов стоит В КОНЦЕ скрипта намеренно: клик по кнопке режима запускает
   // обработчик, который читает karaokeRunning, micStream и другие let,
   // объявленные ниже по файлу. Раньше этот блок стоял выше объявлений и
   // ?mode=tuner падал с ReferenceError — режим просто не переключался.
   {
-    const urlMode = new URLSearchParams(window.location.search).get('mode');
-    if(urlMode){
-      const targetBtn = modeGroup.querySelector(`[data-mode="${urlMode}"]`);
+    const initMode = opts.mode || new URLSearchParams(window.location.search).get('mode');
+    if(initMode){
+      const targetBtn = modeGroup.querySelector(`[data-mode="${initMode}"]`);
       if(targetBtn){
-        suppressParentNav = true;
+        suppressModeCallback = true;
         targetBtn.click();
-        suppressParentNav = false;
+        suppressModeCallback = false;
       }
     }
   }
 
+  // ── Публичный API для React-обёртки (см. Trainer.jsx) ──
+  // setMode/setLocale вызываются страницей В ОТВЕТ на смену URL (переход
+  // по ссылке, кнопка «назад» в браузере) — поэтому не должны снова
+  // дёргать onModeChange/onLocaleChange, иначе получится петля.
+  return {
+    setMode(mode){
+      if(mode === currentMode) return;
+      const targetBtn = modeGroup.querySelector(`[data-mode="${mode}"]`);
+      if(!targetBtn) return;
+      suppressModeCallback = true;
+      targetBtn.click();
+      suppressModeCallback = false;
+    },
+    setLocale(locale){
+      if(!I18N[locale] || locale === currentLang) return;
+      suppressLocaleCallback = true;
+      langSelect.value = locale;
+      currentLang = locale;
+      applyLang();
+      suppressLocaleCallback = false;
+    },
+    setSong(slug){
+      selectSongBySlug(slug);
+    },
+    // Останавливает звук/микрофон при уходе со страницы тренажёра целиком
+    // (переход на каталог, блог и т.п. — там (trainer)-layout размонтируется).
+    // Таймеры анимации (фейерверк в караоke и т.п.) заведены через
+    // requestAnimationFrame/setInterval и переживают destroy() — это
+    // известное ограничение первой версии, полной ревизии всех таймеров
+    // пока не делали.
+    destroy(){
+      try{ if(isPlaying) stopPlayback(); }catch(e){}
+      try{ if(karaokeRunning) stopKaraoke(); }catch(e){}
+      try{ if(micStream){ micStream.getTracks().forEach(t => t.stop()); } }catch(e){}
+      try{ if(window.tunerRunning) window.stopTuner(); }catch(e){}
+      try{ if(audioCtx && audioCtx.state !== 'closed') audioCtx.close(); }catch(e){}
+    }
+  };
+}
+window.mountDombraTrainer = mountDombraTrainer;
 </script>
 
 </body>
