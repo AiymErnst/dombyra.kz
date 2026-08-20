@@ -315,9 +315,14 @@
     cursor:pointer;
     appearance:none;
     -webkit-appearance:none;
-    background-image:linear-gradient(45deg, transparent 50%, var(--seg-active-text) 50%), linear-gradient(135deg, var(--seg-active-text) 50%, transparent 50%);
-    background-position:calc(100% - 14px) center, calc(100% - 9px) center;
-    background-size:5px 5px, 5px 5px;
+    /* Галочка «вниз» — подсказка, что это выпадающий список.
+       Раньше рисовалась двумя linear-gradient-треугольниками: приём
+       хрупкий (зависит от округления фона) и на части экранов справа
+       оставалось пусто. Теперь обычная SVG-иконка, рисуется одинаково
+       везде. Цвет вшит в саму иконку: фон кнопки светлый в обеих темах. */
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7' fill='none'%3E%3Cpath d='M1 1.5L5 5.5L9 1.5' stroke='%232a2a3a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position:calc(100% - 9px) center;
+    background-size:10px 7px;
     background-repeat:no-repeat;
     padding-right:26px;
     width:58px;
@@ -1989,6 +1994,12 @@
     cursor: pointer;
     transition: transform .12s ease, opacity .12s;
     margin-bottom: 10px;
+    /* иконка микрофона + подпись в одну строку (раньше микрофон был
+       эмодзи прямо в тексте перевода) */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
   .tuner-start-btn:hover { opacity: 0.92; }
   .tuner-start-btn.running {
@@ -2674,8 +2685,15 @@
     .song-modal-overlay{ padding:0; align-items:flex-end; }
     .song-modal{
       max-width:100%;
+      /* было 100vh — на мобильном это высота БЕЗ учёта панелей браузера,
+         поэтому модалка получалась выше видимой области, а прижата она к
+         низу (align-items:flex-end) → её верх с крестиком «✕» уезжал за
+         верхний край экрана, и закрыть окно было нечем. dvh считает
+         реальную видимую высоту. */
       max-height:100vh;
+      max-height:100dvh;
       height:100vh;
+      height:100dvh;
       border-radius:0;
     }
     .song-modal-header{ padding-top:calc(env(safe-area-inset-top, 0px) + 12px); }
@@ -3521,7 +3539,7 @@
       </button>
       <select id="songSelect" class="sr-only-select" tabindex="-1" aria-hidden="true"></select>
     </div>
-    <button type="button" id="settingsTrigger" class="settings-trigger" aria-label="Баптаулар">⚙</button>
+    <button type="button" id="settingsTrigger" class="settings-trigger" aria-label="Баптаулар"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 008.6 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 8.6a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
   </div>
 
   <div id="tuner-row">
@@ -3683,7 +3701,7 @@
             </div>
           </div>
 
-          <button class="tuner-start-btn" id="tunerStartBtn" data-i18n="tunerStartBtn">🎙 Начать настройку</button>
+          <button class="tuner-start-btn" id="tunerStartBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10.5v1a7 7 0 0014 0v-1M12 18.5V22M8.5 22h7"/></svg><span data-i18n="tunerStartBtn">Начать настройку</span></button>
           <p class="tuner-status" id="tunerStatus" data-i18n="tunerStatusHint">Разрешите доступ к микрофону</p>
 
         </div>
@@ -3769,7 +3787,7 @@
 
         <div class="speed-row">
           <label for="previewToggle" data-i18n="previewLabel">Показывать следующий лад заранее</label>
-          <input type="checkbox" id="previewToggle">
+          <input type="checkbox" id="previewToggle" checked>
         </div>
 
         <div class="speed-row">
@@ -3906,6 +3924,16 @@ function mountDombraTrainer(container, opts = {}) {
   // контейнере — тренажёр не пересекается со стилями остальной страницы.
   const root = container;
 
+  // Все элементы тренажёра ищем ТОЛЬКО внутри своего контейнера, а не по
+  // всему документу. Пока тренажёр жил в отдельном документе (iframe),
+  // document.getElementById был безопасен — там кроме тренажёра ничего не
+  // было. Теперь он на общей странице: при пересоздании компонента (смена
+  // языка меняет сегмент [locale] и React может смонтировать тренажёр
+  // заново) поиск по документу мог зацепить элементы предыдущей копии, и
+  // тренажёр «терял» текущий режим. Плюс это защищает от совпадения id с
+  // элементами самого сайта.
+  const byId = (id) => root.querySelector('#' + CSS.escape(id));
+
   // ==== Supabase: подключение и авторизация ====
   // ВАЖНО: SUPABASE_ANON_KEY — публичный ключ (publishable), его можно
   // спокойно хранить прямо в этом файле — доступ к платным мелодиям
@@ -4015,7 +4043,7 @@ function mountDombraTrainer(container, opts = {}) {
       tunerStrBottom: 'Нижняя струна',
       tunerStrTop: 'Верхняя струна',
       tunerHint: 'Выберите струну и нажмите старт',
-      tunerStartBtn: '🎙 Начать настройку',
+      tunerStartBtn: 'Начать настройку',
       tunerStopBtn: '⏹ Остановить',
       tunerStatusHint: 'Разрешите доступ к микрофону',
       tunerListening: 'Слушаем... Играйте струну.',
@@ -4110,7 +4138,7 @@ function mountDombraTrainer(container, opts = {}) {
       tunerStrBottom: 'Астынғы ішек',
       tunerStrTop: 'Жоғарғы ішек',
       tunerHint: 'Ішекті таңдап, бастау түймесін бас',
-      tunerStartBtn: '🎙 Бастау',
+      tunerStartBtn: 'Бастау',
       tunerStopBtn: '⏹ Тоқтату',
       tunerStatusHint: 'Микрофонға рұқсат беріңіз',
       tunerListening: 'Тыңдап жатыр... Ішекті тарт.',
@@ -4208,7 +4236,7 @@ function mountDombraTrainer(container, opts = {}) {
       tunerStrBottom: 'Lower string',
       tunerStrTop: 'Upper string',
       tunerHint: 'Select a string and press start',
-      tunerStartBtn: '🎙 Start tuning',
+      tunerStartBtn: 'Start tuning',
       tunerStopBtn: '⏹ Stop',
       tunerStatusHint: 'Allow microphone access',
       tunerListening: 'Listening... Play the string.',
@@ -4306,7 +4334,7 @@ function mountDombraTrainer(container, opts = {}) {
       tunerStrBottom: 'Alt tel',
       tunerStrTop: 'Üst tel',
       tunerHint: 'Bir tel seç ve başlat\'a bas',
-      tunerStartBtn: '🎙 Akort etmeye başla',
+      tunerStartBtn: 'Akort etmeye başla',
       tunerStopBtn: '⏹ Durdur',
       tunerStatusHint: 'Mikrofona izin verin',
       tunerListening: 'Dinleniyor... Teli çal.',
@@ -4389,22 +4417,22 @@ function mountDombraTrainer(container, opts = {}) {
 
 
   function applyLang(){
-    document.querySelectorAll('[data-i18n]').forEach(el => {
+    root.querySelectorAll('[data-i18n]').forEach(el => {
       el.textContent = t(el.dataset.i18n);
     });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    root.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
       el.placeholder = t(el.dataset.i18nPlaceholder);
     });
     document.documentElement.lang = { kz: 'kk', ru: 'ru', en: 'en', tr: 'tr' }[currentLang] || 'ru';
     // код языка в закрытом виде (KZ/RU/EN/TR) — рисуем отдельной надписью
     // поверх select, а не полагаемся на обрезку текста самим select
     // (ненадёжно между браузерами)
-    const langSelectLabel = document.getElementById('langSelectLabel');
+    const langSelectLabel = byId('langSelectLabel');
     if(langSelectLabel) langSelectLabel.textContent = currentLang.toUpperCase();
     // логотип ведёт на витрину того же языка: /kz, /ru, /en, /tr.
     // Ссылка нужна и человеку (возврат на главную), и поиску —
     // страницы приложения начинают ссылаться на витрину
-    const brandLink = document.getElementById('brandLink');
+    const brandLink = byId('brandLink');
     if(brandLink) brandLink.setAttribute('href', `/${currentLang}`);
     // строй в легенде тоже переводится (Оң бұрау / Прямой строй / ...)
     if(typeof applySongTuning === 'function') applySongTuning();
@@ -4424,7 +4452,7 @@ function mountDombraTrainer(container, opts = {}) {
     render();
   }
 
-  const langSelect = document.getElementById('langSelect');
+  const langSelect = byId('langSelect');
   langSelect.value = currentLang;
   langSelect.addEventListener('change', () => {
     // Сообщаем странице, что язык сменился ПОЛЬЗОВАТЕЛЕМ — она обновит
@@ -4437,12 +4465,12 @@ function mountDombraTrainer(container, opts = {}) {
   });
 
 
-  const svg = document.getElementById('neckSvg');
-  const panel = document.getElementById('panel');
-  const stage = document.getElementById('stage');
-  const labelTop = document.getElementById('labelTop');
-  const labelBottom = document.getElementById('labelBottom');
-  const handGroup = document.getElementById('handGroup');
+  const svg = byId('neckSvg');
+  const panel = byId('panel');
+  const stage = byId('stage');
+  const labelTop = byId('labelTop');
+  const labelBottom = byId('labelBottom');
+  const handGroup = byId('handGroup');
 
   const frets = 19;
   let state = { orient: 'horizontal', hand: 'right' };
@@ -4627,7 +4655,7 @@ function mountDombraTrainer(container, opts = {}) {
   });
 
   function applyTunerMirror(){
-    const tunerSvg = document.getElementById('tunerNeckSvg');
+    const tunerSvg = byId('tunerNeckSvg');
     if(!tunerSvg) return;
     if(state.hand === 'left'){
       tunerSvg.style.transform = 'scaleX(-1)';
@@ -4664,7 +4692,7 @@ function mountDombraTrainer(container, opts = {}) {
     render();
     applyTunerMirror();
     // Если stage ещё не имеет размера — наблюдаем и перерисуем как только появится
-    const stageEl = document.getElementById('stage');
+    const stageEl = byId('stage');
     if(stageEl && stageEl.getBoundingClientRect().width < 10){
       const ro = new ResizeObserver((entries) => {
         for(const e of entries){
@@ -5025,7 +5053,7 @@ function mountDombraTrainer(container, opts = {}) {
 
     // строй в легенде нотного блока — у каждой мелодии он свой. Каждая
     // задействованная струна — отдельной строкой: "Название - Нота (Частота Гц)"
-    document.querySelectorAll('.legend-tuning').forEach(el => {
+    root.querySelectorAll('.legend-tuning').forEach(el => {
       if(!usage.bottom && !usage.top){
         // не должно случаться (см. фолбэк в songStringUsage), но на
         // всякий случай прячем блок целиком, а не показываем пустоту
@@ -5051,8 +5079,8 @@ function mountDombraTrainer(container, opts = {}) {
     if(typeof render === 'function' && currentMode !== 'tuner') render();
   }
 
-  const countdownOverlay = document.getElementById('countdownOverlay');
-  const countdownNum = document.getElementById('countdownNum');
+  const countdownOverlay = byId('countdownOverlay');
+  const countdownNum = byId('countdownNum');
 
   // Обратный отсчёт перед стартом — время взять домбру в руки.
   // isCancelled() должна возвращать true, если пользователь нажал Стоп во время отсчёта.
@@ -5070,20 +5098,20 @@ function mountDombraTrainer(container, opts = {}) {
     return !isCancelled();
   }
 
-  const playBtn = document.getElementById('playBtn');
+  const playBtn = byId('playBtn');
   // stopBtn убран — playBtn теперь сам переключается между play/stop
-  const speedSlider = document.getElementById('speedSlider');
-  const speedVal = document.getElementById('speedVal');
-  const previewToggle = document.getElementById('previewToggle');
-  const countdownSelect = document.getElementById('countdownSelect');
-  const sectionList = document.getElementById('sectionList');
-  const sectionRow = document.getElementById('sectionRow');
-  const loopToggle = document.getElementById('loopToggle');
+  const speedSlider = byId('speedSlider');
+  const speedVal = byId('speedVal');
+  const previewToggle = byId('previewToggle');
+  const countdownSelect = byId('countdownSelect');
+  const sectionList = byId('sectionList');
+  const sectionRow = byId('sectionRow');
+  const loopToggle = byId('loopToggle');
   // фича "играть звук мелодии в караоке" убрана: микрофон слышит системный
   // звук из колонок и ошибочно засчитывает его как правильную игру
-  const scrubTrack = document.getElementById('scrubTrack');
-  const startLabel = document.getElementById('startLabel');
-  const songSelect = document.getElementById('songSelect');
+  const scrubTrack = byId('scrubTrack');
+  const startLabel = byId('startLabel');
+  const songSelect = byId('songSelect');
   let audioCtx = null;
   let masterGain = null;
   let currentOsc = null;
@@ -5398,17 +5426,17 @@ function mountDombraTrainer(container, opts = {}) {
   updateWebCompactClass();
   window.addEventListener('resize', updateWebCompactClass);
 
-  // подстраховка: явно выставляем скорость по умолчанию (0.4×) при
+  // подстраховка: явно выставляем скорость по умолчанию (1×) при
   // загрузке — на случай, если какая-то особенность браузера (например,
   // взаимодействие range+datalist после добавления меток 1×/2×) сбивает
   // отображаемое значение
-  speedSlider.value = 40;
-  speedVal.textContent = '0.40×';
+  speedSlider.value = 100;
+  speedVal.textContent = '1.00×';
 
   // показ/скрытие грифа — теперь чекбокс в настройках (освобождает место
   // под ноты, особенно полезно на длинных произведениях). Только веб —
   // на мобильном сама строка настройки скрыта через CSS, а грифа там нет.
-  const fretboardToggle = document.getElementById('fretboardToggle');
+  const fretboardToggle = byId('fretboardToggle');
   fretboardToggle.addEventListener('change', () => {
     root.classList.toggle('fretboard-collapsed', !fretboardToggle.checked);
   });
@@ -5416,9 +5444,9 @@ function mountDombraTrainer(container, opts = {}) {
   // чекбоксы звука: домбра и второй голос глушатся независимо, выбор
   // запоминается между занятиями
   // переключатель стиля ударов: перерисовываем табулатуру и обновляем легенду
-  const strokeStyleSelect = document.getElementById('strokeStyleSelect');
+  const strokeStyleSelect = byId('strokeStyleSelect');
   function applyStrokeStyle(){
-    document.querySelectorAll('.legend-stroke-glyph').forEach(el => {
+    root.querySelectorAll('.legend-stroke-glyph').forEach(el => {
       // innerHTML, а не textContent: в классическом стиле знаки — это SVG
       el.innerHTML = STROKE_GLYPHS[strokeStyle].legend;
     });
@@ -5430,7 +5458,7 @@ function mountDombraTrainer(container, opts = {}) {
     strokeStyleSelect.value = strokeStyle;
     // при загрузке достаточно поправить легенду: сама табулатура ещё не
     // отрисована и возьмёт strokeStyle сама
-    document.querySelectorAll('.legend-stroke-glyph').forEach(el => {
+    root.querySelectorAll('.legend-stroke-glyph').forEach(el => {
       // innerHTML, а не textContent: в классическом стиле знаки — это SVG
       el.innerHTML = STROKE_GLYPHS[strokeStyle].legend;
     });
@@ -5441,8 +5469,8 @@ function mountDombraTrainer(container, opts = {}) {
     });
   }
 
-  const dombraSoundToggle = document.getElementById('dombraSoundToggle');
-  const voice2SoundToggle = document.getElementById('voice2SoundToggle');
+  const dombraSoundToggle = byId('dombraSoundToggle');
+  const voice2SoundToggle = byId('voice2SoundToggle');
   dombraSoundToggle.checked = soundPrefs.dombra;
   voice2SoundToggle.checked = soundPrefs.voice2;
 
@@ -5621,8 +5649,17 @@ function mountDombraTrainer(container, opts = {}) {
 
   // Прокручивает ноту в видимую область СТРОГО внутри её собственной строки
   // (.tab-line, у неё своя горизонтальная прокрутка) — специально не через
-  // scrollIntoView(), потому что тот может утащить за собой всю страницу,
-  // если сама строка видна не полностью на экране.
+  // scrollIntoView(), потому что тот тянет за собой ВСЕ прокручиваемые
+  // предки, включая саму страницу: гриф уезжал вверх за край экрана, а
+  // снизу вылезал заголовок SEO-текста.
+  //
+  // По вертикали листаем ПАРАМИ строк: пока курсор идёт по строкам 0-1,
+  // лист стоит на месте; дойдя до строки 2 — подводим к началу пару 2-3.
+  // Раньше подводили каждую строку по отдельности, и запись дёргалась
+  // после каждой строки.
+  let lastScrolledPair = -1;
+  function resetTabScrollTracking(){ lastScrolledPair = -1; }
+
   function scrollNoteIntoView(el){
     if(!el) return;
     const line = el.closest('.tab-line');
@@ -5631,34 +5668,49 @@ function mountDombraTrainer(container, opts = {}) {
       const target = el.offsetLeft - (line.clientWidth - el.offsetWidth) / 2;
       line.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
     }
-    // по вертикали — если частей/страниц много и лист умеет скроллиться
-    // сам в себе (десктоп), подводим строку к центру видимой области листа.
-    // На мобильном у листа своего скролла больше нет (см. CSS) — тогда
-    // просто скроллим саму страницу до этой строки.
+    if(!line) return;
+
     const sheet = el.closest('.tab-sheet');
-    if(sheet && line){
-      const hasInnerScroll = sheet.scrollHeight - sheet.clientHeight > 4;
-      if(hasInnerScroll){
-        const sheetRect = sheet.getBoundingClientRect();
-        const lineRect = line.getBoundingClientRect();
-        const lineCenterY = lineRect.top + lineRect.height / 2 - sheetRect.top + sheet.scrollTop;
-        const targetTop = lineCenterY - sheet.clientHeight / 2;
-        sheet.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
-      } else {
-        line.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+    // ищем, что именно умеет прокручиваться: сам лист (если у него свой
+    // скролл) или колонка .two-col-wrap (веб). Страницу не трогаем.
+    let container = null;
+    if(sheet && sheet.scrollHeight - sheet.clientHeight > 4) container = sheet;
+    else container = line.closest('.two-col-wrap');
+    if(container && container.scrollHeight - container.clientHeight <= 4) container = null;
+
+    const scope = sheet || container;
+    if(!scope) return;
+    const lines = [...scope.querySelectorAll('.tab-line')];
+    const idx = lines.indexOf(line);
+    if(idx < 0) return;
+
+    const pair = Math.floor(idx / 2);
+    if(pair === lastScrolledPair) return;
+    lastScrolledPair = pair;
+    const firstOfPair = lines[pair * 2] || line;
+
+    if(container){
+      const cRect = container.getBoundingClientRect();
+      const fRect = firstOfPair.getBoundingClientRect();
+      const top = fRect.top - cRect.top + container.scrollTop - 8;
+      container.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    } else {
+      // мобильный: своего скролла нет ни у листа, ни у колонки —
+      // прокручивается сама страница, это там нормально
+      firstOfPair.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
 
   function setPlayingSeg(idx){
+    if(idx === 0) resetTabScrollTracking();
     scrubTrack.querySelectorAll('.tab-note').forEach((seg, i) => {
       seg.classList.toggle('playing', i === idx);
       if(i === idx) scrollNoteIntoView(seg);
     });
   }
 
-  const playbackProgressFill = document.getElementById('playbackProgressFill');
-  const playbackProgressHandle = document.getElementById('playbackProgressHandle');
+  const playbackProgressFill = byId('playbackProgressFill');
+  const playbackProgressHandle = byId('playbackProgressHandle');
   function setPlaybackProgress(fraction){
     if(!playbackProgressFill) return;
     const pct = Math.max(0, Math.min(1, fraction)) * 100;
@@ -5668,7 +5720,7 @@ function mountDombraTrainer(container, opts = {}) {
 
   // ==== Перемотка кликом/протаскиванием по полоске прогресса, как в
   // музыкальных стримингах — по отпусканию сразу переходим на нужный лад ====
-  const playbackProgressTrack = document.getElementById('playbackProgressTrack');
+  const playbackProgressTrack = byId('playbackProgressTrack');
   let isScrubbingProgress = false;
 
   function progressFractionFromEvent(e){
@@ -6072,7 +6124,7 @@ function mountDombraTrainer(container, opts = {}) {
     // название ноты(нот), которая сейчас звучит — дублируем в плавающую
     // панель снизу: на мобильном там больше нет грифа и старой панели с
     // нотой, без этого панель выглядела пусто (одна кнопка + скорость)
-    const floatingActiveNote = document.getElementById('floatingActiveNote');
+    const floatingActiveNote = byId('floatingActiveNote');
     if(floatingActiveNote){
       floatingActiveNote.textContent = lit.map(({dot}) => dot.dataset.note).join(' / ');
     }
@@ -6091,7 +6143,7 @@ function mountDombraTrainer(container, opts = {}) {
     playBtn.classList.remove('is-playing');
     playBtn.textContent = ICON_PLAY;
     isPlaying = false;
-    const floatingActiveNote = document.getElementById('floatingActiveNote');
+    const floatingActiveNote = byId('floatingActiveNote');
     if(floatingActiveNote) floatingActiveNote.textContent = '';
   }
 
@@ -6171,11 +6223,11 @@ function mountDombraTrainer(container, opts = {}) {
   });
 
   // ============ РЕЖИМ КАРАОКЕ ============
-  const modeGroup = document.getElementById('modeGroup');
-  const normalRightContent = document.getElementById('normalRightContent');
-  const karaokeRightContent = document.getElementById('karaokeRightContent');
-  const normalPlayRow = document.getElementById('normalPlayRow');
-  const karaokePlayRow = document.getElementById('karaokePlayRow');
+  const modeGroup = byId('modeGroup');
+  const normalRightContent = byId('normalRightContent');
+  const karaokeRightContent = byId('karaokeRightContent');
+  const normalPlayRow = byId('normalPlayRow');
+  const karaokePlayRow = byId('karaokePlayRow');
 
   modeGroup.addEventListener('click', (e) => {
     const btn = e.target.closest('.seg');
@@ -6212,7 +6264,7 @@ function mountDombraTrainer(container, opts = {}) {
     if(mode === 'karaoke'){
       resetStringHighlight();
       render();
-      document.getElementById('handRow').appendChild(handGroup);
+      byId('handRow').appendChild(handGroup);
     } else if(mode === 'tuner'){
       render();
       applyTunerMirror();
@@ -6220,7 +6272,7 @@ function mountDombraTrainer(container, opts = {}) {
     } else {
       resetStringHighlight();
       render();
-      document.getElementById('handRow').appendChild(handGroup);
+      byId('handRow').appendChild(handGroup);
     }
 
     currentMode = mode;
@@ -6232,12 +6284,12 @@ function mountDombraTrainer(container, opts = {}) {
   });
 
 
-  const karaokeChar = document.getElementById('karaokeChar');
-  const karaokeStatus = document.getElementById('karaokeStatus');
-  const karaokeTrack = document.getElementById('karaokeTrack');
-  const karaokeStartBtn = document.getElementById('karaokeStartBtn');
+  const karaokeChar = byId('karaokeChar');
+  const karaokeStatus = byId('karaokeStatus');
+  const karaokeTrack = byId('karaokeTrack');
+  const karaokeStartBtn = byId('karaokeStartBtn');
   // karaokeStopBtn убран — karaokeStartBtn теперь сам переключается play/stop
-  const karaokeResult = document.getElementById('karaokeResult');
+  const karaokeResult = byId('karaokeResult');
 
   let micStream = null;
   let analyser = null;
@@ -6621,25 +6673,25 @@ function setCharState(state){
       resetTunerDisplay();
     };
 
-    const tunerBtnBottom     = document.getElementById('tunerBtnBottom');
-    const tunerBtnTop        = document.getElementById('tunerBtnTop');
-    const tunerNoteOut       = document.getElementById('tunerNoteOut');
+    const tunerBtnBottom     = byId('tunerBtnBottom');
+    const tunerBtnTop        = byId('tunerBtnTop');
+    const tunerNoteOut       = byId('tunerNoteOut');
 
-    const tunerNeedleMover   = document.getElementById('tunerNeedleMover');
-    const tunerNeedleBall    = document.getElementById('tunerNeedleBall');
-    const tunerNeedleV       = document.getElementById('tunerNeedleV');
-    const tunerVerdict       = document.getElementById('tunerVerdict');
-    const tunerStartBtn      = document.getElementById('tunerStartBtn');
-    const tunerStatus        = document.getElementById('tunerStatus');
-    const tunerTuningStd     = document.getElementById('tunerTuningStandard');
-    const tunerTuningTer     = document.getElementById('tunerTuningTeris');
+    const tunerNeedleMover   = byId('tunerNeedleMover');
+    const tunerNeedleBall    = byId('tunerNeedleBall');
+    const tunerNeedleV       = byId('tunerNeedleV');
+    const tunerVerdict       = byId('tunerVerdict');
+    const tunerStartBtn      = byId('tunerStartBtn');
+    const tunerStatus        = byId('tunerStatus');
+    const tunerTuningStd     = byId('tunerTuningStandard');
+    const tunerTuningTer     = byId('tunerTuningTeris');
 
     function applyTunerTuning(){
       const tu = TUNINGS[tunerCur];
-      document.getElementById('tunerBtnBottomNote').textContent = tu.bottom.note;
-      document.getElementById('tunerBtnTopNote').textContent    = tu.top.note;
-      document.getElementById('tunerBtnBottomName').textContent = tu.bottom.name;
-      document.getElementById('tunerBtnTopName').textContent    = tu.top.name;
+      byId('tunerBtnBottomNote').textContent = tu.bottom.note;
+      byId('tunerBtnTopNote').textContent    = tu.top.note;
+      byId('tunerBtnBottomName').textContent = tu.bottom.name;
+      byId('tunerBtnTopName').textContent    = tu.top.name;
       selectTunerStr(tunerSel);
     }
 
@@ -6829,19 +6881,19 @@ function setCharState(state){
 
   // Сброс подсветки струн (при выходе из тюнера)
   function resetStringHighlight(){
-    const bg = document.getElementById('tStrBottomGlow');
-    const tg = document.getElementById('tStrTopGlow');
+    const bg = byId('tStrBottomGlow');
+    const tg = byId('tStrTopGlow');
     if(bg) bg.style.opacity = '0';
     if(tg) tg.style.opacity = '0';
   }
 
   // Подсветка активной струны в режиме тюнера
   function highlightTunerString(which){
-    const bg = document.getElementById('tStrBottomGlow');
-    const tg = document.getElementById('tStrTopGlow');
+    const bg = byId('tStrBottomGlow');
+    const tg = byId('tStrTopGlow');
     // также подсвечиваем основную струну
-    const bs = document.getElementById('tStrBottom');
-    const ts = document.getElementById('tStrTop');
+    const bs = byId('tStrBottom');
+    const ts = byId('tStrTop');
     if(!bg || !tg) return;
     bg.style.opacity = which === 'bottom' ? '1' : '0';
     tg.style.opacity = which === 'top'    ? '1' : '0';
@@ -6853,7 +6905,7 @@ function setCharState(state){
   let vibrateFrame = 0;
   function startStringVibration(which, intensity){
     if(vibrateAnimId) cancelAnimationFrame(vibrateAnimId);
-    const el = document.getElementById(which === 'bottom' ? 'tStrBottomGlow' : 'tStrTopGlow');
+    const el = byId(which === 'bottom' ? 'tStrBottomGlow' : 'tStrTopGlow');
     if(!el) return;
     const amp = Math.min(4, intensity * 6);
     function animate(){
@@ -6868,27 +6920,27 @@ function setCharState(state){
   function stopStringVibration(){
     if(vibrateAnimId){ cancelAnimationFrame(vibrateAnimId); vibrateAnimId = null; }
     ['tStrBottomGlow','tStrTopGlow'].forEach(id => {
-      const el = document.getElementById(id);
+      const el = byId(id);
       if(el){ el.style.filter = ''; }
     });
   }
 
   function resetStringHighlight(){
     ['tStrBottomGlow','tStrTopGlow'].forEach(id => {
-      const el = document.getElementById(id);
+      const el = byId(id);
       if(el) el.style.opacity = '0';
     });
     ['tStrBottom','tStrTop'].forEach(id => {
-      const el = document.getElementById(id);
+      const el = byId(id);
       if(el) el.style.opacity = '';
     });
     stopStringVibration();
   }
 
   // ── ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ ──
-  const themeToggle = document.getElementById('themeToggle');
-  const themeIconMoon = document.getElementById('themeIconMoon');
-  const themeIconSun = document.getElementById('themeIconSun');
+  const themeToggle = byId('themeToggle');
+  const themeIconMoon = byId('themeIconMoon');
+  const themeIconSun = byId('themeIconSun');
   function setThemeIcon(isLight){
     themeIconMoon.style.display = isLight ? 'none' : 'block';
     themeIconSun.style.display = isLight ? 'block' : 'none';
@@ -6907,9 +6959,9 @@ function setCharState(state){
   });
 
   // ==== Вход через Google (попап, чтобы не ломать переход внутри iframe) ====
-  const loginBtn = document.getElementById('loginBtn');
-  const userBox = document.getElementById('userBox');
-  const userEmail = document.getElementById('userEmail');
+  const loginBtn = byId('loginBtn');
+  const userBox = byId('userBox');
+  const userEmail = byId('userEmail');
 
   function renderAuthUI(user){
     if(user){
@@ -6936,22 +6988,22 @@ function setCharState(state){
     }
   });
 
-  document.getElementById('logoutBtn').addEventListener('click', async () => {
+  byId('logoutBtn').addEventListener('click', async () => {
     await sb.auth.signOut();
   });
 
   // ==== Попап выбора мелодии: поиск, фильтры, сортировка, топ-5, избранное ====
-  var songPickerTrigger = document.getElementById('songPickerTrigger');
-  var songPickerTriggerText = document.getElementById('songPickerTriggerText');
-  var songModalOverlay = document.getElementById('songModalOverlay');
-  var songModalClose = document.getElementById('songModalClose');
-  var songSearchInput = document.getElementById('songSearchInput');
-  var songSortSelect = document.getElementById('songSortSelect');
-  var songFreeOnlyCheckbox = document.getElementById('songFreeOnlyCheckbox');
-  var songModalList = document.getElementById('songModalList');
-  var songModalEmpty = document.getElementById('songModalEmpty');
-  var songModalTop = document.getElementById('songModalTop');
-  var songTopList = document.getElementById('songTopList');
+  var songPickerTrigger = byId('songPickerTrigger');
+  var songPickerTriggerText = byId('songPickerTriggerText');
+  var songModalOverlay = byId('songModalOverlay');
+  var songModalClose = byId('songModalClose');
+  var songSearchInput = byId('songSearchInput');
+  var songSortSelect = byId('songSortSelect');
+  var songFreeOnlyCheckbox = byId('songFreeOnlyCheckbox');
+  var songModalList = byId('songModalList');
+  var songModalEmpty = byId('songModalEmpty');
+  var songModalTop = byId('songModalTop');
+  var songTopList = byId('songTopList');
 
   const FAVORITES_KEY = 'dombyra_favorites';
   function getFavorites(){
@@ -7003,7 +7055,7 @@ function setCharState(state){
   // «сорок девять кружков» и не давало понять, что выбор одиночный).
   // Клик по N-му кружку = выбран уровень N, повторный клик снимает фильтр.
   function buildDifficultyScale(){
-    const row = document.getElementById('songFilterDifficulty');
+    const row = byId('songFilterDifficulty');
     if(!row) return;
     row.querySelectorAll('.song-chip[data-filter-group="difficulty"], .difficulty-scale')
        .forEach(el => el.remove());
@@ -7033,7 +7085,7 @@ function setCharState(state){
   // закрашиваем кружки до выбранного уровня включительно — как рейтинг
   function syncDifficultyScale(){
     const selected = parseInt([...songFilters.difficulty][0], 10);
-    document.querySelectorAll('.difficulty-scale-dot').forEach(dot => {
+    root.querySelectorAll('.difficulty-scale-dot').forEach(dot => {
       const lvl = parseInt(dot.dataset.level, 10);
       dot.classList.toggle('is-on', !!selected && lvl <= selected);
       dot.setAttribute('aria-pressed', String(!!selected && lvl === selected));
@@ -7073,7 +7125,7 @@ function setCharState(state){
     const s = songs[currentSongIndex];
     if(!songPickerTriggerText) return;
     songPickerTriggerText.textContent = s ? songTitle(s) : t('songPickerPlaceholder');
-    const authorEl = document.getElementById('songPickerTriggerAuthor');
+    const authorEl = byId('songPickerTriggerAuthor');
     if(authorEl){
       const trigAuthor = songAuthor(s);
       authorEl.textContent = trigAuthor;
@@ -7081,7 +7133,7 @@ function setCharState(state){
       authorEl.style.display = trigAuthor ? 'block' : 'none';
     }
     // правая часть блока: жанры и шкала уровня выбранной мелодии
-    const metaEl = document.getElementById('songPickerTriggerMeta');
+    const metaEl = byId('songPickerTriggerMeta');
     if(metaEl){
       metaEl.innerHTML = '';
       const genres = (s && s.genreTags) || [];
@@ -7232,10 +7284,10 @@ function setCharState(state){
   // На мобильном/в landscape возвращаем на место — там панель Play и так
   // двухрядная, а места по горизонтали нет.
   function relocateSongBar(){
-    const bar = document.getElementById('songBar');
-    const bottomRow = document.querySelector('.floating-bottom-row');
+    const bar = byId('songBar');
+    const bottomRow = root.querySelector('.floating-bottom-row');
     if(!bar || !bottomRow) return;
-    const homeAnchor = document.getElementById('tuner-row');
+    const homeAnchor = byId('tuner-row');
     if(!homeAnchor || !homeAnchor.parentElement) return;
     // «веб» определяем по МЕНЬШЕЙ стороне, как и в остальном коде,
     // иначе телефон в landscape посчитается десктопом
@@ -7264,9 +7316,9 @@ function setCharState(state){
   });
 
   // ==== Попап настроек (часть / повтор / превью / таймер) ====
-  var settingsTrigger = document.getElementById('settingsTrigger');
-  var settingsModalOverlay = document.getElementById('settingsModalOverlay');
-  var settingsModalClose = document.getElementById('settingsModalClose');
+  var settingsTrigger = byId('settingsTrigger');
+  var settingsModalOverlay = byId('settingsModalOverlay');
+  var settingsModalClose = byId('settingsModalClose');
 
   function openSettingsModal(){
     settingsModalOverlay.style.display = 'flex';
@@ -7300,7 +7352,7 @@ function setCharState(state){
   });
   // чипы теперь мультивыбор: клик включает/выключает конкретный тег,
   // остальные в той же группе остаются как были
-  document.querySelectorAll('.song-chip').forEach(chip => {
+  root.querySelectorAll('.song-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       const group = chip.dataset.filterGroup;
       const value = chip.dataset.filterValue;
@@ -7340,7 +7392,7 @@ function setCharState(state){
 })();
 
 // ==== Салют на весь экран при результате 100% ====
-const fireworksCanvas = document.getElementById('fireworksCanvas');
+const fireworksCanvas = byId('fireworksCanvas');
 const fwCtx = fireworksCanvas ? fireworksCanvas.getContext('2d') : null;
 let fwParticles = [];
 let fwAnimId = null;
