@@ -88,6 +88,13 @@ export default function Trainer({ mode, locale, song, onModeChange, onLocaleChan
   const handleRef = useRef(null);
   const mountedOptsRef = useRef({ mode, locale, song });
 
+  // Всегда держим АКТУАЛЬНЫЕ пропсы под рукой: монтирование асинхронное
+  // (нужно сначала загрузить simulator.html), и за это время режим/язык
+  // могли уже смениться. Без этого тренажёр открывался в том режиме,
+  // который был на момент начала загрузки, а не в текущем.
+  const latestPropsRef = useRef({ mode, locale, song });
+  latestPropsRef.current = { mode, locale, song };
+
   // Монтируем ОДИН РАЗ. mode/locale/song на момент первого рендера уходят
   // как начальные — дальнейшие изменения идут через setMode/setLocale/
   // setSong в отдельных эффектах ниже, без пересоздания тренажёра.
@@ -117,6 +124,14 @@ export default function Trainer({ mode, locale, song, onModeChange, onLocaleChan
           onModeChange,
           onLocaleChange,
         });
+
+        // Досинхронизация с текущим адресом: пока файл грузился, режим или
+        // язык могли уже поменяться (или тренажёр пересоздался при смене
+        // языка). setMode/setLocale сами ничего не делают, если значение
+        // уже совпадает, так что лишней работы здесь нет.
+        const latest = latestPropsRef.current;
+        handleRef.current.setLocale(latest.locale);
+        handleRef.current.setMode(latest.mode);
       } catch (err) {
         // Не даём упасть всей странице — тренажёр просто не появится,
         // ошибка видна в консоли для отладки.
