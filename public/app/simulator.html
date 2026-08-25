@@ -440,7 +440,11 @@
       white-space:nowrap;
       font-size:11px;
       padding:7px 20px 7px 8px;
-      background-position:calc(100% - 10px) center, calc(100% - 6px) center;
+      /* было два значения через запятую (для старой техники "два
+         градиента-треугольника") — сама картинка теперь одна (SVG-галочка
+         в базовом правиле), а тут остался старый двухслойный позишн от
+         прежнего приёма, из-за него на мобильном стрелка не рисовалась */
+      background-position:calc(100% - 9px) center;
     }
     #themeToggle{
       width:34px;
@@ -1524,7 +1528,15 @@
   /* В режиме тюнера: грид, фон с сеткой, панель видна */
   .dombra-trainer.tuner-mode #tuner-row {
     display: grid;
-    grid-template-columns: minmax(0, 620px) 1fr;
+    /* minmax(0, 1fr), а не просто 1fr — у грид-колонок минимальная
+       ширина по умолчанию считается по содержимому (auto = max-content).
+       Карточки струн ("Стандартный/Обратный") и поле ввода Гц
+       ("Произвольно") занимают разную ширину — грид честно пересчитывал
+       границу между колонками при каждом переключении, и левая колонка
+       (гриф) из-за этого слегка "дышала". minmax(0,1fr) явно обнуляет
+       минимум, вместо auto — теперь правая колонка не тянет размер под
+       себя, левая колонка стабильна независимо от того, что показано справа. */
+    grid-template-columns: minmax(0, 620px) minmax(0, 1fr);
     gap: 24px;
     align-items: center;
     padding: 16px;
@@ -1717,6 +1729,10 @@
   .dombra-trainer.web-compact .lang-select{
     font-size:11px;
     padding:7px 20px 7px 10px;
+    /* явно переподтверждаю позицию стрелки здесь же — чтобы не зависеть
+       от каскада с базовым правилом, если у него в будущем поменяется
+       padding-right и стрелка окажется в другом месте пилюли */
+    background-position:calc(100% - 9px) center;
   }
   .dombra-trainer.web-compact .auth-btn{
     font-size:10px;
@@ -1836,6 +1852,12 @@
     margin-bottom: 24px;
     width: 100%;
   }
+  /* [hidden] у select-элементов с классом имеет ТУ ЖЕ специфичность, что и
+     .tuner-str-row{display:flex} выше — при равной специфичности побеждает
+     то, что ниже по файлу, то есть мой же display:flex, а JS-атрибут hidden
+     полностью игнорировался (блок не прятался). .tuner-str-row[hidden] —
+     на один уровень специфичнее, побеждает уже честно. */
+  .tuner-str-row[hidden], .tuner-custom-row[hidden] { display: none; }
   .tuner-str-btn {
     flex: 1;
     padding: 12px 8px;
@@ -1862,6 +1884,59 @@
   .tuner-str-btn .tsname { font-size: 12px; font-weight: 600; color: inherit; opacity: 0.75; }
   .tuner-str-btn.active .tsv { color: var(--gold-soft); }
   .tuner-str-btn.active .tsname { color: var(--gold-soft); opacity: 0.9; }
+  /* произвольная частота — своё число Гц вместо готовой струны */
+  .tuner-custom-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 24px;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 14px;
+    border: 1.5px solid rgba(var(--white-rgb),0.1);
+    background: rgba(var(--white-rgb),0.04);
+  }
+  .tuner-custom-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(var(--cream-rgb),0.6);
+    white-space: nowrap;
+  }
+  .tuner-custom-input {
+    flex: 1;
+    min-width: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--cream);
+    background: rgba(var(--white-rgb),0.06);
+    border: 1.5px solid rgba(var(--white-rgb),0.15);
+    border-radius: 10px;
+    padding: 6px 10px;
+    text-align: center;
+    -moz-appearance: textfield;
+  }
+  .tuner-custom-input::-webkit-outer-spin-button,
+  .tuner-custom-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .tuner-custom-input:focus { outline: none; border-color: var(--gold-soft); }
+  .tuner-custom-note {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gold-soft);
+    white-space: nowrap;
+    min-width: 64px;
+    text-align: right;
+  }
+  /* живая распознанная частота под крупной нотой */
+  .tuner-note-hz {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(var(--cream-rgb),0.55);
+    letter-spacing: 0.02em;
+    min-height: 18px;
+  }
   /* большой бегунок GuitarTuna */
   .tuner-track-wrap {
     position: relative;
@@ -2148,9 +2223,15 @@
 
   .dombra-trainer.light-mode .lang-select{
     background-color:rgba(var(--white-rgb),0.8);
-    background-image:linear-gradient(45deg, transparent 50%, var(--light-text-strong) 50%), linear-gradient(135deg, var(--light-text-strong) 50%, transparent 50%);
-    background-position:calc(100% - 14px) center, calc(100% - 9px) center;
-    background-size:5px 5px, 5px 5px;
+    /* было: старая техника с двумя градиентами-треугольниками — именно её
+       заменили на одну SVG-галочку в базовом правиле .lang-select, но
+       ЭТО правило для светлой темы тогда не тронули, и старая (хрупкая)
+       версия стрелки осталась только здесь — отсюда и пропадала галочка
+       именно в светлой теме. Тот же приём, что в базовом правиле, только
+       цвет обводки другой (тёмный, подходит под светлый фон кнопки). */
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7' fill='none'%3E%3Cpath d='M1 1.5L5 5.5L9 1.5' stroke='%232a2a3a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position:calc(100% - 9px) center;
+    background-size:10px 7px;
     background-repeat:no-repeat;
     color:var(--light-text-strong);
     border:1px solid rgba(var(--light-accent-rgb),0.4);
@@ -2239,6 +2320,17 @@
     border-color: var(--gold);
     background: rgba(var(--gold-rgb),0.12);
   }
+  .dombra-trainer.light-mode .tuner-custom-row {
+    background: rgba(var(--white-rgb),0.7);
+    border-color: rgba(var(--light-accent-rgb),0.3);
+  }
+  .dombra-trainer.light-mode .tuner-custom-label { color: var(--light-text-body); }
+  .dombra-trainer.light-mode .tuner-custom-input {
+    color: var(--light-text-strong);
+    background: rgba(var(--black-rgb),0.04);
+    border-color: rgba(var(--light-accent-rgb),0.3);
+  }
+  .dombra-trainer.light-mode .tuner-note-hz { color: var(--light-text-body); }
   .dombra-trainer.light-mode .tuner-note-big { color: var(--light-text-strong); }
   .dombra-trainer.light-mode .tuner-verdict { color: var(--light-text-body); }
   .dombra-trainer.light-mode .tuner-track-bg { background: rgba(var(--black-rgb),0.08); }
@@ -2835,7 +2927,13 @@
   .dombra-trainer.light-mode .auth-btn-premium{ background:var(--gold); color:#fff; }
   .dombra-trainer.light-mode #themeToggle,
   .dombra-trainer.light-mode .lang-select{
-    background:var(--surface-2);
+    /* было background: (сокращённая запись) — она сбрасывает ВСЕ фоновые
+       свойства разом, включая background-image. Это правило идёт позже
+       .dombra-trainer.light-mode .lang-select{background-image:...} по
+       файлу, специфичность та же — значит побеждало оно и стирало
+       SVG-стрелку до "нет картинки". background-color трогает только
+       цвет, остальное (картинка стрелки) остаётся как задано выше. */
+    background-color:var(--surface-2);
     border-color:var(--hairline);
     color:var(--light-text-body);
   }
@@ -3455,9 +3553,11 @@
   .tab-stroke .stroke-mark{ vertical-align:-1px; }
   .tab-labels .tab-stroke .stroke-mark + .stroke-mark{ margin-left:2px; }
 
-  /* Строй мелодии в легенде */
-  .legend-tuning[hidden]{ display:none; }
-  .legend-tuning b{ font-weight:700; }
+  /* Строй мелодии в легенде — раньше был отдельным 4-м элементом строки
+     (дублировал слова «нижняя/верхняя струна» и на мобильном отжимал
+     четвёртую узкую колонку). Теперь короткой припиской сразу после
+     «Н — нижняя струна» / «В — верхняя струна». */
+  .legend-tuning-bottom[hidden], .legend-tuning-top[hidden]{ display:none; }
 
   /* ══════════════════════════════════════════════════════════════════
      Геометрия НЕ зависит от темы.
@@ -3656,23 +3756,36 @@
           <div class="tuner-tuning-btns">
             <button class="tuner-tuning-btn active" id="tunerTuningStandard" data-i18n="tunerTuningStandard">Оң бұрау · G3 / D3</button>
             <button class="tuner-tuning-btn" id="tunerTuningTeris" data-i18n="tunerTuningTeris">Теріс бұрау · G3 / C3</button>
+            <button class="tuner-tuning-btn" id="tunerTuningCustom" data-i18n="tunerTuningCustom">Произвольно</button>
           </div>
 
-          <div class="tuner-str-row">
+          <div class="tuner-str-row" id="tunerStrRow">
             <button class="tuner-str-btn active" id="tunerBtnBottom" data-str="bottom">
               <span class="tsn" data-i18n="tunerStrBottom">Нижняя</span>
               <span class="tsv" id="tunerBtnBottomNote">G3</span>
-              <span class="tsname" id="tunerBtnBottomName">Соль</span>
+              <span class="tsname" id="tunerBtnBottomName">Соль · 196 Гц</span>
             </button>
             <button class="tuner-str-btn" id="tunerBtnTop" data-str="top">
               <span class="tsn" data-i18n="tunerStrTop">Верхняя</span>
               <span class="tsv" id="tunerBtnTopNote">D3</span>
-              <span class="tsname" id="tunerBtnTopName">Ре</span>
+              <span class="tsname" id="tunerBtnTopName">Ре · 146.83 Гц</span>
             </button>
+          </div>
+
+          <!-- Произвольный режим: вместо выбора готовой струны — своё
+               число Гц. Скрыт по умолчанию, показывается вместо
+               .tuner-str-row при выборе "Произвольно" (см. setTunerTuning
+               в JS). Значение запоминается в localStorage. -->
+          <div class="tuner-custom-row" id="tunerCustomRow" hidden>
+            <label class="tuner-custom-label" for="tunerCustomHz" data-i18n="tunerCustomLabel">Частота, Гц</label>
+            <input type="number" id="tunerCustomHz" class="tuner-custom-input"
+                   min="50" max="1200" step="0.01" inputmode="decimal" placeholder="220">
+            <span class="tuner-custom-note" id="tunerCustomNote"></span>
           </div>
 
           <div class="tuner-note-row">
             <div class="tuner-note-big" id="tunerNoteOut">—</div>
+            <div class="tuner-note-hz" id="tunerNoteHz"></div>
             <div class="tuner-verdict" id="tunerVerdict" data-i18n="tunerHint">Выберите струну и нажмите старт</div>
           </div>
 
@@ -3721,10 +3834,9 @@
         <div class="scrub-wrap">
           <div class="scrub-label"><span data-i18n="startLabelPrefix">Начало: нота</span> <span id="startLabel">1</span> <span data-i18n="startLabelSuffix">— нажми на ноту, чтобы начать с неё</span></div>
           <div class="tab-legend">
-            <span><b data-i18n="shortBottom">Н</b> — <span data-i18n="legendBottom">нижняя струна</span></span>
-            <span><b data-i18n="shortTop">В</b> — <span data-i18n="legendTop">верхняя струна</span></span>
+            <span><b data-i18n="shortBottom">Н</b> — <span data-i18n="legendBottom">нижняя струна</span><span class="legend-tuning-bottom" hidden></span></span>
+            <span><b data-i18n="shortTop">В</b> — <span data-i18n="legendTop">верхняя струна</span><span class="legend-tuning-top" hidden></span></span>
             <span><span class="legend-stroke-glyph">↓↑</span> — <span data-i18n="legendStroke">удар</span></span>
-            <span class="legend-tuning" hidden></span>
           </div>
           <div class="tab-sheet" id="scrubTrack"></div>
         </div>
@@ -3739,10 +3851,9 @@
         <div class="karaoke-status" id="karaokeStatus" data-i18n="karaokeIntro">Нажми «Начать», разреши доступ к микрофону и играй мелодию на домбре вслед за подсветкой</div>
         <div class="karaoke-result" id="karaokeResult" style="display:none;"></div>
         <div class="tab-legend">
-          <span><b data-i18n="shortBottom">Н</b> — <span data-i18n="legendBottom">нижняя струна</span></span>
-          <span><b data-i18n="shortTop">В</b> — <span data-i18n="legendTop">верхняя струна</span></span>
+          <span><b data-i18n="shortBottom">Н</b> — <span data-i18n="legendBottom">нижняя струна</span><span class="legend-tuning-bottom" hidden></span></span>
+          <span><b data-i18n="shortTop">В</b> — <span data-i18n="legendTop">верхняя струна</span><span class="legend-tuning-top" hidden></span></span>
           <span><span class="legend-stroke-glyph">↓↑</span> — <span data-i18n="legendStroke">удар</span></span>
-            <span class="legend-tuning" hidden></span>
         </div>
         <div class="tab-sheet" id="karaokeTrack"></div>
       </div>
@@ -4040,6 +4151,8 @@ function mountDombraTrainer(container, opts = {}) {
       tunerTuningLabel: 'Строй',
       tunerTuningStandard: 'Стандартный строй · G3 / D3',
       tunerTuningTeris: 'Обратный строй · G3 / C3',
+      tunerTuningCustom: 'Произвольно',
+      tunerCustomLabel: 'Частота, Гц',
       tunerStrBottom: 'Нижняя струна',
       tunerStrTop: 'Верхняя струна',
       tunerHint: 'Выберите струну и нажмите старт',
@@ -4135,6 +4248,8 @@ function mountDombraTrainer(container, opts = {}) {
       tunerTuningLabel: 'Күй',
       tunerTuningStandard: 'Оң бұрау · G3 / D3',
       tunerTuningTeris: 'Теріс бұрау · G3 / C3',
+      tunerTuningCustom: 'Еркін',
+      tunerCustomLabel: 'Жиілік, Гц',
       tunerStrBottom: 'Астынғы ішек',
       tunerStrTop: 'Жоғарғы ішек',
       tunerHint: 'Ішекті таңдап, бастау түймесін бас',
@@ -4233,6 +4348,8 @@ function mountDombraTrainer(container, opts = {}) {
       tunerTuningLabel: 'Tuning',
       tunerTuningStandard: 'Standard tuning · G3 / D3',
       tunerTuningTeris: 'Reverse tuning · G3 / C3',
+      tunerTuningCustom: 'Custom',
+      tunerCustomLabel: 'Frequency, Hz',
       tunerStrBottom: 'Lower string',
       tunerStrTop: 'Upper string',
       tunerHint: 'Select a string and press start',
@@ -4331,6 +4448,8 @@ function mountDombraTrainer(container, opts = {}) {
       tunerTuningLabel: 'Akort',
       tunerTuningStandard: 'Standart akort · G3 / D3',
       tunerTuningTeris: 'Ters akort · G3 / C3',
+      tunerTuningCustom: 'Özel',
+      tunerCustomLabel: 'Frekans, Hz',
       tunerStrBottom: 'Alt tel',
       tunerStrTop: 'Üst tel',
       tunerHint: 'Bir tel seç ve başlat\'a bas',
@@ -5047,33 +5166,21 @@ function mountDombraTrainer(container, opts = {}) {
     topNotes = buildFretNoteNames(topNote);
     bottomNotes = buildFretNoteNames(bottomNote);
 
-    // струна, которая в этой мелодии вообще не звучит — её настройку в
+    // струна, которая в этой мелодии вообще не звучит — её частоту в
     // легенде не показываем (например, мелодия только на нижней струне)
     const usage = songStringUsage(song);
 
-    // строй в легенде нотного блока — у каждой мелодии он свой. Каждая
-    // задействованная струна — отдельной строкой: "Название - Нота (Частота Гц)"
-    root.querySelectorAll('.legend-tuning').forEach(el => {
-      if(!usage.bottom && !usage.top){
-        // не должно случаться (см. фолбэк в songStringUsage), но на
-        // всякий случай прячем блок целиком, а не показываем пустоту
-        el.hidden = true;
-        return;
-      }
-      el.hidden = false;
-      const fmt = (v) => Number(v.toFixed(2));
-      const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-      const lines = [], titleBits = [];
-      if(usage.bottom){
-        lines.push(`${cap(t('legendBottom'))} - ${bottomNote} (${fmt(OPEN_FREQ_BOTTOM)}\u00a0Гц)`);
-        titleBits.push(`${fmt(OPEN_FREQ_BOTTOM)} Hz`);
-      }
-      if(usage.top){
-        lines.push(`${cap(t('legendTop'))} - ${topNote} (${fmt(OPEN_FREQ_TOP)}\u00a0Гц)`);
-        titleBits.push(`${fmt(OPEN_FREQ_TOP)} Hz`);
-      }
-      el.innerHTML = lines.join('<br>');
-      el.title = titleBits.join(' / ');
+    // Частота — короткой припиской сразу после «Н — нижняя струна» /
+    // «В — верхняя струна» (раньше был отдельный 4-й элемент строки,
+    // дублировал те же слова «нижняя/верхняя струна» ещё раз).
+    const fmt = (v) => Number(v.toFixed(2));
+    root.querySelectorAll('.legend-tuning-bottom').forEach(el => {
+      el.hidden = !usage.bottom;
+      if(usage.bottom) el.textContent = ` (${bottomNote}, ${fmt(OPEN_FREQ_BOTTOM)}\u00a0Гц)`;
+    });
+    root.querySelectorAll('.legend-tuning-top').forEach(el => {
+      el.hidden = !usage.top;
+      if(usage.top) el.textContent = ` (${topNote}, ${fmt(OPEN_FREQ_TOP)}\u00a0Гц)`;
     });
     // перерисовываем гриф, чтобы data-note у ладов обновились под новый строй
     if(typeof render === 'function' && currentMode !== 'tuner') render();
@@ -5309,15 +5416,60 @@ function mountDombraTrainer(container, opts = {}) {
         }
       }
 
+      // На мобильном такт может быть длиннее целой строки (лимит строки —
+      // 8 ударов, а в такте их может быть и 12) — значит "не разрывать
+      // такт вообще", как на вебе, тут не получится физически. Но можно
+      // не допускать другого: чтобы по ОДНУ сторону разрыва оставалось
+      // 1-2 удара — на слух такт при этом разваливается, целостность
+      // теряется. Правило: с каждой стороны разрыва внутри такта — минимум
+      // MOBILE_MIN_CHUNK ударов. Планируем разрывы заранее по всей части
+      // (а не по ходу раскладки): решение зависит от того, сколько места
+      // ОСТАНЕТСЯ в строке, а это известно только заранее.
+      const MOBILE_MIN_CHUNK = 3;
+      const mobileBreakAfterK = new Set(); // k, после которой начинается новая строка
+      if(isMobileNow){
+        const barStarts = Object.keys(barLenAt).map(Number).sort((a,b)=>a-b);
+        let fillInLine = 0; // сколько ударов уже "виртуально" легло в строку
+        barStarts.forEach(barStart => {
+          let remain = barLenAt[barStart];
+          let offset = 0;
+          while(remain > 0){
+            let capacity = MOBILE_MAX_NOTES_PER_LINE - fillInLine;
+            // остаток строки меньше минимума, а такт только начинается —
+            // не запихиваем в него огрызок, сразу переносим такт целиком
+            if(capacity < MOBILE_MIN_CHUNK && offset === 0 && fillInLine > 0){
+              mobileBreakAfterK.add(barStart - 1);
+              fillInLine = 0;
+              capacity = MOBILE_MAX_NOTES_PER_LINE;
+            }
+            let take = Math.min(capacity, remain);
+            const leftover = remain - take;
+            // на СЛЕДУЮЩЕЙ строке от этого такта останется меньше минимума —
+            // подрезаем текущую порцию, чтобы там оказалось ровно 3
+            if(leftover > 0 && leftover < MOBILE_MIN_CHUNK && take - (MOBILE_MIN_CHUNK - leftover) >= MOBILE_MIN_CHUNK){
+              take -= (MOBILE_MIN_CHUNK - leftover);
+            }
+            offset += take;
+            remain -= take;
+            fillInLine += take;
+            if(remain > 0){
+              mobileBreakAfterK.add(barStart + offset - 1);
+              fillInLine = 0;
+            }
+          }
+        });
+      }
+
       for(let k = 0; k < group.count; k++){
         const i = group.from + k;
         const step = steps[i];
         const w = noteWidth(step);
 
-        // перенос строки на мобильном — но не ровно посередине легато-пары:
+        // перенос строки на мобильном — по заранее спланированным разрывам
+        // (см. mobileBreakAfterK выше), но не ровно посередине легато-пары:
         // если следующая нота должна дугой соединиться именно с этой, сначала
         // ставим текущую ноту, а разрыв строки сдвигаем на шаг позже
-        if(isMobileNow && notesInLine >= MOBILE_MAX_NOTES_PER_LINE){
+        if(isMobileNow && mobileBreakAfterK.has(k - 1)){
           const nextStep = steps[i+1];
           const nextWillLegatoToThis = nextStep && (
             (nextStep.legatoBottom && nextStep.bottom !== null && step.bottom !== null) ||
@@ -5653,12 +5805,17 @@ function mountDombraTrainer(container, opts = {}) {
   // предки, включая саму страницу: гриф уезжал вверх за край экрана, а
   // снизу вылезал заголовок SEO-текста.
   //
-  // По вертикали листаем ПАРАМИ строк: пока курсор идёт по строкам 0-1,
-  // лист стоит на месте; дойдя до строки 2 — подводим к началу пару 2-3.
-  // Раньше подводили каждую строку по отдельности, и запись дёргалась
-  // после каждой строки.
-  let lastScrolledPair = -1;
-  function resetTabScrollTracking(){ lastScrolledPair = -1; }
+  // По вертикали листаем ГРУППАМИ строк, а не после каждой: пока курсор
+  // идёт по строкам текущей группы, лист стоит на месте; дошёл до первой
+  // строки следующей группы — подводим её к началу.
+  //
+  // GROUP_SIZE=4 (раньше было 2 — запись двигалась слишком часто).
+  // Группу подводим к ВЕРХУ видимой области, а не к центру — именно
+  // поэтому в остатке места снизу всегда видно начало следующей группы,
+  // и понятно, куда идти дальше, а не упираешься в конец вслепую.
+  const TAB_SCROLL_GROUP_SIZE = 4;
+  let lastScrolledGroup = -1;
+  function resetTabScrollTracking(){ lastScrolledGroup = -1; }
 
   function scrollNoteIntoView(el){
     if(!el) return;
@@ -5684,20 +5841,22 @@ function mountDombraTrainer(container, opts = {}) {
     const idx = lines.indexOf(line);
     if(idx < 0) return;
 
-    const pair = Math.floor(idx / 2);
-    if(pair === lastScrolledPair) return;
-    lastScrolledPair = pair;
-    const firstOfPair = lines[pair * 2] || line;
+    const group = Math.floor(idx / TAB_SCROLL_GROUP_SIZE);
+    if(group === lastScrolledGroup) return;
+    lastScrolledGroup = group;
+    const firstOfGroup = lines[group * TAB_SCROLL_GROUP_SIZE] || line;
 
     if(container){
       const cRect = container.getBoundingClientRect();
-      const fRect = firstOfPair.getBoundingClientRect();
+      const fRect = firstOfGroup.getBoundingClientRect();
       const top = fRect.top - cRect.top + container.scrollTop - 8;
       container.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
     } else {
       // мобильный: своего скролла нет ни у листа, ни у колонки —
-      // прокручивается сама страница, это там нормально
-      firstOfPair.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // прокручивается сама страница. block:'start' (не 'center') —
+      // группа подводится к верху экрана, снизу остаётся место, где видно
+      // начало следующей группы, а не половина уже сыгранной.
+      firstOfGroup.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 
@@ -6625,6 +6784,11 @@ function setCharState(state){
     let tunerStream = null;
     let tunerAC = null, tunerAn = null, tunerSrc = null, tunerAnim = null;
 
+    // Произвольная частота — запоминаем между визитами (localStorage),
+    // при следующем заходе поле уже заполнено тем же числом
+    const CUSTOM_HZ_KEY = 'dombraTunerCustomHz';
+    const CUSTOM_HZ_MIN = 50, CUSTOM_HZ_MAX = 1200, CUSTOM_HZ_DEFAULT = 220;
+
     async function ensureMicStream(){
       if(tunerStream && tunerStream.active) return true;
       try{
@@ -6676,6 +6840,7 @@ function setCharState(state){
     const tunerBtnBottom     = byId('tunerBtnBottom');
     const tunerBtnTop        = byId('tunerBtnTop');
     const tunerNoteOut       = byId('tunerNoteOut');
+    const tunerNoteHz        = byId('tunerNoteHz');
 
     const tunerNeedleMover   = byId('tunerNeedleMover');
     const tunerNeedleBall    = byId('tunerNeedleBall');
@@ -6685,13 +6850,21 @@ function setCharState(state){
     const tunerStatus        = byId('tunerStatus');
     const tunerTuningStd     = byId('tunerTuningStandard');
     const tunerTuningTer     = byId('tunerTuningTeris');
+    const tunerTuningCustom  = byId('tunerTuningCustom');
+    const tunerStrRow        = byId('tunerStrRow');
+    const tunerCustomRow     = byId('tunerCustomRow');
+    const tunerCustomHz      = byId('tunerCustomHz');
+    const tunerCustomNote    = byId('tunerCustomNote');
+
+    // короткая частота без лишних нулей: 196.00 → "196", 146.83 → "146.83"
+    const fmtHz = (v) => Number(v.toFixed(2));
 
     function applyTunerTuning(){
       const tu = TUNINGS[tunerCur];
       byId('tunerBtnBottomNote').textContent = tu.bottom.note;
       byId('tunerBtnTopNote').textContent    = tu.top.note;
-      byId('tunerBtnBottomName').textContent = tu.bottom.name;
-      byId('tunerBtnTopName').textContent    = tu.top.name;
+      byId('tunerBtnBottomName').textContent = `${tu.bottom.name}\u00a0·\u00a0${fmtHz(tu.bottom.freq)}\u00a0Гц`;
+      byId('tunerBtnTopName').textContent    = `${tu.top.name}\u00a0·\u00a0${fmtHz(tu.top.freq)}\u00a0Гц`;
       selectTunerStr(tunerSel);
     }
 
@@ -6704,6 +6877,33 @@ function setCharState(state){
       tunerFreq = s.freq;
       tunerBtnBottom.classList.toggle('active', which === 'bottom');
       tunerBtnTop.classList.toggle('active',    which === 'top');
+      resetTunerDisplay();
+    }
+
+    // Произвольная частота: число не привязано к конкретной струне домбры
+    // (может быть вообще любой звук), поэтому подсветку струны на грифе
+    // не показываем — она осталась бы обманчивой.
+    //
+    // commit=false (по мере ввода, событие 'input'): подрезать пределами
+    // 50-1200 и переписывать САМО ПОЛЕ здесь нельзя — если это делать на
+    // каждое нажатие клавиши, поле переписывается быстрее, чем человек
+    // печатает следующую цифру, и ввести число вроде "196" невозможно
+    // физически (после "1" поле уже показывает "50", "9" прилипает к нему
+    // и получается "509", и так далее). Пока печатают — только двигаем
+    // цель стрелки, само поле не трогаем.
+    //
+    // commit=true (потеря фокуса / Enter / переключение на вкладку):
+    // человек закончил ввод — вот тут и подрезаем ВИДИМОЕ значение под
+    // границы и приводим пустое/нулевое поле к значению по умолчанию.
+    function applyCustomFreq(commit){
+      const raw = parseFloat(tunerCustomHz.value);
+      let hz = (isFinite(raw) && raw > 0) ? raw : CUSTOM_HZ_DEFAULT;
+      hz = Math.min(CUSTOM_HZ_MAX, Math.max(CUSTOM_HZ_MIN, hz));
+      if(commit) tunerCustomHz.value = hz;
+      tunerFreq = hz;
+      try{ localStorage.setItem(CUSTOM_HZ_KEY, String(hz)); }catch(e){}
+      tunerCustomNote.textContent = `≈ ${freqToNoteName(hz)}`;
+      if(typeof highlightTunerString === 'function') highlightTunerString(null);
       resetTunerDisplay();
     }
 
@@ -6724,6 +6924,7 @@ function setCharState(state){
 
     function resetTunerDisplay(){
       tunerNoteOut.textContent    = '—';
+      tunerNoteHz.textContent     = '';
 
       tunerNeedleBall.textContent = '0';
       tunerNeedleMover.style.left = '50%';
@@ -6751,13 +6952,32 @@ function setCharState(state){
       tunerCur = which;
       tunerTuningStd.classList.toggle('active', which === 'standard');
       tunerTuningTer.classList.toggle('active', which === 'teris');
-      applyTunerTuning();
+      tunerTuningCustom.classList.toggle('active', which === 'custom');
+      if(which === 'custom'){
+        tunerStrRow.hidden = true;
+        tunerCustomRow.hidden = false;
+        applyCustomFreq(true); // свежее открытие вкладки — сразу нормализуем поле
+      } else {
+        tunerStrRow.hidden = false;
+        tunerCustomRow.hidden = true;
+        applyTunerTuning();
+      }
     }
 
     tunerTuningStd.addEventListener('click', () => setTunerTuning('standard'));
     tunerTuningTer.addEventListener('click', () => setTunerTuning('teris'));
+    tunerTuningCustom.addEventListener('click', () => setTunerTuning('custom'));
     tunerBtnBottom.addEventListener('click', () => selectTunerStr('bottom'));
     tunerBtnTop.addEventListener('click',    () => selectTunerStr('top'));
+    // меняем ЦЕЛЬ для стрелки сразу по мере ввода — без ожидания потери
+    // фокуса, — но само поле во время печати не трогаем (см. комментарий
+    // у applyCustomFreq). А когда человек закончил — на потере фокуса или
+    // по Enter — подрезаем видимое значение под границы 50-1200.
+    tunerCustomHz.addEventListener('input', () => applyCustomFreq(false));
+    tunerCustomHz.addEventListener('blur', () => applyCustomFreq(true));
+    tunerCustomHz.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') tunerCustomHz.blur();
+    });
     tunerStartBtn.addEventListener('click', async () => {
       window.tunerRunning ? window.stopTuner() : await startTuner();
     });
@@ -6825,6 +7045,9 @@ function setCharState(state){
 
         moveTunerNeedle(smoothedCents);
         tunerNoteOut.textContent = tunerFreqToNote(medFreq);
+        // живая частота из микрофона рядом с распознанной нотой — именно
+        // её просили показывать "на полосе бегунок"
+        tunerNoteHz.textContent = `${fmtHz(medFreq)}\u00a0Гц`;
 
         const c = smoothedCents;
         if(Math.abs(c) < 8){
@@ -6874,6 +7097,15 @@ function setCharState(state){
     function tunerFreqToNote(f){
       const m = Math.round(12*Math.log2(f/440)+69);
       return NS[((m%12)+12)%12] + (Math.floor(m/12)-1);
+    }
+
+    // Восстанавливаем сохранённое значение в поле произвольной частоты —
+    // само поле показываем только при выборе "Произвольно" (setTunerTuning),
+    // но заполняем заранее, чтобы оно уже стояло к этому моменту.
+    {
+      let savedHz = null;
+      try{ savedHz = parseFloat(localStorage.getItem(CUSTOM_HZ_KEY)); }catch(e){}
+      tunerCustomHz.value = (isFinite(savedHz) && savedHz > 0) ? savedHz : CUSTOM_HZ_DEFAULT;
     }
 
     applyTunerTuning();
@@ -7531,6 +7763,21 @@ function launchFireworks(){
   };
 }
 window.mountDombraTrainer = mountDombraTrainer;
+
+// ── Автозапуск при прямом открытии файла ──
+// На настоящем сайте тренажёр запускает React (Trainer.jsx): он забирает
+// СОДЕРЖИМОЕ body (без самого тега <body>) и монтирует в свой <div>, так
+// что класс dombra-trainer оказывается на div, а не на body реальной
+// страницы сайта — там этот блок ниже не сработает, и это правильно,
+// иначе тренажёр смонтировался бы дважды.
+// А если открыть ЭТОТ файл сам по себе (двойным кликом, чтобы проверить
+// правки до заливки на GitHub) — <body class="dombra-trainer"> здесь
+// есть по-настоящему, и без этого блока страница была бы пустой: скрипт
+// определил бы mountDombraTrainer, но никто бы её не вызвал.
+if(document.body && document.body.classList.contains('dombra-trainer') && !document.body.dataset.mounted){
+  document.body.dataset.mounted = '1';
+  mountDombraTrainer(document.body, {});
+}
 </script>
 
 </body>
