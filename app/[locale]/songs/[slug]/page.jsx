@@ -4,8 +4,9 @@
 // «келіншек ноталары», «адай табы», «сандық нота» много, а конкуренция
 // почти нулевая — в выдаче ролики TikTok и файлы на старых сайтах.
 //
-// Текст рендерится на сервере, тренажёр подключается ниже в iframe
-// и открывается сразу на нужной мелодии через ?song={slug}.
+// Текст рендерится на сервере, тренажёр монтируется ниже клиентским
+// компонентом <Trainer> (без iframe) и открывается сразу на нужной
+// мелодии — slug передаётся ему пропом song.
 
 import { notFound } from 'next/navigation';
 import { locales, defaultLocale, getDictionary } from '@/lib/i18n';
@@ -13,7 +14,7 @@ import {
   getSongCatalog, getSongBySlug,
   songTitle, songAuthor, songParagraphs, songDifficulty, songGenres,
 } from '@/lib/songs';
-import TrainerFrame from '@/app/components/TrainerFrame';
+import Trainer from '@/app/components/Trainer';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://dombyra.kz';
 const HREFLANG = { kz: 'kk-KZ', ru: 'ru-KZ', en: 'en', tr: 'tr-TR' };
@@ -134,7 +135,11 @@ export default async function SongPage({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <TrainerFrame mode="normal" locale={locale} song={slug} title={title} />
+      {/* Режим «Обучение» (в тренажёре он называется normal). Колбэки
+          onModeChange/onLocaleChange здесь не передаём: на странице
+          мелодии переключение режима не меняет адрес — тренажёр просто
+          переключается внутри себя. */}
+      <Trainer mode="normal" locale={locale} song={slug} />
 
       <main className="mode-page">
         <nav className="song-crumbs" aria-label="breadcrumb">
