@@ -350,6 +350,29 @@
     padding:8px 14px;
     cursor:pointer;
     white-space:nowrap;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  /* Корона — фиксированный золотой цвет (#f5c518), не завязанный на
+     переменную --gold. У неё есть скрытый смысл, кроме имени, — это
+     "акцентный цвет темы", а не буквально золото: в светлой теме её
+     переопределяют на индиго (#5b4be8), в попапе настроек — на серый.
+     Если бы корона была currentColor или var(--gold), в светлой теме она
+     стала бы сине-фиолетовой вместе с фоном кнопки — не то, о чём просили.
+
+     viewBox теперь "3 8 18 11" (было "0 0 24 24") — обрезан ровно по
+     контуру самой короны, без пустых полей. У формы короны (зубцы вверху,
+     плоское основание внизу) пустого пространства в родном 24×24-квадрате
+     сверху было заметно больше (8 юнитов), чем снизу (5 юнитов) — из-за
+     этой асимметрии картинка внутри своей рамки визуально "сидела" не по
+     центру рамки, и центрирование по флексу (которое центрирует именно
+     РАМКУ, а не то, что внутри неё нарисовано) не помогало — текст рядом
+     всё равно казался съехавшим. Обрезанный viewBox устраняет этот перекос:
+     теперь рамка иконки плотно облегает саму корону. */
+  .auth-btn-crown{
+    flex:0 0 auto;
+    color:#f5c518;
   }
   .auth-btn-premium{
     background:var(--gold);
@@ -373,7 +396,13 @@
     text-overflow:ellipsis;
     white-space:nowrap;
   }
-  .auth-btn-label{ }
+  /* line-height:1 — без него высота строки текста больше 14px (высоты
+     короны), и flex-центрирование центрирует по этой большей строке;
+     из-за того, что браузер обычно распределяет "лишнее" межстрочное
+     пространство не поровну (чуть больше снизу буквы, чем сверху), текст
+     визуально съезжал на пару пикселей ниже короны, хотя формально оба
+     были "по центру" каждый в своей рамке. */
+  .auth-btn-label{ line-height:1; }
 
   /* ===== Компактная шапка на мобильных: две плотные строки вместо трёх ===== */
   @media (max-width:640px), (orientation:landscape) and (max-height:640px){
@@ -659,12 +688,60 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    width:96px;
-    height:96px;
-    margin:0 auto 4px;
-    font-size:64px;
+    flex:0 0 auto;
+    width:44px;
+    height:44px;
+    margin:0;
+    font-size:32px;
     line-height:1;
     transition:transform .15s ease;
+  }
+  /* Эмодзи — слева от ВСЕЙ СТРАНИЦЫ (position:fixed относительно окна
+     браузера), а не только от белого блока грифа. Причина: .content-shell
+     и .stage.horizontal (сам гриф) центрируются с ОДИНАКОВЫМ максимумом
+     ширины — гриф всегда заполняет контейнер целиком, впритык, свободного
+     места рядом с ним ВНУТРИ контейнера не бывает никогда. А вот снаружи
+     .content-shell, по бокам страницы, — есть, но только когда окно шире
+     содержимого (см. left ниже и медиа-запрос дальше — на узких окнах
+     эмодзи просто пропадает, там ему буквально негде быть).
+     Горизонталь (left) считает CSS от центра экрана — на десктопе
+     .content-shell почти всегда в режиме .web-compact (max-width:1100px),
+     это и есть тот самый частый случай, под него и посчитано:
+     650px(центр 1100 контейнера) + 24px отступ + 64px сама иконка.
+     Вертикаль (top) НЕЛЬЗЯ посчитать в CSS так же надёжно — высота
+     шапки+грифа не константа — её меряет и держит в синхроне JS
+     (positionKaraokeBadge, вызывается при переключении режима и на
+     resize), сюда пишем только запасное значение на случай, если JS
+     почему-то не успел отработать раньше первой отрисовки. */
+  .karaoke-sticky-head{
+    display:none; /* показываем только в режиме караоке, см. правило ниже */
+    position:fixed;
+    left:calc(50% - 638px);
+    top:50%;
+    transform:translateY(-50%);
+    z-index:5;
+    align-items:center;
+    justify-content:center;
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    background:rgba(var(--black-rgb),0.18);
+    border:1px solid rgba(var(--block-border-rgb),0.25);
+  }
+  .dombra-trainer.karaoke-mode .karaoke-sticky-head{
+    display:flex;
+  }
+  .dombra-trainer.light-mode .karaoke-sticky-head{
+    background:var(--surface);
+    border-color:var(--hairline);
+    box-shadow:var(--card-shadow);
+  }
+  /* На окнах уже ~1250px снаружи .content-shell не остаётся места без
+     наложения на белый блок — прячем совсем, как и договорились. */
+  @media (max-width:1250px){
+    .dombra-trainer.karaoke-mode .karaoke-sticky-head{
+      display:none;
+    }
   }
   .karaoke-char.happy{
     transform:scale(1.15);
@@ -672,14 +749,14 @@
   .karaoke-char.sad{
     transform:scale(0.95);
   }
-  .karaoke-status{
-    font-size:13px;
-    color:var(--cream-muted);
-    text-align:center;
-    margin:12px 0 16px;
-    min-height:34px;
-    line-height:1.4;
-  }
+  /* .karaoke-status раньше был видимым текстом рядом с эмодзи — теперь
+     это .sr-only-select (скрытый элемент для доступности, см. разметку),
+     собственных стилей ему больше не нужно. */
+  /* У записи больше нет ни своей внутренней прокрутки (см. предыдущую
+     правку), ни фоновой карточки — раньше серый фон визуально обозначал
+     границы той самой прокручиваемой рамки, но теперь запись — обычный
+     блок в общем потоке, как и в "Обучении" (там фона нет вообще), и
+     доставшийся по наследству фон стал просто лишним пятном без функции. */
   .karaoke-outer{
     display:flex;
     align-items:stretch;
@@ -1606,7 +1683,14 @@
     .tuner-note-big { font-size: 52px; }
     .tuner-needle-ball { width: 40px; height: 40px; font-size: 12px; }
   }
-  #tunerStage { display: none; width: 100%; align-self: center; }
+  /* align-self:start, а не center — раньше картинка с рукой была
+     привязана к центру ряда грида. Правая панель (карточки струн vs
+     поле ввода Гц) при переключении вкладок меняет высоту, ряд грида
+     высотой под это содержимое — при центрировании иллюстрация каждый
+     раз "переезжала" вверх/вниз следом за пересчётом центра, хотя её
+     собственный размер не менялся. align-self:start держит её у
+     верхнего края ряда всегда, независимо от высоты панели справа. */
+  #tunerStage { display: none; width: 100%; align-self: start; }
   .dombra-trainer.tuner-mode #tunerStage { display: block; }
   #tunerNeckSvg { display: block; width: 100%; height: auto; }
   /* на мобильном иллюстрация грифа с рукой в тюнере не показывается —
@@ -1676,6 +1760,15 @@
     .dombra-trainer.tuner-mode #tuner-row{
       flex:0 0 auto;
       overflow-y:visible;
+    }
+    /* На мобильном гриф скрыт (#stage{display:none}) — вместе с ним
+       прячем и эмодзи/статус: на маленьком экране без грифа рядом он не
+       даёт достаточно контекста, а места и так впритык — под ноты, а не
+       под ещё один блок сверху. Селектор ровно той же специфичности, что
+       и .dombra-trainer.karaoke-mode .karaoke-sticky-head{display:flex}
+       в базовых правилах — побеждает по порядку в файле, без !important. */
+    .dombra-trainer.karaoke-mode .karaoke-sticky-head{
+      display:none;
     }
   }
   /* ===== Веб-версия: масштаб заметно компактнее (65% от исходных
@@ -3601,7 +3694,12 @@
     </div>
     <div class="top-bar-right">
       <div class="auth-box" id="authBox">
-        <button id="loginBtn" class="auth-btn auth-btn-premium"><span class="auth-btn-label">Premium</span></button>
+        <button id="loginBtn" class="auth-btn auth-btn-premium">
+          <svg class="auth-btn-crown" width="16" height="10" viewBox="3 8 18 11" fill="currentColor" aria-hidden="true">
+            <path d="M3 19h18l-1.4-8.4-4.6 3.4-3-6-3 6-4.6-3.4L3 19z"/>
+          </svg>
+          <span class="auth-btn-label">Premium</span>
+        </button>
         <div id="userBox" class="user-box" style="display:none;">
           <span id="userEmail" class="user-email"></span>
           <button id="logoutBtn" class="auth-btn auth-btn-ghost">Выйти</button>
@@ -3643,6 +3741,26 @@
   </div>
 
   <div id="tuner-row">
+  <!-- Эмодзи караоке — слева от белого блока грифа, вертикально по
+       центру, В ПРОКРУЧИВАЕМОЙ ПИНК-ЗОНЕ (position:absolute относительно
+       #tuner-row, left вместо потока). Раньше стоял отдельной строкой
+       МЕЖДУ строкой песни и грифом — занимал место в потоке и подвигал
+       гриф+ноты вниз, отъедая высоту у самого важного (у нот). Сбоку —
+       ноль отнятой высоты: #tuner-row занимает всю ширину экрана, а
+       .stage (белый блок) центрирован и уже сейчас ýже — слева всегда
+       есть розовое поле. На мобильном скрыт вместе с грифом (там для
+       него нет ни места, ни контекста) — см. медиа-запрос ниже. Текст
+       статуса теперь не виден постоянно (не влезал бы сбоку без
+       отдельной ширины) — доступен через title при наведении на сам
+       эмодзи. -->
+  <div class="karaoke-sticky-head" id="karaokeStickyHead" title="Нажми «Начать», разреши доступ к микрофону и играй мелодию на домбре вслед за подсветкой">
+    <div id="karaokeChar" class="karaoke-char">😐</div>
+    <!-- Сам текст статуса больше не показывается визуально (эмодзи в
+         кружке сбоку, шире некуда) — но JS по-прежнему обновляет его на
+         каждый шаг игры (setKaraokeStatus), и он же дублируется в title
+         видимого кружка выше, чтобы подсказка была доступна при наведении. -->
+    <span class="sr-only-select" id="karaokeStatus" data-i18n="karaokeIntro">Нажми «Начать», разреши доступ к микрофону и играй мелодию на домбре вслед за подсветкой</span>
+  </div>
   <div class="stage" id="stage">
     <svg id="neckSvg" xmlns="http://www.w3.org/2000/svg"></svg>
     <div class="string-label" id="labelTop"></div>
@@ -3823,6 +3941,7 @@
   </div>
   </div>
   </div>
+
   </div>
 
   <div class="two-col-wrap">
@@ -3847,8 +3966,11 @@
       </div>
 
       <div id="karaokeRightContent">
-	    <div id="karaokeChar" class="karaoke-char">😐</div>
-        <div class="karaoke-status" id="karaokeStatus" data-i18n="karaokeIntro">Нажми «Начать», разреши доступ к микрофону и играй мелодию на домбре вслед за подсветкой</div>
+        <!-- Итог мелодии — скрыт по умолчанию (display:none), появляется
+             только когда мелодия доиграна (см. finishKaraoke в JS). Пока
+             скрыт, места не занимает вообще — поэтому его можно спокойно
+             держать здесь, а не в бейдже поверх грифа (там бы не влез по
+             смыслу — это не короткий статус, а результат с оценкой). -->
         <div class="karaoke-result" id="karaokeResult" style="display:none;"></div>
         <div class="tab-legend">
           <span><b data-i18n="shortBottom">Н</b> — <span data-i18n="legendBottom">нижняя струна</span><span class="legend-tuning-bottom" hidden></span></span>
@@ -5351,14 +5473,18 @@ function mountDombraTrainer(container, opts = {}) {
       {
         const title = document.createElement('div');
         title.className = 'tab-section-title';
-        // Номер части берём по порядку, а не из названия: в базе имена
-        // частей встречаются вида "X2", "2X2" — там повтор вписан прямо
-        // в название. Само число повторов лежит отдельным полем repeat,
-        // его и показываем как ×N.
+        // Имя части показываем ДОСЛОВНО из JSON — так же, как оно
+        // перечислено в модалке настроек ("Часть"). Раньше голое число
+        // ("2", "9"...) считалось технической заглушкой и подменялось на
+        // сквозной счётчик по порядку (1, 2, 3...) — но одинаковые имена
+        // у автора мелодий означают намеренный повтор той же части в
+        // другом месте, а не мусорное автонумерование, и от подмены
+        // терялась сама эта связь: «Часть 2» на экране могла оказаться
+        // вообще не тем, что записано в настройках под этим именем.
+        // Хвост вида "×2"/"x2" всё равно обрезаем — число повторов уже
+        // показывается отдельным бейджем ниже через group.repeat.
         const raw = (group.name || '').trim();
-        // название — просто номер, или маркер повтора, или их склейка?
-        const isBoilerplate = raw === '' || /^\d*\s*[xх×]?\s*\d*$/i.test(raw);
-        const label = isBoilerplate ? String(sectionNo) : raw.replace(/\s*[xх×]\s*\d+$/i, '').trim();
+        const label = raw ? raw.replace(/\s*[xх×]\s*\d+$/i, '').trim() : '';
         title.textContent = `${t('sectionLabel')} ${label || sectionNo}`;
         if(group.repeat > 1){
           const rep = document.createElement('span');
@@ -5393,9 +5519,9 @@ function mountDombraTrainer(container, opts = {}) {
       // "Мобильный" определяем по МЕНЬШЕЙ стороне экрана (а не просто по
       // ширине) — иначе телефон, повёрнутый боком, перестал бы считаться
       // мобильным, т.к. его ширина в landscape обычно больше 640px.
-      const MOBILE_PORTRAIT_MAX_NOTES = 8;
+      const MOBILE_PORTRAIT_MAX_NOTES = 7;
       const MOBILE_LANDSCAPE_MAX_NOTES = 16;
-      const WEB_MAX_NOTES_PER_LINE = 20;
+      const WEB_MAX_NOTES_PER_LINE = 25;
       const shortSide = Math.min(window.innerWidth, window.innerHeight);
       const isMobileNow = shortSide <= 640;
       const isLandscapeNow = window.innerWidth > window.innerHeight;
@@ -5417,14 +5543,14 @@ function mountDombraTrainer(container, opts = {}) {
       }
 
       // На мобильном такт может быть длиннее целой строки (лимит строки —
-      // 8 ударов, а в такте их может быть и 12) — значит "не разрывать
-      // такт вообще", как на вебе, тут не получится физически. Но можно
-      // не допускать другого: чтобы по ОДНУ сторону разрыва оставалось
-      // 1-2 удара — на слух такт при этом разваливается, целостность
-      // теряется. Правило: с каждой стороны разрыва внутри такта — минимум
-      // MOBILE_MIN_CHUNK ударов. Планируем разрывы заранее по всей части
-      // (а не по ходу раскладки): решение зависит от того, сколько места
-      // ОСТАНЕТСЯ в строке, а это известно только заранее.
+      // MOBILE_MAX_NOTES_PER_LINE ударов, а в такте их может быть и больше)
+      // — значит "не разрывать такт вообще", как на вебе, тут не получится
+      // физически. Но можно не допускать другого: чтобы по ОДНУ сторону
+      // разрыва оставалось 1-2 удара — на слух такт при этом разваливается,
+      // целостность теряется. Правило: с каждой стороны разрыва внутри
+      // такта — минимум MOBILE_MIN_CHUNK ударов. Планируем разрывы заранее
+      // по всей части (а не по ходу раскладки): решение зависит от того,
+      // сколько места ОСТАНЕТСЯ в строке, а это известно только заранее.
       const MOBILE_MIN_CHUNK = 3;
       const mobileBreakAfterK = new Set(); // k, после которой начинается новая строка
       if(isMobileNow){
@@ -5435,12 +5561,22 @@ function mountDombraTrainer(container, opts = {}) {
           let offset = 0;
           while(remain > 0){
             let capacity = MOBILE_MAX_NOTES_PER_LINE - fillInLine;
-            // остаток строки меньше минимума, а такт только начинается —
-            // не запихиваем в него огрызок, сразу переносим такт целиком
-            if(capacity < MOBILE_MIN_CHUNK && offset === 0 && fillInLine > 0){
-              mobileBreakAfterK.add(barStart - 1);
-              fillInLine = 0;
-              capacity = MOBILE_MAX_NOTES_PER_LINE;
+            // Такт не помещается в остаток строки целиком — но раньше тут
+            // проверялось только "остаток совсем маленький" (< MIN). Этого
+            // было мало: например при остатке 4 и такте на 5 нот получалось
+            // 4+1 — единственная нота-огрызок, потому что 1 < MIN, а взять
+            // меньше 4 с этой стороны разрыва было уже нельзя (иначе ЭТА
+            // сторона просела бы ниже MIN). Теперь проверяем ОБЕ стороны
+            // будущего разрыва заранее: если ни один вариант не даёт ≥3
+            // по обе стороны — вообще не делим тут, весь такт целиком
+            // уезжает на свежую строку с полной вместимостью.
+            if(remain > capacity && offset === 0 && fillInLine > 0){
+              const otherSide = remain - capacity;
+              if(capacity < MOBILE_MIN_CHUNK || otherSide < MOBILE_MIN_CHUNK){
+                mobileBreakAfterK.add(barStart - 1);
+                fillInLine = 0;
+                capacity = MOBILE_MAX_NOTES_PER_LINE;
+              }
             }
             let take = Math.min(capacity, remain);
             const leftover = remain - take;
@@ -5460,6 +5596,24 @@ function mountDombraTrainer(container, opts = {}) {
         });
       }
 
+      // Отложенный разрыв "держим" явным флагом, а не просто проверяем
+      // точку из mobileBreakAfterK на каждой ноте отдельно: если разрыв
+      // запланирован после ноты X, а нота X+1 тоже оказалась в легато-паре
+      // (сдвигаем ещё на шаг) — старая версия на этом теряла сам факт
+      // "разрыв ещё нужен" НАВСЕГДА, потому что следующая проверяемая
+      // точка (X+1) в mobileBreakAfterK не значилась вообще (там только
+      // X). Строка росла до СЛЕДУЮЩЕЙ запланированной точки, а не до
+      // ближайшей безопасной — на длинных легато-цепочках (много дуг
+      // подряд) это давало 12-16 нот в строке вместо 5-8.
+      let pendingMobileBreak = false;
+      // Жёсткий потолок — на случай, если ВСЯ цепочка нот сплошь в
+      // легато (такое в принципе возможно) и безопасной точки для
+      // разрыва не находится вообще. Без этого предохранителя строка
+      // росла бы неограниченно; с ним — рвём принудительно, дуга в этом
+      // редком случае отрисуется "оборванной" (без соединительной линии
+      // к следующей ноте), это лучше, чем нечитаемая стена нот.
+      const MOBILE_HARD_MAX_NOTES = MOBILE_MAX_NOTES_PER_LINE + 3;
+
       for(let k = 0; k < group.count; k++){
         const i = group.from + k;
         const step = steps[i];
@@ -5468,14 +5622,22 @@ function mountDombraTrainer(container, opts = {}) {
         // перенос строки на мобильном — по заранее спланированным разрывам
         // (см. mobileBreakAfterK выше), но не ровно посередине легато-пары:
         // если следующая нота должна дугой соединиться именно с этой, сначала
-        // ставим текущую ноту, а разрыв строки сдвигаем на шаг позже
-        if(isMobileNow && mobileBreakAfterK.has(k - 1)){
-          const nextStep = steps[i+1];
-          const nextWillLegatoToThis = nextStep && (
-            (nextStep.legatoBottom && nextStep.bottom !== null && step.bottom !== null) ||
-            (nextStep.legatoTop && nextStep.top !== null && step.top !== null)
-          );
-          if(!nextWillLegatoToThis) startLine();
+        // ставим текущую ноту, а разрыв строки сдвигаем на шаг позже —
+        // и это "позже" теперь держится флагом pendingMobileBreak, пока
+        // не найдётся первая безопасная нота (или не сработает потолок).
+        if(isMobileNow){
+          if(mobileBreakAfterK.has(k - 1)) pendingMobileBreak = true;
+          if(pendingMobileBreak){
+            const nextStep = steps[i+1];
+            const nextWillLegatoToThis = nextStep && (
+              (nextStep.legatoBottom && nextStep.bottom !== null && step.bottom !== null) ||
+              (nextStep.legatoTop && nextStep.top !== null && step.top !== null)
+            );
+            if(!nextWillLegatoToThis || notesInLine >= MOBILE_HARD_MAX_NOTES){
+              startLine();
+              pendingMobileBreak = false;
+            }
+          }
         }
 
         // веб: решение о переносе принимаем ТОЛЬКО на границе такта.
@@ -5577,6 +5739,35 @@ function mountDombraTrainer(container, opts = {}) {
   }
   updateWebCompactClass();
   window.addEventListener('resize', updateWebCompactClass);
+
+  // Эмодзи-бейдж караоке — слева от ВСЕЙ страницы (position:fixed), не
+  // просто "слева от грифа": .content-shell и .stage.horizontal центрируются
+  // с ОДИНАКОВЫМ максимумом (1300px), гриф заполняет контейнер целиком —
+  // свободного места СПРАВА/СЛЕВА от него внутри контейнера физически нет
+  // никогда. А вот СНАРУЖИ .content-shell, по бокам всей страницы, оно
+  // есть — но только когда окно шире 1300px (иначе .content-shell сам
+  // занимает всю ширину, и там тоже пусто не остаётся — см. CSS).
+  //
+  // Горизонталь считает CSS (calc от центра экрана, см. .karaoke-sticky-head)
+  // — она не меняется от контента. Вертикаль же зависит от фактической
+  // высоты шапки+грифа, а её нельзя надёжно посчитать заранее в CSS
+  // (высота шапки/грифа не фиксированные числа) — меряем по месту через
+  // getBoundingClientRect и держим в синхроне при изменении окна.
+  function positionKaraokeBadge(){
+    if(!root.classList.contains('karaoke-mode')) return;
+    const r = stage.getBoundingClientRect();
+    if(r.width === 0 && r.height === 0) return; // гриф ещё не отрисован/скрыт
+    karaokeStickyHead.style.top = (r.top + r.height / 2) + 'px';
+  }
+  // ОТДЕЛЬНЫЙ таймер, не tabResizeTimer выше — тот уже используется другим
+  // resize-слушателем (refreshSheets); общий таймер на двух независимых
+  // слушателях означал бы, что один постоянно отменяет отложенный вызов
+  // другого, и один из них реально никогда не срабатывал бы
+  let karaokeBadgeResizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(karaokeBadgeResizeTimer);
+    karaokeBadgeResizeTimer = setTimeout(positionKaraokeBadge, 200);
+  });
 
   // подстраховка: явно выставляем скорость по умолчанию (1×) при
   // загрузке — на случай, если какая-то особенность браузера (например,
@@ -6424,6 +6615,7 @@ function mountDombraTrainer(container, opts = {}) {
       resetStringHighlight();
       render();
       byId('handRow').appendChild(handGroup);
+      positionKaraokeBadge();
     } else if(mode === 'tuner'){
       render();
       applyTunerMirror();
@@ -6445,6 +6637,7 @@ function mountDombraTrainer(container, opts = {}) {
 
   const karaokeChar = byId('karaokeChar');
   const karaokeStatus = byId('karaokeStatus');
+  const karaokeStickyHead = byId('karaokeStickyHead');
   const karaokeTrack = byId('karaokeTrack');
   const karaokeStartBtn = byId('karaokeStartBtn');
   // karaokeStopBtn убран — karaokeStartBtn теперь сам переключается play/stop
@@ -6525,6 +6718,17 @@ function setCharState(state){
     karaokeChar.textContent = KARAOKE_EMOJI[state] || KARAOKE_EMOJI.neutral;
   }
 
+  // Текст статуса теперь не показывается визуально — эмодзи в кружке
+  // сбоку от грифа, места под текст нет вообще (см. .karaoke-sticky-head
+  // в CSS). karaokeStatus остаётся скрытым (sr-only) элементом с тем же
+  // текстом — для доступности и на случай, если понадобится обратно;
+  // title дублируется на ВИДИМЫЙ кружок (karaokeStickyHead), чтобы
+  // подсказка была доступна при наведении на сам эмодзи.
+  function setKaraokeStatus(text){
+    karaokeStatus.textContent = text;
+    karaokeStickyHead.title = text;
+  }
+
   // в ударе звучат обе струны — засчитываем попадание в любую из них
   function bestCentsFor(freq, targetFreqs){
     let best = 9999;
@@ -6539,22 +6743,49 @@ function setCharState(state){
   // это детектор одного чистого тона, а два одновременных звука сбивают его
   // на случайную частоту. Вместо этого честно проверяем спектр: звучит ли
   // энергия одновременно рядом с ОБЕИМИ нужными частотами.
-  function hasSpectralPeakNear(freqDataDb, sampleRate, fftSize, targetFreq, toleranceCents, refDb){
+  //
+  // Раньше "присутствует" проверялось относительно САМОЙ ГРОМКОЙ ТОЧКИ ВСЕГО
+  // СПЕКТРА. Это давало 2 бага разом:
+  // 1) В тишине спектр примерно ровный (шум микрофона) — "не тише самого
+  //    громкого места" тогда выполняется почти везде, попадание засчитывалось
+  //    даже когда ничего не играли.
+  // 2) Щипок домбры даёт широкополосный шум атаки сразу по всему спектру —
+  //    он легко попадает в тот же 18дБ порог независимо от того, какая
+  //    нота реально сыграна, отсюда "любая игра на двух струнах = зачёт".
+  //
+  // Теперь сравниваем НЕ с глобальным максимумом, а с локальным шумовым
+  // полом — медианой соседних частот ВОКРУГ цели (не самой цели). Так
+  // «пик» означает «здесь заметно громче, чем рядом», а не «не намного
+  // тише самого шумного места где-то в спектре».
+  function hasSpectralPeakNear(freqDataDb, sampleRate, fftSize, targetFreq, toleranceCents, aboveFloorDb){
     const binHz = sampleRate / fftSize;
     const ratio = Math.pow(2, toleranceCents / 1200);
     const lowBin = Math.max(0, Math.floor((targetFreq / ratio) / binHz));
     const highBin = Math.min(freqDataDb.length - 1, Math.ceil((targetFreq * ratio) / binHz));
-    let maxDb = -Infinity;
+    let peakDb = -Infinity;
     for(let b = lowBin; b <= highBin; b++){
-      if(freqDataDb[b] > maxDb) maxDb = freqDataDb[b];
+      if(freqDataDb[b] > peakDb) peakDb = freqDataDb[b];
     }
-    // «присутствует», если пик здесь не сильно тише самого громкого места во всём спектре
-    return maxDb > refDb - 18;
+    // шумовой пол — медиана бинов ВОКРУГ целевого окна (само окно исключено,
+    // иначе целевой пик влиял бы на собственный же порог сравнения)
+    const spanBins = Math.max(20, highBin - lowBin) * 4;
+    const floorLow = Math.max(0, lowBin - spanBins);
+    const floorHigh = Math.min(freqDataDb.length - 1, highBin + spanBins);
+    const samples = [];
+    for(let b = floorLow; b <= floorHigh; b++){
+      if(b >= lowBin && b <= highBin) continue;
+      samples.push(freqDataDb[b]);
+    }
+    samples.sort((a,b) => a-b);
+    const floorDb = samples.length ? samples[Math.floor(samples.length/2)] : -100;
+    return peakDb > floorDb + aboveFloorDb;
   }
-  function checkDualPresence(freqBuf, sampleRate, fftSize, targets){
-    let refDb = -Infinity;
-    for(let i=0; i<freqBuf.length; i++){ if(freqBuf[i] > refDb) refDb = freqBuf[i]; }
-    return targets.map(f => hasSpectralPeakNear(freqBuf, sampleRate, fftSize, f, 70, refDb));
+  function checkDualPresence(freqBuf, sampleRate, fftSize, targets, isSilent){
+    // тишина — сразу "не попал" по обеим целям, не считая пол/пик вообще:
+    // в почти ровном шумовом спектре локальный "пик" мог случайно найтись
+    // где угодно на пару дБ громче соседей и пройти порог
+    if(isSilent) return targets.map(() => false);
+    return targets.map(f => hasSpectralPeakNear(freqBuf, sampleRate, fftSize, f, 70, 12));
   }
 
   function buildKaraokeTrack(){
@@ -6575,7 +6806,7 @@ function setCharState(state){
       // allow="microphone" — обычная «дай разрешение» подсказка тут бесполезна
       let inIframe;
       try { inIframe = window.self !== window.top; } catch(err) { inIframe = true; }
-      karaokeStatus.textContent = inIframe ? t('micIframe') : t('micDenied');
+      setKaraokeStatus(inIframe ? t('micIframe') : t('micDenied'));
       console.error('[домбра] микрофон недоступен:', e);
       return;
     }
@@ -6593,7 +6824,11 @@ function setCharState(state){
     karaokeStartBtn.textContent = ICON_STOP;
     karaokeResult.style.display = 'none';
     setCharState('listening');
-    karaokeStatus.textContent = t('getReady');
+    setKaraokeStatus(t('getReady'));
+    // сброс счётчика групп строк (общий с "Обучением", см. resetTabScrollTracking)
+    // — без этого повторный запуск (или вторая мелодия за сеанс) мог решить,
+    // что уже "докрутили" до нужного места, и автопрокрутка молча не срабатывала
+    resetTabScrollTracking();
 
     const seq = activePlayback();
     buildKaraokeTrack();
@@ -6643,7 +6878,7 @@ function setCharState(state){
       // как правильную игру на домбре
       const askParts = stepParts(step).map(p =>
         `${p.name==='bottom'?t('stringBottomShort'):t('stringTopShort')} ${t('stringWord')} ${t('fretWord')} ${p.fret}`);
-      karaokeStatus.textContent = `${t('playThis')}: ${askParts.join(' + ')}`;
+      setKaraokeStatus(`${t('playThis')}: ${askParts.join(' + ')}`);
 
       // слушаем на протяжении длительности ноты, запоминаем лучшее (ближайшее) совпадение
       // слушаем на протяжении длительности ноты + небольшой запас на перехват (быстрые
@@ -6652,17 +6887,30 @@ function setCharState(state){
       const windowEnd = performance.now() + durMs + grace;
       let bestCents = 9999;
       let bestFreq = 0;
-      let bestDualHits = 0; // для двухструнных ударов: сколько из двух целей поймали одновременно
+      // для двухструнных ударов: сколько ЗАМЕРОВ подряд поймали каждую из
+      // двух целей (не "хоть раз за всё время ноты" — см. комментарий ниже)
+      const dualHitCounts = [0, 0];
+      let dualSampleCount = 0;
       while(performance.now() < windowEnd){
         if(karaokeToken !== myToken) break;
         if(isDual){
           // одна струна не спутает autoCorrelate, а вот две одновременно — легко.
           // поэтому вместо «угадать одну высоту» честно проверяем спектр на
           // присутствие энергии сразу у ОБЕИХ нужных частот
+          //
+          // RMS по временной области — тот же приём, что уже работает в
+          // тюнере (там порог 0.007) — отсеивает тишину ДО спектрального
+          // анализа: в тишине "локальный пик" мог случайно найтись где
+          // угодно на пару дБ громче соседей и пройти порог.
+          analyser.getFloatTimeDomainData(buf);
+          let rms = 0;
+          for(let k=0; k<buf.length; k++) rms += buf[k]*buf[k];
+          rms = Math.sqrt(rms/buf.length);
+          const silent = rms < 0.01;
           analyser.getFloatFrequencyData(freqBuf);
-          const hits = checkDualPresence(freqBuf, audioCtx.sampleRate, analyser.fftSize, targetFreqs);
-          const hitCount = hits.filter(Boolean).length;
-          if(hitCount > bestDualHits) bestDualHits = hitCount;
+          const hits = checkDualPresence(freqBuf, audioCtx.sampleRate, analyser.fftSize, targetFreqs, silent);
+          hits.forEach((h, k) => { if(h) dualHitCounts[k]++; });
+          dualSampleCount++;
         } else {
           analyser.getFloatTimeDomainData(buf);
           const freq = autoCorrelate(buf, audioCtx.sampleRate);
@@ -6674,9 +6922,19 @@ function setCharState(state){
         await new Promise(r => setTimeout(r, 40));
       }
       if(karaokeToken !== myToken) break;
+      // Засчитываем цель только если она звучала БОЛЬШУЮ ЧАСТЬ времени ноты
+      // (минимум половину замеров), а не "поймали хоть один раз за всё
+      // время". Раньше брали максимум за всю ноту (grade решал единственный
+      // удачный замер) — щипок домбры даёт короткий широкополосный шум
+      // атаки, который на долю секунды может случайно задеть обе целевые
+      // частоты сразу, и этот один "везучий" замер навсегда застолбливал
+      // зачёт для всей ноты — даже если реально играли что-то другое или
+      // вообще молчали (отсюда "горит зелёным, даже если ничего не играю").
+      const dualRequired = isDual ? Math.max(1, Math.ceil(dualSampleCount * 0.5)) : 0;
+      const bestDualHits = isDual ? dualHitCounts.filter(c => c >= dualRequired).length : 0;
       // диагностика только в консоли (F12) — обычный игрок это не видит
       if(isDual){
-        console.log(`[домбра] удар (2 струны) ${stepParts(step).map(p=>p.name+':'+p.fret).join('+')} · цель ${targetFreqs.map(f=>f.toFixed(1)).join('/')} Гц · поймано целей: ${bestDualHits}/2`);
+        console.log(`[домбра] удар (2 струны) ${stepParts(step).map(p=>p.name+':'+p.fret).join('+')} · цель ${targetFreqs.map(f=>f.toFixed(1)).join('/')} Гц · поймано целей: ${bestDualHits}/2 (замеров: ${dualHitCounts.join('/')} из ${dualSampleCount}, нужно ≥${dualRequired})`);
       } else {
         console.log(`[домбра] удар ${stepParts(step).map(p=>p.name+':'+p.fret).join('+')} · цель ${targetFreqs.map(f=>f.toFixed(1)).join('/')} Гц · услышано ${bestFreq.toFixed(1)} Гц · ${bestCents.toFixed(0)} центов`);
       }
@@ -6712,7 +6970,7 @@ function setCharState(state){
     karaokeStartBtn.innerHTML = ICON_MIC;
     }catch(e){
       console.error('[домбра] ошибка в режиме караоке:', e);
-      karaokeStatus.textContent = t('errorPrefix') + e.message;
+      setKaraokeStatus(t('errorPrefix') + e.message);
       if(micStream){ micStream.getTracks().forEach(t => t.stop()); micStream = null; }
       karaokeRunning = false;
       karaokeStartBtn.classList.remove('is-playing');
@@ -6741,7 +6999,7 @@ function setCharState(state){
     karaokeChar.textContent = SCORE_EMOJI[tier];
     if(tier === 'great' || tier === 'super') karaokeChar.classList.add('happy');
     if(tier === 'bad' || tier === 'notBad') karaokeChar.classList.add('sad');
-    karaokeStatus.textContent = t('done');
+    setKaraokeStatus(t('done'));
     karaokeResult.style.display = 'block';
     karaokeResult.innerHTML = `
   <div class="big-score">${score}%</div>
@@ -6760,7 +7018,7 @@ function setCharState(state){
     karaokeStartBtn.classList.remove('is-playing');
     karaokeStartBtn.innerHTML = ICON_MIC;
     setCharState(null);
-    karaokeStatus.textContent = t('stopped');
+    setKaraokeStatus(t('stopped'));
     karaokeTrack.querySelectorAll('.tab-note').forEach(s => s.classList.remove('current'));
   }
 
