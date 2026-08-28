@@ -106,6 +106,7 @@ body {
   line-height: 1.7;
 }
 .mode-page h1 {
+  font-family: var(--font-brand);
   font-size: clamp(26px, 4vw, 38px);
   line-height: 1.2;
   margin: 0 0 12px;
@@ -113,11 +114,11 @@ body {
 .mode-lead { font-size: 18px; margin: 0 0 32px; opacity: 0.85; }
 
 .mode-block { margin: 0 0 28px; }
-.mode-block h2 { font-size: 21px; margin: 0 0 8px; }
+.mode-block h2 { font-family: var(--font-brand); font-size: 21px; margin: 0 0 8px; }
 .mode-block p { margin: 0; opacity: 0.85; }
 
 .mode-faq { margin: 44px 0; }
-.mode-faq > h2 { font-size: 23px; margin: 0 0 16px; }
+.mode-faq > h2 { font-family: var(--font-brand); font-size: 23px; margin: 0 0 16px; }
 .mode-faq details {
   border: 1px solid rgba(127,127,127,0.2);
   border-radius: 14px;
