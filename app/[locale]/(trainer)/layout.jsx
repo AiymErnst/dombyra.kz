@@ -40,11 +40,20 @@ export default function TrainerLayout({ children }) {
         locale={locale}
         onModeChange={(newMode) => {
           const target = `/${locale}/${MODE_TO_PATH[newMode] || DEFAULT_MODE_PATH}`;
-          if (target !== pathname) router.push(target, { scroll: false });
+          // window.location.pathname, а не переменная pathname выше —
+          // та берётся из usePathname() и актуальна ровно на момент ЭТОГО
+          // рендера. Если кликнуть по вкладке второй раз, пока первый
+          // переход ещё не долетел (и компонент ещё не перерисовался с
+          // новым pathname), сравнение шло со СТАРЫМ значением — если
+          // цель второго клика случайно совпадала с ним, router.push
+          // тихо пропускался, хотя настоящий адрес в браузере был другим.
+          // window.location.pathname читается заново при каждом вызове —
+          // всегда актуален, в отличие от значения из замыкания.
+          if (target !== window.location.pathname) router.push(target, { scroll: false });
         }}
         onLocaleChange={(newLocale) => {
           const target = `/${newLocale}/${modePath}`;
-          if (target !== pathname) router.push(target, { scroll: false });
+          if (target !== window.location.pathname) router.push(target, { scroll: false });
         }}
       />
       {/* key={pathname} — без него бывало, что SEO-текст под тренажёром
