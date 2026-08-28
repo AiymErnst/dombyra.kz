@@ -353,6 +353,14 @@
     display:inline-flex;
     align-items:center;
     gap:6px;
+    /* корона+текст иногда переносились на 2 строки при нехватке места —
+       inline-flex сам по себе не должен переносить содержимое, но кнопка
+       как flex-элемент в .top-bar-right могла сжиматься (flex-shrink по
+       умолчанию разрешён) при недостатке ширины у самой шапки. Явно
+       запрещаем и то, и другое — при нехватке места кнопка теперь просто
+       не сожмётся ниже своего содержимого, а не перенесёт его на 2 строки. */
+    flex-wrap:nowrap;
+    flex-shrink:0;
   }
   /* Корона — фиксированный золотой цвет (#f5c518), не завязанный на
      переменную --gold. У неё есть скрытый смысл, кроме имени, — это
@@ -689,42 +697,40 @@
     align-items:center;
     justify-content:center;
     flex:0 0 auto;
-    width:44px;
-    height:44px;
+    width:64px;
+    height:64px;
     margin:0;
-    font-size:32px;
+    font-size:46px;
     line-height:1;
     transition:transform .15s ease;
   }
-  /* Эмодзи — слева от ВСЕЙ СТРАНИЦЫ (position:fixed относительно окна
-     браузера), а не только от белого блока грифа. Причина: .content-shell
-     и .stage.horizontal (сам гриф) центрируются с ОДИНАКОВЫМ максимумом
-     ширины — гриф всегда заполняет контейнер целиком, впритык, свободного
-     места рядом с ним ВНУТРИ контейнера не бывает никогда. А вот снаружи
-     .content-shell, по бокам страницы, — есть, но только когда окно шире
-     содержимого (см. left ниже и медиа-запрос дальше — на узких окнах
-     эмодзи просто пропадает, там ему буквально негде быть).
-     Горизонталь (left) считает CSS от центра экрана — на десктопе
-     .content-shell почти всегда в режиме .web-compact (max-width:1100px),
-     это и есть тот самый частый случай, под него и посчитано:
-     650px(центр 1100 контейнера) + 24px отступ + 64px сама иконка.
-     Вертикаль (top) НЕЛЬЗЯ посчитать в CSS так же надёжно — высота
-     шапки+грифа не константа — её меряет и держит в синхроне JS
-     (positionKaraokeBadge, вызывается при переключении режима и на
-     resize), сюда пишем только запасное значение на случай, если JS
-     почему-то не успел отработать раньше первой отрисовки. */
+  /* Карточка (эмодзи + текст статуса) — ВСЕГДА сбоку от ВСЕЙ СТРАНИЦЫ
+     (position:fixed относительно окна браузера), без условного отката в
+     строку по потоку. Пробовала умнее — JS мерил реальную границу грифа
+     (getBoundingClientRect) и по ней решал, докать сбоку или откатить в
+     запасную строку — но это решение иногда срабатывало раньше, чем
+     страница до конца отрисовывалась, и ошибочно откатывалось на запасной
+     вариант даже там, где места сбоку хватало. Возврат к простому и
+     рабочему: left считает CSS через calc() от центра экрана (половина
+     ширины контейнера в самом частом десктопном случае — .web-compact,
+     где контейнер ограничен 1100px — плюс отступ 24px и ширина самой
+     карточки 180px), не завязано на измерения вообще, всегда одно и то же.
+     top по-прежнему выставляет JS (positionKaraokeBadge) — высота
+     шапки+грифа не константа, calc() для неё не годится. */
   .karaoke-sticky-head{
     display:none; /* показываем только в режиме караоке, см. правило ниже */
     position:fixed;
-    left:calc(50% - 638px);
+    left:calc(50% - 754px);
     top:50%;
     transform:translateY(-50%);
     z-index:5;
+    flex-direction:column;
     align-items:center;
     justify-content:center;
-    width:64px;
-    height:64px;
-    border-radius:50%;
+    gap:8px;
+    width:180px;
+    padding:16px 14px;
+    border-radius:20px;
     background:rgba(var(--black-rgb),0.18);
     border:1px solid rgba(var(--block-border-rgb),0.25);
   }
@@ -736,12 +742,14 @@
     border-color:var(--hairline);
     box-shadow:var(--card-shadow);
   }
-  /* На окнах уже ~1250px снаружи .content-shell не остаётся места без
-     наложения на белый блок — прячем совсем, как и договорились. */
-  @media (max-width:1250px){
-    .dombra-trainer.karaoke-mode .karaoke-sticky-head{
-      display:none;
-    }
+  .karaoke-status{
+    font-size:13px;
+    line-height:1.35;
+    text-align:center;
+    color:var(--cream-muted);
+  }
+  .dombra-trainer.light-mode .karaoke-status{
+    color:var(--light-text-body);
   }
   .karaoke-char.happy{
     transform:scale(1.15);
@@ -807,25 +815,45 @@
   .karaoke-seg.ok .karaoke-cell.filled{ color:var(--grade-ok-text); }
   .karaoke-seg.miss{ background:var(--grade-miss); }
   .karaoke-seg.miss .karaoke-cell.filled{ color:var(--grade-miss-text); }
-  .karaoke-result{
-    margin-top:18px;
+  /* .karaoke-result-modal — содержимое попапа с итогом мелодии.
+     .song-modal/.song-modal-overlay уже дают карточку с фоном/тенью/
+     кнопкой закрытия — здесь только то, что специфично для самого
+     контента (эмодзи, крупный процент, текст, кнопка "заново"). */
+  .karaoke-result-body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
     text-align:center;
-    background:linear-gradient(180deg, rgba(var(--gold-rgb),0.1), rgba(var(--gold-rgb),0.02));
-    border:1px solid rgba(var(--gold-rgb),0.35);
-    border-radius:14px;
-    padding:18px 22px;
-    width:100%;
+    gap:10px;
+    padding:8px 4px 4px;
   }
-  .karaoke-result .big-score{
+  .karaoke-result-emoji{
+    font-size:64px;
+    line-height:1;
+  }
+  .big-score{
     font-family:'Playfair Display', serif;
-    font-size:36px;
+    font-size:44px;
     color:var(--gold-soft);
   }
-  .karaoke-result .score-msg{
-    font-size:13px;
+  .score-msg{
+    font-size:14px;
     color:var(--cream-muted);
-    margin-top:6px;
+    line-height:1.5;
   }
+  .karaoke-result-again{
+    margin-top:8px;
+    font-family:'Inter', sans-serif;
+    font-size:14px;
+    font-weight:600;
+    color:#fff;
+    background:var(--gold);
+    border:none;
+    border-radius:999px;
+    padding:10px 24px;
+    cursor:pointer;
+  }
+  .karaoke-result-again:hover{ opacity:0.9; }
   .fret-marker{
     fill:var(--white);
     opacity:0.4;
@@ -3741,25 +3769,19 @@
   </div>
 
   <div id="tuner-row">
-  <!-- Эмодзи караоке — слева от белого блока грифа, вертикально по
-       центру, В ПРОКРУЧИВАЕМОЙ ПИНК-ЗОНЕ (position:absolute относительно
-       #tuner-row, left вместо потока). Раньше стоял отдельной строкой
-       МЕЖДУ строкой песни и грифом — занимал место в потоке и подвигал
-       гриф+ноты вниз, отъедая высоту у самого важного (у нот). Сбоку —
-       ноль отнятой высоты: #tuner-row занимает всю ширину экрана, а
-       .stage (белый блок) центрирован и уже сейчас ýже — слева всегда
-       есть розовое поле. На мобильном скрыт вместе с грифом (там для
-       него нет ни места, ни контекста) — см. медиа-запрос ниже. Текст
-       статуса теперь не виден постоянно (не влезал бы сбоку без
-       отдельной ширины) — доступен через title при наведении на сам
-       эмодзи. -->
-  <div class="karaoke-sticky-head" id="karaokeStickyHead" title="Нажми «Начать», разреши доступ к микрофону и играй мелодию на домбре вслед за подсветкой">
+  <!-- Эмодзи+статус караоке — слева от ВСЕЙ СТРАНИЦЫ (position:fixed
+       относительно окна браузера), вертикально по центру грифа. Причина
+       брать за ориентир окно, а не белый блок грифа: .content-shell и
+       .stage.horizontal центрируются с ОДИНАКОВЫМ максимумом ширины —
+       гриф всегда заполняет контейнер целиком, впритык, свободного места
+       рядом с ним ВНУТРИ контейнера не бывает никогда. А вот снаружи
+       .content-shell, по бокам страницы, — есть, но только на достаточно
+       широких окнах (см. медиа-запрос в CSS — на узких окнах эмодзи
+       пропадает, там ему буквально негде быть). На мобильном скрыт
+       вместе с грифом. -->
+  <div class="karaoke-sticky-head" id="karaokeStickyHead">
     <div id="karaokeChar" class="karaoke-char">😐</div>
-    <!-- Сам текст статуса больше не показывается визуально (эмодзи в
-         кружке сбоку, шире некуда) — но JS по-прежнему обновляет его на
-         каждый шаг игры (setKaraokeStatus), и он же дублируется в title
-         видимого кружка выше, чтобы подсказка была доступна при наведении. -->
-    <span class="sr-only-select" id="karaokeStatus" data-i18n="karaokeIntro">Нажми «Начать», разреши доступ к микрофону и играй мелодию на домбре вслед за подсветкой</span>
+    <div class="karaoke-status" id="karaokeStatus" data-i18n="karaokeIntro">Нажми «Начать», разреши доступ к микрофону и играй мелодию на домбре вслед за подсветкой</div>
   </div>
   <div class="stage" id="stage">
     <svg id="neckSvg" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -3966,12 +3988,6 @@
       </div>
 
       <div id="karaokeRightContent">
-        <!-- Итог мелодии — скрыт по умолчанию (display:none), появляется
-             только когда мелодия доиграна (см. finishKaraoke в JS). Пока
-             скрыт, места не занимает вообще — поэтому его можно спокойно
-             держать здесь, а не в бейдже поверх грифа (там бы не влез по
-             смыслу — это не короткий статус, а результат с оценкой). -->
-        <div class="karaoke-result" id="karaokeResult" style="display:none;"></div>
         <div class="tab-legend">
           <span><b data-i18n="shortBottom">Н</b> — <span data-i18n="legendBottom">нижняя струна</span><span class="legend-tuning-bottom" hidden></span></span>
           <span><b data-i18n="shortTop">В</b> — <span data-i18n="legendTop">верхняя струна</span><span class="legend-tuning-top" hidden></span></span>
@@ -4136,6 +4152,29 @@
     </div>
   </div>
 
+  <!-- Итог мелодии — раньше был инлайн-блоком НАД нотами внутри
+       прокручиваемой области: скрыт по умолчанию, появлялся только в
+       конце — но пользователь к этому моменту обычно уже проскроллил
+       вниз по ходу игры, и результат просто оказывался выше видимой
+       области. Без прокрутки наверх выглядело так, будто ничего не
+       произошло. Модалка — тот же самый паттерн, что и у остальных
+       попапов (.song-modal-overlay/.song-modal, см. settingsModalOverlay
+       выше) — показывается поверх всего, скроллить никуда не нужно. -->
+  <div id="karaokeResultOverlay" class="song-modal-overlay" style="display:none;">
+    <div class="song-modal karaoke-result-modal" role="dialog" aria-modal="true" aria-label="Нәтиже">
+      <div class="song-modal-header">
+        <div class="settings-modal-title" data-i18n="karaokeResultTitle">Нәтиже</div>
+        <button type="button" id="karaokeResultClose" class="song-modal-close" aria-label="Жабу">✕</button>
+      </div>
+      <div class="settings-modal-body karaoke-result-body">
+        <div class="karaoke-result-emoji" id="karaokeResultEmoji">🥳</div>
+        <div class="big-score" id="karaokeResultScore">0%</div>
+        <div class="score-msg" id="karaokeResultMsg"></div>
+        <button type="button" class="karaoke-result-again" id="karaokeResultAgain" data-i18n="karaokeTryAgain">Қайта ойнау</button>
+      </div>
+    </div>
+  </div>
+
 <canvas id="fireworksCanvas" class="fireworks-canvas"></canvas>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <!-- Реальные записи инструментов для второго голоса (минусовки).
@@ -4235,6 +4274,8 @@ function mountDombraTrainer(container, opts = {}) {
       speedLabel: 'Скорость',
       panelHint: 'Выбери лад на грифе',
       karaokeIntro: 'Нажми «Бастау», разреши доступ к микрофону и играй мелодию на домбре вслед за подсветкой',
+      karaokeResultTitle: 'Итог',
+      karaokeTryAgain: 'Попробовать снова',
       gradeGreat: '✓ Попал(а)',
       gradeOk: '~ Почти',
       gradeMiss: '✕ Пропуск',
@@ -4335,6 +4376,8 @@ function mountDombraTrainer(container, opts = {}) {
       speedLabel: 'Жылдамдық',
       panelHint: 'Грифтен перне таңда',
       karaokeIntro: '«Бастау» түймесін бас, микрофонға рұқсат бер және жарықтандыруға сай домбырада ойна',
+      karaokeResultTitle: 'Нәтиже',
+      karaokeTryAgain: 'Қайта ойнау',
       karaokeStartBtn: 'Бастау',
       frameBottom: 'Астынғы ішек',
       frameTop: 'Жоғарғы ішек',
@@ -4432,6 +4475,8 @@ function mountDombraTrainer(container, opts = {}) {
       speedLabel: 'Speed',
       panelHint: 'Choose a fret on the neck',
       karaokeIntro: 'Press "Start", allow microphone access, and play the melody on your dombra following the highlights',
+      karaokeResultTitle: 'Result',
+      karaokeTryAgain: 'Try again',
       gradeGreat: '✓ Nailed it',
       gradeOk: '~ Close',
       gradeMiss: '✕ Missed',
@@ -4532,6 +4577,8 @@ function mountDombraTrainer(container, opts = {}) {
       speedLabel: 'Hız',
       panelHint: 'Sap üzerinden bir perde seç',
       karaokeIntro: '"Başlat"a bas, mikrofona izin ver ve ışıklandırmayı takip ederek melodiyi dombrada çal',
+      karaokeResultTitle: 'Sonuç',
+      karaokeTryAgain: 'Tekrar dene',
       gradeGreat: '✓ Tam isabet',
       gradeOk: '~ Yakın',
       gradeMiss: '✕ Kaçırdın',
@@ -5740,19 +5787,16 @@ function mountDombraTrainer(container, opts = {}) {
   updateWebCompactClass();
   window.addEventListener('resize', updateWebCompactClass);
 
-  // Эмодзи-бейдж караоке — слева от ВСЕЙ страницы (position:fixed), не
-  // просто "слева от грифа": .content-shell и .stage.horizontal центрируются
-  // с ОДИНАКОВЫМ максимумом (1300px), гриф заполняет контейнер целиком —
-  // свободного места СПРАВА/СЛЕВА от него внутри контейнера физически нет
-  // никогда. А вот СНАРУЖИ .content-shell, по бокам всей страницы, оно
-  // есть — но только когда окно шире 1300px (иначе .content-shell сам
-  // занимает всю ширину, и там тоже пусто не остаётся — см. CSS).
-  //
-  // Горизонталь считает CSS (calc от центра экрана, см. .karaoke-sticky-head)
-  // — она не меняется от контента. Вертикаль же зависит от фактической
-  // высоты шапки+грифа, а её нельзя надёжно посчитать заранее в CSS
-  // (высота шапки/грифа не фиксированные числа) — меряем по месту через
-  // getBoundingClientRect и держим в синхроне при изменении окна.
+  // Эмодзи-бейдж караоке — ВСЕГДА слева от всей страницы (position:fixed
+  // безусловно, чистым CSS через calc(), без попыток JS-ом измерять и
+  // решать "поместится сбоку или нет"). Пробовала умнее — JS мерил реальные
+  // координаты грифа и по ним решал, докать бейдж сбоку или откатить на
+  // запасную строку в потоке — но это решение иногда срабатывало раньше,
+  // чем страница до конца отрисовывалась, ошибочно считало "места нет" и
+  // откатывалось на запасной вариант даже там, где места хватало. Возврат
+  // к простому и рабочему: горизонталь всегда одна и та же, безусловно.
+  // Вертикаль (top) по-прежнему меряет JS — высота шапки+грифа не константа,
+  // а calc() для неё в принципе не годится.
   function positionKaraokeBadge(){
     if(!root.classList.contains('karaoke-mode')) return;
     const r = stage.getBoundingClientRect();
@@ -5768,6 +5812,15 @@ function mountDombraTrainer(container, opts = {}) {
     clearTimeout(karaokeBadgeResizeTimer);
     karaokeBadgeResizeTimer = setTimeout(positionKaraokeBadge, 200);
   });
+  // ResizeObserver — сам браузер сообщает, когда РЕАЛЬНО поменялся размер
+  // .stage (в том числе после доигравшего CSS-перехода max-width, после
+  // подгрузки шрифтов и т.п.), вместо того чтобы гадать таймерами "сколько
+  // ждать". Три ручных вызова в модальном переключателе (сразу/кадр/250мс)
+  // это подстраховка на случай, если сам observer чуть задержится с первым
+  // срабатыванием, но именно это должно ловить все реальные случаи.
+  if(typeof ResizeObserver === 'function'){
+    new ResizeObserver(() => positionKaraokeBadge()).observe(stage);
+  }
 
   // подстраховка: явно выставляем скорость по умолчанию (1×) при
   // загрузке — на случай, если какая-то особенность браузера (например,
@@ -6615,7 +6668,16 @@ function mountDombraTrainer(container, opts = {}) {
       resetStringHighlight();
       render();
       byId('handRow').appendChild(handGroup);
+      // Один вызов сразу может измерить ещё не устоявшуюся раскладку —
+      // у .stage есть CSS-переход по ширине (transition: max-width .2s
+      // ease), и если он ещё доигрывает в момент замера, координаты
+      // снимаются с промежуточного состояния, а не с финального. Три
+      // попытки (сразу, через кадр, и через 250мс — чуть больше
+      // длительности перехода) почти ничего не стоят, зато перекрывают
+      // и этот случай, и обычную задержку раскладки/шрифтов.
       positionKaraokeBadge();
+      requestAnimationFrame(positionKaraokeBadge);
+      setTimeout(positionKaraokeBadge, 250);
     } else if(mode === 'tuner'){
       render();
       applyTunerMirror();
@@ -6641,7 +6703,6 @@ function mountDombraTrainer(container, opts = {}) {
   const karaokeTrack = byId('karaokeTrack');
   const karaokeStartBtn = byId('karaokeStartBtn');
   // karaokeStopBtn убран — karaokeStartBtn теперь сам переключается play/stop
-  const karaokeResult = byId('karaokeResult');
 
   let micStream = null;
   let analyser = null;
@@ -6718,15 +6779,8 @@ function setCharState(state){
     karaokeChar.textContent = KARAOKE_EMOJI[state] || KARAOKE_EMOJI.neutral;
   }
 
-  // Текст статуса теперь не показывается визуально — эмодзи в кружке
-  // сбоку от грифа, места под текст нет вообще (см. .karaoke-sticky-head
-  // в CSS). karaokeStatus остаётся скрытым (sr-only) элементом с тем же
-  // текстом — для доступности и на случай, если понадобится обратно;
-  // title дублируется на ВИДИМЫЙ кружок (karaokeStickyHead), чтобы
-  // подсказка была доступна при наведении на сам эмодзи.
   function setKaraokeStatus(text){
     karaokeStatus.textContent = text;
-    karaokeStickyHead.title = text;
   }
 
   // в ударе звучат обе струны — засчитываем попадание в любую из них
@@ -6814,6 +6868,16 @@ function setCharState(state){
     try{
 
     ensureAudioCtx();
+    // audioCtx общий с проигрыванием мелодии (создаётся один раз на всё
+    // приложение, см. ensureAudioCtx) — если где-то раньше он был
+    // приостановлен (suspended), микрофон технически подключается, но
+    // анализатор ничего не слышит: getFloatTimeDomainData на
+    // приостановленном контексте отдаёт тишину/устаревшие данные молча,
+    // без единой ошибки в консоли. У тюнера (свой отдельный audioCtx,
+    // tunerAC) эта проверка уже была — тут её не было вообще, добавляю.
+    if(audioCtx.state === 'suspended'){
+      await audioCtx.resume();
+    }
     const micSource = audioCtx.createMediaStreamSource(micStream);
     analyser = audioCtx.createAnalyser();
     analyser.fftSize = 2048;
@@ -6822,7 +6886,8 @@ function setCharState(state){
     karaokeRunning = true;
     karaokeStartBtn.classList.add('is-playing');
     karaokeStartBtn.textContent = ICON_STOP;
-    karaokeResult.style.display = 'none';
+    // на случай повторного запуска — закрываем модалку итога прошлой попытки
+    closeKaraokeResultModal();
     setCharState('listening');
     setKaraokeStatus(t('getReady'));
     // сброс счётчика групп строк (общий с "Обучением", см. resetTabScrollTracking)
@@ -6995,21 +7060,55 @@ function setCharState(state){
     else if(score < 100){ msg = t('scoreSuper'); tier = 'super'; }
     else { msg = t('scorePerfect'); tier = 'super'; }
 
+    // Маленький эмодзи в бейдже у грифа тоже отражает итог — виден сразу,
+    // без открытия модалки, а при её открытии повторяется уже крупно.
     karaokeChar.classList.remove('happy','sad','listening');
     karaokeChar.textContent = SCORE_EMOJI[tier];
     if(tier === 'great' || tier === 'super') karaokeChar.classList.add('happy');
     if(tier === 'bad' || tier === 'notBad') karaokeChar.classList.add('sad');
     setKaraokeStatus(t('done'));
-    karaokeResult.style.display = 'block';
-    karaokeResult.innerHTML = `
-  <div class="big-score">${score}%</div>
-  <div class="score-msg">${msg}<br>${t('exact')}: ${great} · ${t('almost')}: ${ok} · ${t('missed')}: ${total-great-ok}</div>
-`;
+
+    // Итог — модальным окном, а не инлайн-блоком над нотами: тот способ
+    // требовал прокрутки страницы наверх, чтобы его увидеть (пользователь
+    // к концу игры обычно уже проскроллил вниз вслед за автопрокруткой
+    // нот), и выглядело так, будто ничего не произошло.
+    karaokeResultEmoji.textContent = SCORE_EMOJI[tier];
+    karaokeResultScore.textContent = `${score}%`;
+    karaokeResultMsg.innerHTML = `${msg}<br>${t('exact')}: ${great} · ${t('almost')}: ${ok} · ${t('missed')}: ${total-great-ok}`;
+    openKaraokeResultModal();
 
     if(score === 100 && typeof launchFireworks === 'function'){
       launchFireworks();
     }
   }
+
+  const karaokeResultOverlay = byId('karaokeResultOverlay');
+  const karaokeResultEmoji   = byId('karaokeResultEmoji');
+  const karaokeResultScore   = byId('karaokeResultScore');
+  const karaokeResultMsg     = byId('karaokeResultMsg');
+  const karaokeResultClose   = byId('karaokeResultClose');
+  const karaokeResultAgain   = byId('karaokeResultAgain');
+
+  function openKaraokeResultModal(){
+    karaokeResultOverlay.style.display = 'flex';
+    // смайлик сбоку от грифа дублирует тот же смайлик в модалке — прячем,
+    // пока модалка открыта, чтобы не показывать одно и то же дважды
+    karaokeStickyHead.style.visibility = 'hidden';
+  }
+  function closeKaraokeResultModal(){
+    karaokeResultOverlay.style.display = 'none';
+    karaokeStickyHead.style.visibility = '';
+  }
+  karaokeResultClose.addEventListener('click', closeKaraokeResultModal);
+  // клик по тёмной подложке закрывает — тот же паттерн, что у остальных
+  // попапов (settingsModalOverlay/songModalOverlay)
+  karaokeResultOverlay.addEventListener('click', (e) => {
+    if(e.target === karaokeResultOverlay) closeKaraokeResultModal();
+  });
+  karaokeResultAgain.addEventListener('click', () => {
+    closeKaraokeResultModal();
+    startKaraoke();
+  });
 
   function stopKaraoke(){
     karaokeToken++;
@@ -7138,9 +7237,11 @@ function setCharState(state){
       resetTunerDisplay();
     }
 
-    // Произвольная частота: число не привязано к конкретной струне домбры
-    // (может быть вообще любой звук), поэтому подсветку струны на грифе
-    // не показываем — она осталась бы обманчивой.
+    // Произвольная частота: число не привязано к конкретной струне домбры —
+    // им можно настроить ЛЮБУЮ из двух струн. Раньше здесь подсветка струн
+    // на грифе гасилась совсем (число ведь не значит "именно эта струна") —
+    // но так было неясно, что настраивать можно обе. Подсвечиваем сразу
+    // обе (см. highlightTunerString('both') ниже).
     //
     // commit=false (по мере ввода, событие 'input'): подрезать пределами
     // 50-1200 и переписывать САМО ПОЛЕ здесь нельзя — если это делать на
@@ -7161,7 +7262,11 @@ function setCharState(state){
       tunerFreq = hz;
       try{ localStorage.setItem(CUSTOM_HZ_KEY, String(hz)); }catch(e){}
       tunerCustomNote.textContent = `≈ ${freqToNoteName(hz)}`;
-      if(typeof highlightTunerString === 'function') highlightTunerString(null);
+      // 'both' — раньше здесь было null (гасило подсветку струн совсем).
+      // В произвольном строе число не привязано к конкретной струне —
+      // им можно настраивать любую из двух, поэтому подсвечиваем сразу
+      // обе: так понятно, что доступны обе, а не только одна конкретная.
+      if(typeof highlightTunerString === 'function') highlightTunerString('both');
       resetTunerDisplay();
     }
 
@@ -7378,6 +7483,9 @@ function setCharState(state){
   }
 
   // Подсветка активной струны в режиме тюнера
+  // which: 'bottom' | 'top' | 'both' (произвольный строй — число не
+  // привязано к одной конкретной струне, можно настроить любую из двух,
+  // поэтому подсвечиваем сразу обе, а не гасим подсветку совсем) | null
   function highlightTunerString(which){
     const bg = byId('tStrBottomGlow');
     const tg = byId('tStrTopGlow');
@@ -7385,10 +7493,12 @@ function setCharState(state){
     const bs = byId('tStrBottom');
     const ts = byId('tStrTop');
     if(!bg || !tg) return;
-    bg.style.opacity = which === 'bottom' ? '1' : '0';
-    tg.style.opacity = which === 'top'    ? '1' : '0';
-    if(bs) bs.style.opacity = which === 'bottom' ? '0.85' : '0.35';
-    if(ts) ts.style.opacity = which === 'top'    ? '0.85' : '0.3';
+    const bottomOn = which === 'bottom' || which === 'both';
+    const topOn = which === 'top' || which === 'both';
+    bg.style.opacity = bottomOn ? '1' : '0';
+    tg.style.opacity = topOn ? '1' : '0';
+    if(bs) bs.style.opacity = bottomOn ? '0.85' : '0.35';
+    if(ts) ts.style.opacity = topOn ? '0.85' : '0.3';
   }
 
   let vibrateAnimId = null;
