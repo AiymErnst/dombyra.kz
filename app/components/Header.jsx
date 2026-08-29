@@ -132,7 +132,7 @@ export default function Header({
 
           <nav className="flex flex-col">
             {NAV_LINKS.map((link) => (
-              
+              <a
                 key={link.key}
                 href={navHref(link, locale, isLanding)}
                 onClick={close}
