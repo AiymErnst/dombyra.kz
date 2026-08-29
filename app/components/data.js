@@ -127,7 +127,7 @@ export const VIDEOS = [
 // пункты остаются.
 export const NAV_LINKS = [
   { href: "#catalog", key: "catalog", type: "anchor" },
-  { href: "/learn", key: "trainer", type: "page" },
+  { href: "/learn", key: "trainer", type: "page", badge: "FREE" },
   { href: "/tuner", key: "tuner", type: "page", badge: "FREE" },
   { href: "/karaoke", key: "karaoke", type: "page", badge: "FREE" },
   { href: "/blog", key: "blog", type: "page" },
