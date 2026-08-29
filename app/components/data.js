@@ -110,18 +110,28 @@ export const VIDEOS = [
 ];
 
 // текст подписей больше не хранится здесь — только ключи, соответствующие
-// locales/*.json → nav (catalog, certificate, trainer, tuner, why, reviews, blog).
-// trainer/tuner ведут сразу на страницы инструмента (не на секции лендинга) —
-// остальные пункты остаются якорями, т.к. отдельных страниц под них нет
+// locales/*.json → nav (catalog, trainer, tuner, karaoke, blog, why).
+// trainer/tuner/karaoke ведут сразу на страницы инструмента (не на секции
+// лендинга).
+//
+// "why" — раньше был якорем на блок "Почему именно мы", но этот блок
+// убрали как отдельную секцию (преимущества переехали в начало каталога).
+// Теперь "why" (в шапке подписан как "О нас") ведёт на отдельную
+// страницу /about — как type: "page", а не anchor. Ключ в dict.nav
+// оставила прежним ("why"), чтобы не трогать locales/*.json лишний раз —
+// это просто внутренний идентификатор пункта меню, на подпись не влияет.
+//
+// "certificate" и "reviews" убраны из шапки по просьбе Айым — секции
+// #certificate и #reviews на лендинге остались, просто на них больше нет
+// прямой ссылки в навигации. FOOTER_LINKS ниже не трогали: в футере эти
+// пункты остаются.
 export const NAV_LINKS = [
-  { href: "#catalog",     key: "catalog",     type: "anchor" },
-  { href: "#certificate", key: "certificate", type: "anchor" },
-  { href: "/learn",       key: "trainer",     type: "page" },
-  { href: "/tuner",       key: "tuner",       type: "page", badge: "FREE" },
-  { href: "/karaoke",     key: "karaoke",     type: "page", badge: "FREE" },
-  { href: "/blog",        key: "blog",        type: "page" },
-  { href: "#why",         key: "why",         type: "anchor" },
-  { href: "#reviews",     key: "reviews",     type: "anchor" },
+  { href: "#catalog", key: "catalog", type: "anchor" },
+  { href: "/learn", key: "trainer", type: "page" },
+  { href: "/tuner", key: "tuner", type: "page", badge: "FREE" },
+  { href: "/karaoke", key: "karaoke", type: "page", badge: "FREE" },
+  { href: "/blog", key: "blog", type: "page" },
+  { href: "/about", key: "why", type: "page" },
 ];
 export const FOOTER_LINKS = [
   {
