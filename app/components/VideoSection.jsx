@@ -24,7 +24,7 @@ export default function VideoSection({ playingVideo, onPlay, dict }) {
       <div className="px-5 lg:mx-auto lg:max-w-[1180px] lg:px-7">
         <SectionEyebrow>{t.eyebrow || "YOUTUBE"}</SectionEyebrow>
         <h2 className="mt-3 font-brand text-[28px] font-extrabold uppercase tracking-[-0.025em] sm:text-[34px] lg:text-[46px]">
-          {t.title1 || "Смотреть"}{" "}
+          {t.title1 || "Смотреть"} {" "}
           <span className="font-display italic normal-case font-normal tracking-normal text-brand-blue">
             {t.title2 || "и слушать"}
           </span>
@@ -38,8 +38,8 @@ export default function VideoSection({ playingVideo, onPlay, dict }) {
         className="mt-6 flex gap-3 overflow-x-auto px-5 pb-2 [scroll-snap-type:x_mandatory] lg:mx-auto lg:max-w-[1180px] lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-7"
       >
         {videos.map((video, i) => (
-          <div key={video.id} className="w-[270px] flex-none [scroll-snap-align:start] lg:w-auto">
-            <div className="relative h-[160px] overflow-hidden rounded-2xl border border-brand-border bg-brand-bg">
+          <div key={video.id} className="w-[320px] sm:w-[360px] flex-none [scroll-snap-align:start] lg:w-auto">
+            <div className="relative aspect-video overflow-hidden rounded-2xl border border-brand-border bg-brand-bg">
               {playingVideo === i ? (
                 <iframe
                   src={`https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0`}
