@@ -74,7 +74,7 @@ export default function Header({
 
         <nav className="hidden items-center gap-6 lg:flex">
           {NAV_LINKS.map((link) => (
-            
+            <a
               key={link.key}
               href={navHref(link, locale, isLanding)}
               className="flex items-center gap-1.5 font-brand text-[13px] font-semibold text-brand-ink hover:text-brand-teal"
