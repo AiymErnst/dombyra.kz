@@ -18,28 +18,28 @@
     "language": "LANGUAGE"
   },
   "hero": {
-  "badge": "PROFESSIONAL QUALITY DOMBRAS",
-  "titleLine1": "Dombyra",
-  "titleLine2": "is your voice",
-  "subtitle": "Handcrafted solid-wood instruments — assembled, tuned and tested by hand. A sound you can hear from the very first note.",
-  "productName": "«ASYL»",
-  "productDesc": "spruce / maple · 185,000 ₸",
-  "cta": "Buy"
-},
-"stats": {
-  "since": {
-    "year": "1998",
-    "label": "the year our master luthier started"
+    "badge": "PROFESSIONAL QUALITY DOMBRAS",
+    "titleLine1": "Dombyra",
+    "titleLine2": "The Voice of the Steppes",
+    "subtitle": "Handcrafted solid-wood instruments — assembled, tuned and tested by hand. A sound you can hear from the very first note.",
+    "productName": "«dombyra.kz»",
+    "productDesc": "Educate | Create | Promote",
+    "cta": "Buy"
   },
-  "launch": {
-    "year": "2015",
-    "label": "dombyra.kz was launched"
+  "stats": {
+    "since": {
+      "year": "1998",
+      "label": "the year our master luthier started"
+    },
+    "launch": {
+      "year": "2015",
+      "label": "dombyra.kz was launched"
+    },
+    "clients": {
+      "value": "10,000+",
+      "label": "customers worldwide"
+    }
   },
-  "clients": {
-    "value": "10,000+",
-    "label": "customers worldwide"
-  }
-},
   "pages": {
     "home": {
       "title": "Dombra Online — Tuner, Tablature and Karaoke",
@@ -62,10 +62,26 @@
       ]
     },
     "catalog": {
-  "title": "Dombra Catalog",
-  "subtitle": "Handmade, with a certificate of authenticity. Price from 100,000 ₸, depending on the wood, decorations, and 925 silver plating.",
-  "viewAll": "View full catalog"
-},
+      "title": "Dombra Catalog",
+      "subtitle": "Handmade, with a certificate of authenticity. Price from 100,000 ₸, depending on the wood, decorations, and 925 silver plating.",
+      "viewAll": "View full catalog",
+      "title1": "Dombra",
+      "title2": "catalog",
+      "priceFrom": "from",
+      "advantages": [
+        "3-year warranty",
+        "Free trainer",
+        "Experienced masters",
+        "Premium quality",
+        "Quality materials",
+        "Exclusive designs",
+        "Superb sound",
+        "Free delivery across Kazakhstan"
+      ],
+      "articleCallout": "Buying your first dombra? Read the article before you choose.",
+      "articleLinkText": "How to choose a dombra",
+      "articleSlug": "kak-vybrat-dombru"
+    },
     "tuner": {
       "title": "Dombra Tuner Online — Tune by Microphone, Free",
       "description": "Tune your Kazakh dombra online: the microphone detects each string and shows how sharp or flat it is. Standard G3/D3 and reverse G3/C3 tunings. Free, no sign-up.",
@@ -238,39 +254,305 @@
       "delivery": "Delivery & warranty"
     }
   },
-  "cards": [
-  { "ph": "GIF: fret hints", "caption": "Frets light up in the tempo of the melody" },
-  { "ph": "GIF: pitch check", "caption": "The trainer hears wrong notes and corrects you" },
-  { "ph": "GIF: progress and melodies", "caption": "Track your progress across 40 melodies" }
-],
-  "karaokeSteps": [
-  { "num": "01", "title": "Turn on the microphone", "desc": "One click — and the trainer hears your dombra" },
-  { "num": "02", "title": "Watch the highlighting", "desc": "Frets light up in the tempo of the melody" },
-  { "num": "03", "title": "See mistakes instantly", "desc": "A wrong note lights up red" },
-  { "num": "04", "title": "Play your favorite kuis", "desc": "From simple melodies to complex pieces" }
-],
   "catalogPage": {
-  "metaTitle": "Dombra Catalog — dombyra.kz",
-  "metaDescription": "Handmade dombras with a certificate of authenticity. Price depends on wood type, decorations and 925 silver plating.",
-  "title": "Dombra Catalog",
-  "lead": "Every dombra is handmade and comes with a certificate of authenticity.",
-  "priceNote": "The final price depends on the chosen wood type, additional decorations and 925 silver plating — please confirm the exact price when ordering.",
-  "priceNoteShort": "The final price depends on wood type, decorations and 925 silver plating.",
-  "priceFrom": "from",
-  "silverTag": "silver 925",
-  "silverOption": "925 silver option available",
-  "decorationOption": "Additional decorations",
-  "woodLabel": "Wood types",
-  "orderCta": "Order / ask for price",
-  "showMore": "Show more",
-  "loading": "Loading…",
-  "empty": "The catalog is empty for now",
-  "noPhoto": "Dombra photo",
-  "articlesTitle": "Before you choose",
-  "articles": [
-    { "slug": "kak-vybrat-dombru", "title": "How to choose your first dombra" },
-    { "slug": "dombra-dlya-rebenka", "title": "A dombra for a child: where to start" },
-    { "slug": "tuning-difference", "title": "Standard vs reverse tuning explained" }
+    "metaTitle": "Dombra Catalog — dombyra.kz",
+    "metaDescription": "Handmade dombras with a certificate of authenticity. Price depends on wood type, decorations and 925 silver plating.",
+    "title": "Dombra Catalog",
+    "lead": "Every dombra is handmade and comes with a certificate of authenticity.",
+    "priceNote": "The final price depends on the chosen wood type, additional decorations and 925 silver plating — please confirm the exact price when ordering.",
+    "priceNoteShort": "The final price depends on wood type, decorations and 925 silver plating.",
+    "priceFrom": "from",
+    "silverTag": "silver 925",
+    "silverOption": "925 silver option available",
+    "decorationOption": "Additional decorations",
+    "woodLabel": "Wood types",
+    "orderCta": "Order / ask for price",
+    "showMore": "Show more",
+    "loading": "Loading…",
+    "empty": "The catalog is empty for now",
+    "noPhoto": "Dombra photo",
+    "articlesTitle": "Before you choose",
+    "articles": [
+      {
+        "slug": "kak-vybrat-dombru",
+        "title": "How to choose your first dombra"
+      },
+      {
+        "slug": "dombra-dlya-rebenka",
+        "title": "A dombra for a child: where to start"
+      },
+      {
+        "slug": "tuning-difference",
+        "title": "Standard vs reverse tuning explained"
+      }
     ]
+  },
+  "forWhom": {
+    "badge": "WHO IT'S FOR",
+    "title1": "The dombra isn't just an instrument — it's ",
+    "titleAccent": "a tradition",
+    "subtitle": "You don't need to be a musician to play the dombra. You can play just for yourself, for the soul, with simple tunes that warm the heart. You can start learning at any age.",
+    "quoteMain": "Нағыз қазақ — қазақ емес, нағыз қазақ — домбыра!",
+    "quoteSub": "It's said for a reason: a dombra should hang in every Kazakh home. It's part of a culture that lives in the walls and passes from generation to generation.",
+    "cards": [
+      {
+        "title": "Tradition and a connection to your roots",
+        "text": "A dombra is something you'll pass on to your children. Family evenings with music will stay with them for life.",
+        "conclusion": "If you value tradition — the dombra is for you.",
+        "tag": "Family",
+        "photoHints": [
+          "Photo: a family playing at home",
+          "Photo: elders teaching the young"
+        ]
+      },
+      {
+        "title": "It decorates a space",
+        "text": "Not just an instrument — a piece of interior design with real meaning. You can admire it like a painting.",
+        "conclusion": "Want to decorate your home with something alive — the dombra is for you.",
+        "tag": "Interior",
+        "photoHints": [
+          "Photo: a dombra on the wall",
+          "Photo: in a bright interior"
+        ]
+      },
+      {
+        "title": "A prestigious gift",
+        "text": "A living piece of musical history — a fitting gift for a colleague, a manager, or a foreign guest.",
+        "conclusion": "Looking for a memorable, prestigious gift — this is the dombra.",
+        "tag": "Gift",
+        "photoHints": [
+          "Photo: gift, packaging",
+          "Photo: presenting the gift"
+        ]
+      },
+      {
+        "title": "Good for the mind and body",
+        "text": "Trains memory and patience, develops finger dexterity — at any age.",
+        "conclusion": "Want a useful hobby — the dombra is for you.",
+        "tag": "Growth",
+        "photoHints": [
+          "Photo: hands on the fretboard",
+          "Photo: a child learning"
+        ]
+      }
+    ]
+  },
+  "certificate": {
+    "eyebrow": "AUTHENTICITY",
+    "title1": "Nagyz Qazaq",
+    "title2": "certificate",
+    "subtitle": "Every instrument comes with a personal certificate: wood type, master's name, build date and unit number. Along with the dombra you get the certificate, a sticker pack and a soft case.",
+    "photoCaption": "Photo of the «Nagyz Qazaq» certificate",
+    "points": [
+      "A unique number and the master's handwritten signature",
+      "A QR code with an audio recording and the instrument's passport",
+      "Confirms handcrafted work and the wood's origin"
+    ],
+    "bundleLabel": "Comes with every dombra",
+    "stickerPhotoCaption": "photo — A5 sticker pack",
+    "stickerTitle": "A5 sticker pack",
+    "stickerDesc": "A real printed set of dombra stickers — packed in the box together with the certificate",
+    "casePhotoCaption": "photo — soft case",
+    "caseTitle": "Soft case",
+    "caseDesc": "For carrying and protecting the instrument — included"
+  },
+  "trainerPromo": {
+    "eyebrow": "TRAINER",
+    "title1": "Learn to play",
+    "title2": "in just ",
+    "titleAccent": "an hour",
+    "subtitle": "The trainer shows you where to place your fingers and listens to your playing through the microphone. Kuis and songs — right in the browser, no install.",
+    "tunerPhotos": [
+      {
+        "ph": "photo — string out of tune, needle off-centre",
+        "caption": "Hears the string's pitch and shows which way to turn the peg"
+      },
+      {
+        "ph": "photo — needle in the green zone, centred",
+        "caption": "Needle centred — the tuning is perfect"
+      }
+    ],
+    "trainerCards": [
+      {
+        "ph": "GIF: fret hints",
+        "caption": "Frets light up in the tempo of the melody"
+      },
+      {
+        "ph": "GIF: pitch check",
+        "caption": "The trainer hears wrong notes and corrects you"
+      },
+      {
+        "ph": "GIF: progress and melodies",
+        "caption": "Track your progress across 40 melodies"
+      }
+    ],
+    "trainerSteps": [
+      {
+        "num": "01",
+        "title": "Pick a melody",
+        "desc": "From simple tunes to complex kuis"
+      },
+      {
+        "num": "02",
+        "title": "Watch the hints",
+        "desc": "Frets light up in the tempo of the melody"
+      },
+      {
+        "num": "03",
+        "title": "Play into the mic",
+        "desc": "The trainer hears your playing and corrects you"
+      },
+      {
+        "num": "04",
+        "title": "Free, right away",
+        "desc": "No install — straight in the browser"
+      }
+    ],
+    "openTrainerCta": "Open the trainer",
+    "tunerTitle1": "Free",
+    "tunerTitle2": "dombra tuner",
+    "tunerSubtitle": "It lives on the same page as the trainer. Turn on the microphone — and the D–G tuning will be clean in a minute, no ear training or experience needed.",
+    "tunerSteps": [
+      {
+        "num": "01",
+        "title": "Hears both strings",
+        "desc": "D and G are detected automatically"
+      },
+      {
+        "num": "02",
+        "title": "±1 cent accuracy",
+        "desc": "The needle shows which way to turn the peg"
+      },
+      {
+        "num": "03",
+        "title": "No installation",
+        "desc": "Works right in your phone's browser"
+      },
+      {
+        "num": "04",
+        "title": "Free for everyone",
+        "desc": "No sign-up, no payment"
+      }
+    ],
+    "tunerCta": "Tune your dombra",
+    "tunerFootnote": "The tuner and trainer live on the same page",
+    "karaokeTitle1": "Karaoke",
+    "karaokeTitle2": "for the dombra",
+    "karaokeSubtitle": "The microphone listens to your playing and lights up the frets in real time — you instantly see what you missed and what to replay.",
+    "karaokeCards": [
+      {
+        "ph": "photo — exact hit, green highlight",
+        "caption": "An accurate note lights up green"
+      },
+      {
+        "ph": "photo — result: note-by-note breakdown",
+        "caption": "At the end — a score and a breakdown of mistakes"
+      },
+      {
+        "ph": "photo — playing with the mic, frets lit in time",
+        "caption": "You play — the mic listens to every note"
+      }
+    ],
+    "karaokeSteps": [
+      {
+        "num": "01",
+        "title": "Turn on the microphone",
+        "desc": "One click — and the trainer hears your dombra"
+      },
+      {
+        "num": "02",
+        "title": "Watch the highlighting",
+        "desc": "Frets light up in the tempo of the melody"
+      },
+      {
+        "num": "03",
+        "title": "See mistakes instantly",
+        "desc": "A wrong note lights up red"
+      },
+      {
+        "num": "04",
+        "title": "Play your favorite kuis",
+        "desc": "From simple melodies to complex pieces"
+      }
+    ],
+    "karaokeCta": "Play karaoke",
+    "karaokeFootnote": "Free, no install, no sign-up"
+  },
+  "reviews": {
+    "eyebrow": "REVIEWS",
+    "title1": "What musicians",
+    "title2": "say",
+    "ratingLine": "★★★★★ 4.9 out of 5 · 412 reviews",
+    "items": [
+      {
+        "text": "Got the «Dala» for concerts. It holds tune all evening, the sound is full and doesn't buzz through amplification. Solid case — I've flown with it three times.",
+        "name": "Alisher K.",
+        "role": "dombra player, Astana"
+      },
+      {
+        "text": "Bought the «Turan» for my 9-year-old daughter. They helped pick the size for her hand and sent an audio recording before payment. A month later she's playing a kui.",
+        "name": "Dinara S.",
+        "role": "Almaty"
+      },
+      {
+        "text": "Ordered to Berlin. Arrived in nine days, not a single crack. The master answered every care question over messenger.",
+        "name": "Yerzhan M.",
+        "role": "Berlin"
+      }
+    ],
+    "scrollHint": "← Swipe"
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title1": "Frequently",
+    "title2": "asked questions",
+    "items": [
+      {
+        "q": "How does a beginner choose a dombra?",
+        "a": "Start with the «Turan» model: soft string tension and a narrow neck. Send us your height and hand size — we'll suggest two or three options and send audio recordings."
+      },
+      {
+        "q": "How long does delivery take?",
+        "a": "Almaty — courier the same day. Other cities in Kazakhstan — 1–2 days. International shipping — 5–9 days, we send the tracking number on WhatsApp."
+      },
+      {
+        "q": "Can I hear the instrument before buying?",
+        "a": "Yes. Every dombra in the catalog has an audio recording and a 360° video. We can also do a live video call from the workshop."
+      },
+      {
+        "q": "Is instalment payment available?",
+        "a": "Kaspi Red and 0-0-12 instalments on all models over 100,000 ₸. For companies — invoice and bank transfer."
+      },
+      {
+        "q": "What if the instrument doesn't suit me?",
+        "a": "14 days to return it in its original packaging — we refund the full price and cover the return shipping."
+      }
+    ]
+  },
+  "video": {
+    "eyebrow": "YOUTUBE",
+    "title1": "Watch",
+    "title2": "and listen",
+    "subtitle": "Workshop footage, model reviews and short lessons.",
+    "titles": [
+      "Lesson 1. The dombra's structure and how to tune it.",
+      "5 common mistakes when playing the dombra",
+      "Lesson 5. The song «Erkem-ai»"
+    ],
+    "playLabel": "Play",
+    "channelCta": "Our YouTube channel"
+  },
+  "leadForm": {
+    "title1": "We'll match",
+    "title2": "a dombra",
+    "title3": "to your hand",
+    "subtitle": "The master will message you on WhatsApp and send audio recordings of three suitable instruments — no forms, just tap the button.",
+    "cta": "Message on WhatsApp",
+    "prefillMessage": "Hello! Please help me choose a dombra."
+  },
+  "stickyBar": {
+    "title": "Not sure which one to pick?",
+    "subtitle": "We'll help in 5 minutes",
+    "cta": "Buy"
   }
 }
