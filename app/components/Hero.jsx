@@ -24,7 +24,7 @@ export default function Hero({ sentinelRef, dict, locale }) {
     <>
       {/* ---------- обложка ---------- */}
       <section className="relative h-[92vh] min-h-[560px] w-full overflow-hidden bg-brand-ink">
-        <Placeholder>Фото домбры — светлый премиальный кадр, во весь экран</Placeholder>
+        <Placeholder><img src="/content/IMG_6974.png" alt="Домбыра" className="absolute inset-0 h-full w-full object-cover" /></Placeholder>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/25 to-transparent" />
 
         <div className="absolute inset-x-0 bottom-0 px-5 pb-10 lg:px-12 lg:pb-16">
@@ -45,7 +45,7 @@ export default function Hero({ sentinelRef, dict, locale }) {
             </p>
 
             <div className="mt-6 flex flex-wrap items-center gap-4">
-              
+              <a  
                 href="#catalog"
                 className="inline-flex items-center gap-2 rounded-full bg-brand-lime px-7 py-4 font-brand text-sm font-bold text-brand-ink"
               >
