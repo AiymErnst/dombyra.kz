@@ -18,26 +18,26 @@
     "language": "DİL"
   },
   "hero": {
-    "badge": "КӘСІБИ САПАЛЫ ДОМБЫРАЛАР",
-    "titleLine1": "Домбыра",
-    "titleLine2": "твой голос",
-    "subtitle": "Мастерские инструменты из массива — собраны, отстроены и прослушаны вручную. Звук, который слышно с первой ноты.",
-    "productName": "«АСЫЛ»",
-    "productDesc": "ель / клён · 185 000 ₸",
-    "cta": "Купить"
+    "badge": "PROFESYONEL KALİTEDE DOMBRALAR",
+    "titleLine1": "Dombra",
+    "titleLine2": "Ulu Bozkırın Sesi",
+    "subtitle": "Elle toplanmış, akort edilmiş ve dinlenmiş masif ahşap enstrümanlar. İlk notadan itibaren duyulan bir ses.",
+    "productName": "«dombyra.kz»",
+    "productDesc": "Eğitiyoruz | Yaratıyoruz | Tanıtıyoruz",
+    "cta": "Satın al"
   },
   "stats": {
     "since": {
       "year": "1998",
-      "label": "с этого года работает топ-мастер"
+      "label": "usta ustamızın çalışmaya başladığı yıl"
     },
     "launch": {
       "year": "2015",
-      "label": "год запуска проекта dombyra.kz"
+      "label": "dombyra.kz'in kurulduğu yıl"
     },
     "clients": {
-      "value": "10 000+",
-      "label": "клиентов по всему миру"
+      "value": "10.000+",
+      "label": "dünya çapında müşteri"
     }
   },
   "pages": {
@@ -62,10 +62,26 @@
       ]
     },
     "catalog": {
-  "title": "Dombra Kataloğu",
-  "subtitle": "El yapımı, orijinallik sertifikalı. Fiyat 100.000 ₸'den başlar, ahşap türüne, süslemelere ve 925 ayar gümüş kaplamaya göre değişir.",
-  "viewAll": "Tüm kataloğu görüntüle"
-},
+      "title": "Dombra Kataloğu",
+      "subtitle": "El yapımı, orijinallik sertifikalı. Fiyat 100.000 ₸'den başlar, ahşap türüne, süslemelere ve 925 ayar gümüş kaplamaya göre değişir.",
+      "viewAll": "Tüm kataloğu görüntüle",
+      "title1": "Dombra",
+      "title2": "kataloğu",
+      "priceFrom": "başlangıç",
+      "advantages": [
+        "3 yıl garanti",
+        "Ücretsiz eğitim aracı",
+        "Deneyimli ustalar",
+        "Premium kalite",
+        "Kaliteli malzemeler",
+        "Özgün tasarımlar",
+        "Üstün ses",
+        "Kazakistan geneli ücretsiz teslimat"
+      ],
+      "articleCallout": "İlk kez mi dombra alıyorsunuz? Seçmeden önce yazımızı okuyun.",
+      "articleLinkText": "Dombra nasıl seçilir",
+      "articleSlug": "kak-vybrat-dombru"
+    },
     "tuner": {
       "title": "Dombra Akort Aleti — Mikrofonla Çevrimiçi Akort",
       "description": "Kazak dombranızı çevrimiçi akort edin: mikrofon telin sesini tanır ve ne kadar tiz veya pes olduğunu gösterir. Düz akort G3/D3 ve ters akort G3/C3. Ücretsiz.",
@@ -237,41 +253,306 @@
       "reviews": "Yorumlar",
       "delivery": "Teslimat ve garanti"
     }
-  }, 
-  "cards": [
-  { "ph": "GIF: perde ipuçları", "caption": "Perdeler ezginin temposunda yanar" },
-  { "ph": "GIF: ses kontrolü", "caption": "Eğitmen yanlış notaları duyar ve düzeltir" },
-  { "ph": "GIF: ilerleme ve ezgiler", "caption": "40 ezgi boyunca ilerlemenizi takip edin" }
-],
-  "karaokeSteps": [
-  { "num": "01", "title": "Mikrofonu aç", "desc": "Tek tıkla — eğitmen dombranızı duyar" },
-  { "num": "02", "title": "Işıklandırmayı takip et", "desc": "Perdeler ezginin temposunda yanar" },
-  { "num": "03", "title": "Hataları anında gör", "desc": "Yanlış nota kırmızı yanar" },
-  { "num": "04", "title": "Sevdiğiniz küyleri çalın", "desc": "Basit ezgilerden karmaşık parçalara kadar" }
-],
+  },
   "catalogPage": {
-  "metaTitle": "Dombra Kataloğu — dombyra.kz",
-  "metaDescription": "Orijinallik sertifikalı el yapımı dombralar. Fiyat ahşap türüne, süslemelere ve 925 ayar gümüş kaplamaya göre değişir.",
-  "title": "Dombra Kataloğu",
-  "lead": "Her dombra el yapımıdır ve orijinallik sertifikasıyla gelir.",
-  "priceNote": "Nihai fiyat seçilen ahşap türüne, ek süslemelere ve 925 ayar gümüş kaplamaya göre değişir — kesin fiyatı sipariş sırasında teyit edin.",
-  "priceNoteShort": "Nihai fiyat ahşap türüne, süslemelere ve 925 ayar gümüş kaplamaya göre değişir.",
-  "priceFrom": "başlangıç",
-  "silverTag": "gümüş 925",
-  "silverOption": "925 ayar gümüş seçeneği",
-  "decorationOption": "Ek süslemeler",
-  "woodLabel": "Ahşap türleri",
-  "orderCta": "Sipariş ver / fiyat sor",
-  "showMore": "Daha fazla göster",
-  "loading": "Yükleniyor…",
-  "empty": "Katalog şimdilik boş",
-  "noPhoto": "Dombra fotoğrafı",
-  "articlesTitle": "Seçmeden önce",
-  "articles": [
-    { "slug": "kak-vybrat-dombru", "title": "Yeni başlayanlar için dombra nasıl seçilir" },
-    { "slug": "dombra-dlya-rebenka", "title": "Çocuk için dombra: nereden başlamalı" },
-    { "slug": "tuning-difference", "title": "Düz ve ters akort arasındaki fark" }
-
+    "metaTitle": "Dombra Kataloğu — dombyra.kz",
+    "metaDescription": "Orijinallik sertifikalı el yapımı dombralar. Fiyat ahşap türüne, süslemelere ve 925 ayar gümüş kaplamaya göre değişir.",
+    "title": "Dombra Kataloğu",
+    "lead": "Her dombra el yapımıdır ve orijinallik sertifikasıyla gelir.",
+    "priceNote": "Nihai fiyat seçilen ahşap türüne, ek süslemelere ve 925 ayar gümüş kaplamaya göre değişir — kesin fiyatı sipariş sırasında teyit edin.",
+    "priceNoteShort": "Nihai fiyat ahşap türüne, süslemelere ve 925 ayar gümüş kaplamaya göre değişir.",
+    "priceFrom": "başlangıç",
+    "silverTag": "gümüş 925",
+    "silverOption": "925 ayar gümüş seçeneği",
+    "decorationOption": "Ek süslemeler",
+    "woodLabel": "Ahşap türleri",
+    "orderCta": "Sipariş ver / fiyat sor",
+    "showMore": "Daha fazla göster",
+    "loading": "Yükleniyor…",
+    "empty": "Katalog şimdilik boş",
+    "noPhoto": "Dombra fotoğrafı",
+    "articlesTitle": "Seçmeden önce",
+    "articles": [
+      {
+        "slug": "kak-vybrat-dombru",
+        "title": "Yeni başlayanlar için dombra nasıl seçilir"
+      },
+      {
+        "slug": "dombra-dlya-rebenka",
+        "title": "Çocuk için dombra: nereden başlamalı"
+      },
+      {
+        "slug": "tuning-difference",
+        "title": "Düz ve ters akort arasındaki fark"
+      }
     ]
+  },
+  "forWhom": {
+    "badge": "KİMLER İÇİN",
+    "title1": "Dombra sadece bir enstrüman değil, bir ",
+    "titleAccent": "gelenektir",
+    "subtitle": "Dombra çalmak için müzisyen olmanıza gerek yok. Sadece kendiniz için, ruhunuz için, kalbi ısıtan basit ezgilerle çalabilirsiniz. Her yaşta öğrenmeye başlayabilirsiniz.",
+    "quoteMain": "Нағыз қазақ — қазақ емес, нағыз қазақ — домбыра!",
+    "quoteSub": "Boşuna denmiyor: bir dombra her Kazak evinde asılı durmalı. Bu, duvarlarda yaşayan ve nesilden nesile aktarılan kültürün bir parçası.",
+    "cards": [
+      {
+        "title": "Gelenek ve köklerle bağ",
+        "text": "Dombra çocuklarınıza bırakacağınız bir mirastır. Müzikle geçen aile akşamları onların hayatı boyunca hatırlayacağı anılar olur.",
+        "conclusion": "Geleneklere değer veriyorsanız — dombra tam size göre.",
+        "tag": "Aile",
+        "photoHints": [
+          "Fotoğraf: evde birlikte çalan bir aile",
+          "Fotoğraf: büyükler küçüklere öğretiyor"
+        ]
+      },
+      {
+        "title": "Mekânı süsler",
+        "text": "Sadece bir enstrüman değil, derin anlamı olan bir iç mekân parçası — bir tabloya bakar gibi ona hayran kalabilirsiniz.",
+        "conclusion": "Evinizi canlı bir şeyle süslemek istiyorsanız — dombra tam size göre.",
+        "tag": "İç mekân",
+        "photoHints": [
+          "Fotoğraf: duvarda asılı dombra",
+          "Fotoğraf: aydınlık bir iç mekânda"
+        ]
+      },
+      {
+        "title": "Prestijli bir hediye",
+        "text": "Yaşayan bir müzik hikâyesi — bir meslektaşa, bir yöneticiye ya da yabancı bir misafire yakışan bir hediye.",
+        "conclusion": "Unutulmaz, prestijli bir hediye arıyorsanız — işte dombra.",
+        "tag": "Hediye",
+        "photoHints": [
+          "Fotoğraf: hediye, ambalaj",
+          "Fotoğraf: hediye takdimi"
+        ]
+      },
+      {
+        "title": "Zihin ve beden için fayda",
+        "text": "Hafızayı ve sabrı güçlendirir, parmak becerisini geliştirir — her yaşta.",
+        "conclusion": "Kendiniz için faydalı bir hobi istiyorsanız — dombra tam size göre.",
+        "tag": "Gelişim",
+        "photoHints": [
+          "Fotoğraf: griftteki eller",
+          "Fotoğraf: öğrenen bir çocuk"
+        ]
+      }
+    ]
+  },
+  "certificate": {
+    "eyebrow": "ORİJİNALLİK",
+    "title1": "Nagyz Qazaq",
+    "title2": "sertifikası",
+    "subtitle": "Her enstrümana kişisel bir sertifika eşlik eder: ahşap türü, ustanın adı, üretim tarihi ve seri numarası. Dombra ile birlikte sertifika, stikerpak ve yumuşak kılıf da alırsınız.",
+    "photoCaption": "«Nagyz Qazaq» sertifikası fotoğrafı",
+    "points": [
+      "Ustanın el yazısıyla imzası ve benzersiz numara",
+      "Enstrümanın ses kaydı ve pasaportu içeren QR kod",
+      "El yapımı olduğunu ve ahşabın kökenini doğrular"
+    ],
+    "bundleLabel": "Her dombra ile birlikte gelir",
+    "stickerPhotoCaption": "fotoğraf — A5 stikerpak",
+    "stickerTitle": "A5 stikerpak",
+    "stickerDesc": "Gerçek, basılı dombra çıkartma seti — sertifikayla birlikte kutuya konur",
+    "casePhotoCaption": "fotoğraf — yumuşak kılıf",
+    "caseTitle": "Yumuşak kılıf",
+    "caseDesc": "Enstrümanı taşımak ve korumak için — pakette dahil"
+  },
+  "trainerPromo": {
+    "eyebrow": "EĞİTİM ARACI",
+    "title1": "Çalmayı öğrenin,",
+    "title2": "sadece ",
+    "titleAccent": "bir saatte",
+    "subtitle": "Eğitim aracı parmaklarınızı nereye koyacağınızı gösterir ve mikrofonla çalışınızı dinler. Küyler ve şarkılar — doğrudan tarayıcıda, kurulum yok.",
+    "tunerPhotos": [
+      {
+        "ph": "fotoğraf — tel akortsuz, iğne merkezden kaymış",
+        "caption": "Telin perdesini duyar ve burguyu hangi yöne çevireceğinizi gösterir"
+      },
+      {
+        "ph": "fotoğraf — iğne yeşil bölgede, ortada",
+        "caption": "İğne ortalandı — akort mükemmel"
+      }
+    ],
+    "trainerCards": [
+      {
+        "ph": "GIF: perde ipuçları",
+        "caption": "Perdeler ezginin temposunda yanar"
+      },
+      {
+        "ph": "GIF: ses kontrolü",
+        "caption": "Eğitmen yanlış notaları duyar ve düzeltir"
+      },
+      {
+        "ph": "GIF: ilerleme ve ezgiler",
+        "caption": "40 ezgi boyunca ilerlemenizi takip edin"
+      }
+    ],
+    "trainerSteps": [
+      {
+        "num": "01",
+        "title": "Bir ezgi seç",
+        "desc": "Basit ezgilerden karmaşık küylere kadar"
+      },
+      {
+        "num": "02",
+        "title": "İpuçlarına bak",
+        "desc": "Perdeler ezginin temposunda yanar"
+      },
+      {
+        "num": "03",
+        "title": "Mikrofona çal",
+        "desc": "Eğitmen çalışını duyar ve düzeltir"
+      },
+      {
+        "num": "04",
+        "title": "Ücretsiz ve hemen",
+        "desc": "Kurulum yok — doğrudan tarayıcıda"
+      }
+    ],
+    "openTrainerCta": "Eğitim aracını aç",
+    "tunerTitle1": "Ücretsiz",
+    "tunerTitle2": "dombra akort aleti",
+    "tunerSubtitle": "Eğitim aracıyla aynı sayfada bulunur. Mikrofonu açın — D–G akortu bir dakikada temiz olur, kulak eğitimi ya da deneyim gerekmez.",
+    "tunerSteps": [
+      {
+        "num": "01",
+        "title": "İki teli de duyar",
+        "desc": "Re ve sol otomatik olarak tanınır"
+      },
+      {
+        "num": "02",
+        "title": "±1 sent hassasiyet",
+        "desc": "İğne burguyu hangi yöne çevireceğinizi gösterir"
+      },
+      {
+        "num": "03",
+        "title": "Kurulum gerektirmez",
+        "desc": "Telefon tarayıcısında çalışır"
+      },
+      {
+        "num": "04",
+        "title": "Herkese ve her zaman ücretsiz",
+        "desc": "Üyelik ve ödeme gerekmez"
+      }
+    ],
+    "tunerCta": "Dombrayı akort et",
+    "tunerFootnote": "Akort aleti ve eğitim aracı aynı sayfada",
+    "karaokeTitle1": "Dombra için",
+    "karaokeTitle2": "karaoke",
+    "karaokeSubtitle": "Mikrofon çalışınızı dinler ve perdeleri gerçek zamanlı olarak aydınlatır — neyi kaçırdığınızı ve neyi tekrar çalmanız gerektiğini anında görürsünüz.",
+    "karaokeCards": [
+      {
+        "ph": "fotoğraf — tam isabet, yeşil ışık",
+        "caption": "Doğru nota yeşil yanar"
+      },
+      {
+        "ph": "fotoğraf — sonuç: nota nota hata dökümü",
+        "caption": "Sonunda — puan ve hata dökümü"
+      },
+      {
+        "ph": "fotoğraf — mikrofonla çalma, perdeler tempoda yanıyor",
+        "caption": "Çalarsın — mikrofon her notayı dinler"
+      }
+    ],
+    "karaokeSteps": [
+      {
+        "num": "01",
+        "title": "Mikrofonu aç",
+        "desc": "Tek tıkla — eğitmen dombranızı duyar"
+      },
+      {
+        "num": "02",
+        "title": "Işıklandırmayı takip et",
+        "desc": "Perdeler ezginin temposunda yanar"
+      },
+      {
+        "num": "03",
+        "title": "Hataları anında gör",
+        "desc": "Yanlış nota kırmızı yanar"
+      },
+      {
+        "num": "04",
+        "title": "Sevdiğiniz küyleri çalın",
+        "desc": "Basit ezgilerden karmaşık parçalara kadar"
+      }
+    ],
+    "karaokeCta": "Karaoke oyna",
+    "karaokeFootnote": "Ücretsiz, kurulum ve üyelik gerekmez"
+  },
+  "reviews": {
+    "eyebrow": "YORUMLAR",
+    "title1": "Müzisyenler",
+    "title2": "ne diyor",
+    "ratingLine": "★★★★★ 5 üzerinden 4,9 · 412 yorum",
+    "items": [
+      {
+        "text": "Konserler için «Dala» aldım. Tüm akşam akordunu koruyor, ses dolgun, hoparlörde uğuldamıyor. Kılıfı sağlam — üç kez uçakla taşıdım.",
+        "name": "Alişer K.",
+        "role": "dombra sanatçısı, Astana"
+      },
+      {
+        "text": "Kızıma 9 yaşında «Turan» aldık. Eline göre boyutu seçmemize yardımcı oldular, ödemeden önce ses kaydı gönderdiler. Bir ay sonra bir küy çalıyor.",
+        "name": "Dinara S.",
+        "role": "Almatı"
+      },
+      {
+        "text": "Berlin'e sipariş verdim. Dokuz günde geldi, tek bir çatlak yok. Usta bakım hakkındaki tüm sorularımı mesajlaşmadan yanıtladı.",
+        "name": "Yerjan M.",
+        "role": "Berlin"
+      }
+    ],
+    "scrollHint": "← Kaydırın"
+  },
+  "faq": {
+    "eyebrow": "SIKÇA SORULANLAR",
+    "title1": "En çok",
+    "title2": "sorulanlar",
+    "items": [
+      {
+        "q": "Yeni başlayan biri dombrayı nasıl seçmeli?",
+        "a": "«Turan» modeliyle başlayın: yumuşak tel gerginliği ve dar sap. Bize boyunuzu ve el ölçünüzü yazın — iki üç seçenek önerip ses kayıtları gönderelim."
+      },
+      {
+        "q": "Teslimat ne kadar sürer?",
+        "a": "Almatı — sipariş günü kurye ile. Kazakistan'ın diğer şehirleri — 1–2 gün. Uluslararası gönderim — 5–9 gün, takip numarasını WhatsApp'tan gönderiyoruz."
+      },
+      {
+        "q": "Satın almadan önce enstrümanı dinleyebilir miyim?",
+        "a": "Evet. Katalogdaki her dombranın ses kaydı ve 360° videosu var. Atölyeden canlı görüntülü görüşme de yapabiliriz."
+      },
+      {
+        "q": "Taksit var mı?",
+        "a": "100.000 ₸ üzeri tüm modellerde Kaspi Red ve 0-0-12 taksit. Şirketler için fatura ve banka havalesi."
+      },
+      {
+        "q": "Enstrüman bana uymazsa ne olur?",
+        "a": "Orijinal ambalajında 14 gün içinde iade — tam ücreti iade ederiz, gönderim masrafını biz karşılarız."
+      }
+    ]
+  },
+  "video": {
+    "eyebrow": "YOUTUBE",
+    "title1": "İzle",
+    "title2": "ve dinle",
+    "subtitle": "Atölyeden kayıtlar, model incelemeleri ve kısa dersler.",
+    "titles": [
+      "1. Ders. Dombranın yapısı ve nasıl akort edilir.",
+      "Dombra çalarken yapılan 5 yaygın hata",
+      "5. Ders. «Erkem-ay» şarkısı"
+    ],
+    "playLabel": "Oynat",
+    "channelCta": "YouTube kanalımız"
+  },
+  "leadForm": {
+    "title1": "Elinize uygun",
+    "title2": "bir dombra",
+    "title3": "seçelim",
+    "subtitle": "Usta size WhatsApp'tan yazacak ve uygun üç enstrümanın ses kayıtlarını gönderecek — form yok, sadece dokunun.",
+    "cta": "WhatsApp'tan yazın",
+    "prefillMessage": "Merhaba! Bana bir dombra seçmeme yardımcı olur musunuz."
+  },
+  "stickyBar": {
+    "title": "Hangisini seçeceğinizi bilmiyor musunuz?",
+    "subtitle": "5 dakikada seçelim",
+    "cta": "Satın al"
   }
 }
