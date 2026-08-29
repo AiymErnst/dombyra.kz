@@ -47,7 +47,7 @@ export default function Hero({ sentinelRef, dict, locale }) {
             </p>
 
             <div className="mt-6 flex flex-wrap items-center gap-4">
-              
+              <a
                 href="#catalog"
                 className="inline-flex items-center gap-2 rounded-full bg-brand-lime px-7 py-4 font-brand text-sm font-bold text-brand-ink"
               >
