@@ -36,7 +36,7 @@ export default function LeadForm({ dict }) {
           {t.subtitle ||
             "Мастер сам напишет вам в WhatsApp и пришлёт аудиозаписи трёх подходящих инструментов — никаких форм, просто нажмите."}
         </p>
-        
+        <a
           href={`${CONTACT_WHATSAPP_URL}?text=${message}`}
           target="_blank"
           rel="noopener noreferrer"
