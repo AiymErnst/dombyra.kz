@@ -92,7 +92,7 @@ export default function Header({
         {/* Телефон и WhatsApp — только на широких экранах, чтобы не
             толкаться с меню и переключателем языка на планшете */}
         <div className="hidden items-center gap-3 lg:flex">
-          
+          <a
             href={`tel:${PHONE_TEL}`}
             className="whitespace-nowrap font-brand text-[13px] font-bold text-brand-ink hover:text-brand-blue"
           >
