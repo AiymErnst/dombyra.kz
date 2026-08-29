@@ -1,4 +1,4 @@
-import { Placeholder, SectionEyebrow, Button } from "./ui";
+import { SectionEyebrow, Button } from "./ui";
 
 // app/components/VideoSection.jsx
 //
@@ -50,7 +50,11 @@ export default function VideoSection({ playingVideo, onPlay, dict }) {
                 />
               ) : (
                 <>
-                  <Placeholder>Кадр из видео</Placeholder>
+                  <img
+                    src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
+                    alt={video.title}
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
                   <button
                     onClick={() => onPlay(i)}
                     aria-label={`${t.playLabel || "Воспроизвести"}: ${video.title}`}
@@ -73,7 +77,7 @@ export default function VideoSection({ playingVideo, onPlay, dict }) {
         ))}
       </div>
       <div className="px-5 pt-5 lg:mx-auto lg:max-w-[1180px] lg:px-7">
-        <a
+        
           href="https://www.youtube.com/@dombyrakz"
           target="_blank"
           rel="noopener noreferrer"
