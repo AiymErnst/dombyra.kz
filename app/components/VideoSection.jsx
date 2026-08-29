@@ -77,7 +77,7 @@ export default function VideoSection({ playingVideo, onPlay, dict }) {
         ))}
       </div>
       <div className="px-5 pt-5 lg:mx-auto lg:max-w-[1180px] lg:px-7">
-        
+        <a
           href="https://www.youtube.com/@dombyrakz"
           target="_blank"
           rel="noopener noreferrer"
