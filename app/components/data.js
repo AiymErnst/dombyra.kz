@@ -2,6 +2,19 @@
 // Вынесено в массивы, чтобы позже было легко перевести на Supabase —
 // пока просто редактируется прямо здесь.
 
+// Телефон/WhatsApp — единый источник для Header.jsx и LeadForm.jsx,
+// чтобы номер не разъезжался по файлам, если его придётся поменять.
+export const CONTACT_PHONE_TEL = "+77755226901";
+export const CONTACT_WHATSAPP_URL = "https://wa.me/77755226901";
+
+// REVIEWS, FAQS, VIDEOS ниже больше не используются компонентами
+// Reviews.jsx / Faq.jsx / VideoSection.jsx — их текст переехал в
+// dict.reviews / dict.faq / dict.video (с тем же текстом как запасной
+// в самих компонентах), чтобы работало на всех языках, а не только на
+// русском. Массивы оставлены здесь на случай, если где-то ещё
+// понадобятся — можно смело удалить, если нигде больше не
+// импортируются.
+
 export const CATALOG = [
   { name: "Асыл", subtitle: "Ель / клён · классика", price: "185 000 ₸", badge: "Хит" },
   { name: "Дала", subtitle: "Кедр / орех · концертная", price: "320 000 ₸" },
@@ -127,7 +140,7 @@ export const VIDEOS = [
 // пункты остаются.
 export const NAV_LINKS = [
   { href: "#catalog", key: "catalog", type: "anchor" },
-  { href: "/learn", key: "trainer", type: "page", badge: "FREE" },
+  { href: "/learn", key: "trainer", type: "page" },
   { href: "/tuner", key: "tuner", type: "page", badge: "FREE" },
   { href: "/karaoke", key: "karaoke", type: "page", badge: "FREE" },
   { href: "/blog", key: "blog", type: "page" },
