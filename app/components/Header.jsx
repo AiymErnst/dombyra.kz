@@ -98,7 +98,7 @@ export default function Header({
           >
             {PHONE_DISPLAY}
           </a>
-          
+          <a
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
