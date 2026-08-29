@@ -38,14 +38,16 @@ export default function Hero({ sentinelRef, dict, locale }) {
             <h1 className="mt-4 text-balance font-brand text-[52px] font-extrabold uppercase leading-[0.88] tracking-[-0.035em] text-white sm:text-[68px] lg:text-[96px]">
               {hero.titleLine1}
               <br />
-              <span className="text-brand-lime">{hero.titleLine2}</span>
+              <span className="font-display italic normal-case font-normal tracking-normal text-brand-lime">
+                {hero.titleLine2}
+              </span>
             </h1>
             <p className="mt-4 max-w-[420px] font-brand text-[14.5px] font-medium leading-relaxed text-white/75">
               {hero.subtitle}
             </p>
 
             <div className="mt-6 flex flex-wrap items-center gap-4">
-              <a  
+              
                 href="#catalog"
                 className="inline-flex items-center gap-2 rounded-full bg-brand-lime px-7 py-4 font-brand text-sm font-bold text-brand-ink"
               >
