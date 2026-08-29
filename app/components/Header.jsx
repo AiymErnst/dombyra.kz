@@ -166,7 +166,7 @@ export default function Header({
               <a href={`tel:${PHONE_TEL}`} className="font-brand text-xl font-bold">
                 {PHONE_DISPLAY}
               </a>
-              
+              <a
                 href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
