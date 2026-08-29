@@ -37,7 +37,7 @@ export default function LeadForm({ dict }) {
             "Мастер сам напишет вам в WhatsApp и пришлёт аудиозаписи трёх подходящих инструментов — никаких форм, просто нажмите."}
         </p>
         
-          href={`${https://wa.link/n8qkfz}?text=${message}`}
+          href={`${CONTACT_WHATSAPP_URL}?text=${message}`}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-brand-lime py-4 font-brand text-sm font-bold text-brand-ink sm:w-auto sm:px-10"
