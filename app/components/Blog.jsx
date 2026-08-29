@@ -3,6 +3,10 @@ import { Placeholder, Button, SectionEyebrow } from "./ui";
 // Статьи приходят пропсом: LandingPage помечен "use client", поэтому
 // обращаться к базе внутри него нельзя — данные забирает серверная
 // страница app/[locale]/page.jsx и передаёт вниз.
+//
+// Логика уже была правильной (i18n через pick() по title_i18n/excerpt_i18n
+// из Supabase) — здесь только визуальный рефреш карточек под остальной
+// редизайн (скругление, курсивный акцент в заголовке).
 export default function Blog({ posts = [], dict, locale }) {
   const t = (dict?.pages?.blog) || {};
   if (!posts.length) return null;
@@ -15,20 +19,20 @@ export default function Blog({ posts = [], dict, locale }) {
   };
 
   return (
-    <section id="blog" className="scroll-mt-16 bg-brand-bg px-5 py-10 lg:px-7">
+    <section id="blog" className="scroll-mt-16 bg-brand-bg px-5 py-14 lg:px-7 lg:py-20">
       <div className="lg:mx-auto lg:max-w-[1180px]">
         <SectionEyebrow>{t.eyebrow}</SectionEyebrow>
-        <h2 className="mt-3 mb-5.5 font-brand text-[28px] font-extrabold uppercase tracking-[-0.025em] lg:text-[52px]">
+        <h2 className="mt-3 mb-7 font-brand text-[28px] font-extrabold uppercase tracking-[-0.025em] sm:text-[34px] lg:text-[46px]">
           {t.homeTitle}
         </h2>
-        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           {posts.map((post) => {
             const category =
               (t.categories && t.categories[post.category_key]) || post.category_key;
             return (
               <article
                 key={post.slug}
-                className="flex flex-col border border-brand-border bg-white"
+                className="flex flex-col overflow-hidden rounded-2xl border border-brand-border bg-white"
               >
                 <a href={`/${locale}/blog/${post.slug}`} className="block h-[160px]">
                   {post.cover_url ? (
@@ -49,10 +53,10 @@ export default function Blog({ posts = [], dict, locale }) {
                       <span>{post.read_minutes} {t.readMinutes}</span>
                     ) : null}
                   </div>
-                  <h3 className="mt-2.5 font-brand text-[17px] font-bold leading-snug">
+                  <h3 className="mt-2.5 font-brand text-[16px] font-bold leading-snug">
                     <a href={`/${locale}/blog/${post.slug}`}>{pick(post.title_i18n)}</a>
                   </h3>
-                  <p className="mt-2 font-brand text-[13.5px] font-medium leading-relaxed text-brand-ink/60">
+                  <p className="mt-2 font-brand text-[13px] font-medium leading-relaxed text-brand-ink/60">
                     {pick(post.excerpt_i18n)}
                   </p>
                   <div className="mt-4">
