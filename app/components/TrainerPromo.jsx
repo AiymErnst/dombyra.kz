@@ -99,7 +99,7 @@ function StepGrid({ steps, accentLast = false }) {
 
 function CtaButton({ href, children }) {
   return (
-    
+    <a
       href={href}
       className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-7 py-4 font-brand text-sm font-bold text-white transition-colors hover:bg-brand-blue-dark"
     >
