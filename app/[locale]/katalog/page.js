@@ -20,7 +20,14 @@ import KatalogGrid from "./KatalogGrid";
 import CatalogArticleLinks from "./CatalogArticleLinks";
 import ExclusiveModelBanner, { findExclusiveItem } from "./ExclusiveModelBanner";
 
-export const revalidate = 3600;
+// Раньше страница кэшировалась на час (revalidate = 3600) — новые
+// товары появлялись с задержкой, пока не истечёт кэш или не сработает
+// вебхук из Supabase. Теперь страница рендерится заново при каждом
+// заходе — так же, как тренажёр (simulator.html) загружает мелодии
+// напрямую из Supabase при каждом открытии, без кэша вообще. При
+// небольшом трафике сайта разница в скорости не заметна, а вебхук и
+// REVALIDATE_SECRET для dombras больше не нужны.
+export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 9;
 
