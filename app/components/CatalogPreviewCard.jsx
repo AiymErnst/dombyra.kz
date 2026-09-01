@@ -1,91 +1,37 @@
 "use client";
 // app/components/CatalogPreviewCard.jsx
 //
-// Одна карточка домбры на главной, с мини-галереей — два разных способа
-// листать фото под разные устройства:
-//   • Веб (мышь, hover) — тонкие сегменты сверху (как у Lamoda/OZON):
-//     двигаешь курсор по фото по горизонтали — переключается на нужный
-//     сегмент, без клика вообще.
-//   • Мобильный (палец) — свайп по фото + точки снизу как запасной
-//     способ, hover там не работает физически.
-// Показываются только нужные элементы под конкретное устройство через
-// Tailwind (lg: = веб), лишнее не мешает и не путает.
+// Одна карточка домбры — с мини-галереей: движение курсора на вебе,
+// свайп на мобильном. Сама логика переключения фото теперь в общем
+// хуке usePhotoScrubber.js (используется и здесь, и в
+// ExclusiveModelBanner.jsx) — раньше была продублирована.
 //
-// Внешний вид (скругление, белая рамка-паддинг вокруг фото) обновлён
-// под новый веерный дизайн каталога на главной — сама логика выше не
-// трогалась ни на строчку.
-import { useRef, useState } from "react";
+// Название теперь берётся через localizedDombraName() — раньше всегда
+// показывался item.name_ru, независимо от выбранного языка сайта.
 import Image from "next/image";
 import Link from "next/link";
+import { localizedDombraName } from "@/lib/dombras";
+import { usePhotoScrubber } from "./usePhotoScrubber";
 
-const SWIPE_THRESHOLD = 40; // px, минимальное движение пальца, чтобы считать это свайпом, а не тапом
-
-export default function CatalogPreviewCard({ item, localePrefix, priceFrom }) {
-  const [activeIndex, setActiveIndex] = useState(0);
+export default function CatalogPreviewCard({ item, localePrefix, priceFrom, locale }) {
   const photos = item.photos || [];
-  const hasMultiple = photos.length > 1;
-
-  const touchStartX = useRef(null);
-  const wasSwipe = useRef(false);
-
-  function goTo(i) {
-    setActiveIndex((i + photos.length) % photos.length);
-  }
-
-  function showDot(e, i) {
-    e.preventDefault();
-    e.stopPropagation();
-    goTo(i);
-  }
-
-  function handleMouseMove(e) {
-    if (!hasMultiple) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const relX = e.clientX - rect.left;
-    const segment = Math.min(
-      photos.length - 1,
-      Math.max(0, Math.floor((relX / rect.width) * photos.length))
-    );
-    setActiveIndex(segment);
-  }
-
-  function handleMouseLeave() {
-    if (!hasMultiple) return;
-    setActiveIndex(0);
-  }
-
-  function handleTouchStart(e) {
-    if (!hasMultiple) return;
-    touchStartX.current = e.touches[0].clientX;
-    wasSwipe.current = false;
-  }
-
-  function handleTouchMove(e) {
-    if (!hasMultiple || touchStartX.current === null) return;
-    const delta = e.touches[0].clientX - touchStartX.current;
-    if (Math.abs(delta) > 10) wasSwipe.current = true;
-  }
-
-  function handleTouchEnd(e) {
-    if (!hasMultiple || touchStartX.current === null) return;
-    const delta = e.changedTouches[0].clientX - touchStartX.current;
-    touchStartX.current = null;
-    if (Math.abs(delta) > SWIPE_THRESHOLD) {
-      goTo(delta < 0 ? activeIndex + 1 : activeIndex - 1);
-    }
-  }
-
-  function handleClick(e) {
-    if (wasSwipe.current) {
-      e.preventDefault();
-      wasSwipe.current = false;
-    }
-  }
+  const name = localizedDombraName(item, locale || "ru");
+  const {
+    activeIndex,
+    hasMultiple,
+    showDot,
+    handleMouseMove,
+    handleMouseLeave,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    handleLinkClick,
+  } = usePhotoScrubber(photos);
 
   return (
     <Link
       href={`${localePrefix}/katalog/${item.slug}`}
-      onClick={handleClick}
+      onClick={handleLinkClick}
       className="group block rounded-2xl border border-brand-border bg-white p-2 transition-shadow hover:shadow-lg"
     >
       <div
@@ -99,7 +45,7 @@ export default function CatalogPreviewCard({ item, localePrefix, priceFrom }) {
         {photos[activeIndex] ? (
           <Image
             src={photos[activeIndex]}
-            alt={item.name_ru}
+            alt={name}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 33vw"
@@ -143,7 +89,7 @@ export default function CatalogPreviewCard({ item, localePrefix, priceFrom }) {
       </div>
       <div className="mt-2 px-1 pb-1">
         <h3 className="font-brand text-[13px] font-extrabold text-brand-ink">
-          {item.name_ru}
+          {name}
         </h3>
         <p className="mt-1 font-brand text-[12px] font-extrabold text-brand-blue">
           {priceFrom} {item.base_price.toLocaleString("ru-RU")} ₸
