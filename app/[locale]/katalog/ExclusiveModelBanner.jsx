@@ -18,7 +18,7 @@ import { Placeholder } from "@/app/components/ui";
 // эксклюзивная модель и понадобится более гибкая система.
 export function findExclusiveItem(items) {
   return items.find((item) =>
-    item.name_ru?.toLowerCase().includes("Красная огненная лошадь")
+    item.name_ru?.toLowerCase().includes("красная огненная лошадь")
   );
 }
 
