@@ -5,8 +5,9 @@
 //
 // Вводный блок под заголовком переделан: вместо одной строки про цену
 // теперь — объяснение, от чего зависит стоимость (размер, дерево,
-// украшения), сами тарифы по размеру (42/48) и список того, что
-// входит бесплатно (чехол, тренажёр, сертификат, доставка).
+// украшения), сами тарифы по размеру (42/44/46/48) и список того, что
+// входит бесплатно (чехол, тренажёр, сертификат, доставка). Сделан
+// компактным — узкие пилюли вместо крупных карточек.
 import { getDictionary } from "@/lib/i18n";
 import { getDombras } from "@/lib/dombras";
 import KatalogGrid from "./KatalogGrid";
@@ -18,6 +19,8 @@ const PAGE_SIZE = 9;
 
 const FALLBACK_SIZE_TIERS = [
   { size: "42", price: "65 000 ₸" },
+  { size: "44", price: "75 000 ₸" },
+  { size: "46", price: "90 000 ₸" },
   { size: "48", price: "100 000 ₸" },
 ];
 
@@ -50,7 +53,7 @@ export default async function KatalogPage({ params }) {
   const dict = getDictionary(locale);
   const { items, total } = await getDombras(PAGE_SIZE, 0);
   const c = dict.catalogPage || {};
-  const sizeTiers = c.sizeTiers?.length === 2 ? c.sizeTiers : FALLBACK_SIZE_TIERS;
+  const sizeTiers = c.sizeTiers?.length === 4 ? c.sizeTiers : FALLBACK_SIZE_TIERS;
   const freebies = c.freebies?.length === 4 ? c.freebies : FALLBACK_FREEBIES;
 
   return (
@@ -63,47 +66,37 @@ export default async function KatalogPage({ params }) {
         {c.lead || "Каждая домбра — ручная работа с сертификатом подлинности."}
       </p>
 
-      <div className="mt-7 rounded-2xl border border-brand-border bg-brand-bg p-5 lg:p-7">
-        <p className="max-w-[720px] font-brand text-[13.5px] font-medium leading-relaxed text-brand-ink/72 lg:text-[15px]">
+      {/* цена и что входит бесплатно — компактный блок */}
+      <div className="mt-5 rounded-2xl border border-brand-border bg-brand-bg p-4 lg:p-5">
+        <p className="max-w-[640px] font-brand text-[12.5px] font-medium leading-relaxed text-brand-ink/70">
           {c.priceIntro ||
-            "Стоимость домбры зависит от размера, дерева и дополнительных украшений. Выберите любой дизайн и украсьте домбру дополнительными узорами на грифе, сбоку корпуса, добавьте серебряную накладку и гравировку."}
+            "Стоимость зависит от размера, дерева и украшений. Выберите дизайн, добавьте узоры на грифе и корпусе, серебряную накладку или гравировку."}
         </p>
 
-        <div className="mt-5 flex flex-wrap gap-3">
+        <div className="mt-3 flex flex-wrap gap-1.5">
           {sizeTiers.map((tier, i) => (
-            <div
+            <span
               key={i}
-              className="rounded-2xl bg-white px-5 py-3.5 shadow-sm"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 font-brand text-[11.5px] font-bold text-brand-ink"
             >
-              <div className="font-brand text-[11px] font-bold uppercase tracking-[0.08em] text-brand-ink/50">
-                {c.sizeLabel || "Размер"} {tier.size}
-              </div>
-              <div className="mt-0.5 font-brand text-[18px] font-extrabold text-brand-blue">
+              {c.sizeLabel || "Размер"} {tier.size}
+              <span className="text-brand-blue">
                 {c.priceFrom || "от"} {tier.price}
-              </div>
-            </div>
+              </span>
+            </span>
           ))}
         </div>
 
-        <div className="mt-6 border-t border-brand-border pt-5">
-          <div className="mb-3 font-brand text-[11px] font-bold uppercase tracking-[0.1em] text-brand-teal">
-            {c.freebiesLabel || "Бесплатно с каждой домброй"}
-          </div>
-          <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
-            {freebies.map((label, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-2.5 rounded-2xl bg-white px-3.5 py-3"
-              >
-                <span className="h-5 w-5 flex-none text-brand-blue">
-                  {FREEBIE_ICONS[i]}
-                </span>
-                <span className="font-brand text-[12px] font-bold leading-snug text-brand-ink">
-                  {label}
-                </span>
-              </div>
-            ))}
-          </div>
+        <div className="mt-3 flex flex-wrap gap-1.5 border-t border-brand-border pt-3">
+          {freebies.map((label, i) => (
+            <span
+              key={i}
+              className="inline-flex items-center gap-1.5 rounded-full border border-brand-border bg-white px-3 py-1.5 font-brand text-[11px] font-semibold text-brand-ink/80"
+            >
+              <span className="h-3.5 w-3.5 flex-none text-brand-teal">{FREEBIE_ICONS[i]}</span>
+              {label}
+            </span>
+          ))}
         </div>
       </div>
 
