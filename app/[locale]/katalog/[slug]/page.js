@@ -10,16 +10,8 @@
 //   Теперь берёт номер из data.js, как и везде на сайте.
 // • Новое: 4 размера с ценами, характеристики (базовая комплектация),
 //   плашка "бесплатно", галерея украшений внизу (общий компонент).
-// • Характеристики теперь переведены на все 4 языка прямо здесь, в
-//   коде (CHARACTERISTICS_BY_LOCALE) — без обращения к dict, по
-//   просьбе Айым, чтобы не ждать общего прохода по locales/*.json.
-//
-// Про 4 размера — важная оговорка: в Supabase нет поля под цену за
-// конкретный размер (только одна base_price на товар). Чтобы не
-// показывать одну и ту же вымышленную таблицу цен на каждой странице
-// независимо от товара, я МАСШТАБИРУЮ реальную base_price этого товара
-// коэффициентами (SIZE_MULTIPLIERS) — так у дешёвых моделей и размеры
-// дешевле, у дорогих — дороже, пропорционально их настоящей цене.
+// • Цены по размерам — реальные (65/75/85/100 тыс. ₸), не оценка.
+//   Для "Красная огненная лошадь" отдельно — 170 тыс. ₸ на любой размер.
 import { notFound } from "next/navigation";
 import { getDictionary } from "@/lib/i18n";
 import { getDombraBySlug, localizedDombraName, localizedDombraDescription, formatPriceFrom } from "@/lib/dombras";
@@ -47,13 +39,6 @@ function getSizeTiers(item) {
     return SIZE_TIERS_FIXED.map((tier) => ({ size: tier.size, price: EXCLUSIVE_PRICE }));
   }
   return SIZE_TIERS_FIXED;
-}
-
-function getSizeTiers(basePrice) {
-  return SIZES.map((size, i) => ({
-    size,
-    price: Math.round((basePrice * SIZE_MULTIPLIERS[i]) / 1000) * 1000,
-  }));
 }
 
 // Переводы вписаны прямо здесь, без обращения к dict — отдельная
@@ -238,7 +223,7 @@ export default async function DombraPage({ params }) {
             ))}
           </div>
 
-          <a
+          
             href={`${CONTACT_WHATSAPP_URL}?text=${whatsappMessage}`}
             target="_blank"
             rel="noopener noreferrer"
