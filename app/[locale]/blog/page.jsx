@@ -1,14 +1,13 @@
 // app/[locale]/blog/page.jsx
 //
-// Список статей — полностью переделан визуально под референсы (крупная
-// фотообложка с большим заголовком, затем сетка карточек), но данные и
-// сама логика (i18n через pick(), SEO/hreflang/JSON-LD) — те же, что
-// были, просто теперь в новой вёрстке на Tailwind вместо старых
-// семантических классов (post-page/post-list/...).
-//
-// По просьбе Айым: на самой обложке — плавающая карточка-ссылка на
-// страницу "О нас" (она уже готова) — как тот же приём с плавающей
-// карточкой товара в Hero.jsx на главной.
+// Список статей — по отзыву Айым переделала визуал под референс
+// (стеклянные UI-элементы, полупрозрачные бейджи с backdrop-blur):
+// теперь фото на карточке — на весь блок (вертикальное на мобильном),
+// текст лежит поверх фото на тёмном градиенте снизу, а не под фото
+// отдельным белым блоком, как было раньше. Категория — стеклянная
+// пилюля прямо на фото. Логика (статьи в lib/articles.js, i18n через
+// pick(), SEO/hreflang/JSON-LD) не менялась, только вёрстка карточек
+// и хедера.
 import Link from "next/link";
 import { locales, defaultLocale, getDictionary } from "@/lib/i18n";
 import { getArticles, pick } from "@/lib/articles";
@@ -72,14 +71,13 @@ export default async function BlogIndex({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main>
-        {/* обложка */}
         <section className="relative h-[58vh] min-h-[420px] w-full overflow-hidden bg-brand-ink">
           <Placeholder>Фото — обложка журнала</Placeholder>
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/25 to-transparent" />
 
           <div className="absolute inset-x-0 bottom-0 px-5 pb-10 lg:px-12 lg:pb-14">
             <div className="lg:mx-auto lg:max-w-[1180px]">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 backdrop-blur-xl">
                 <span className="h-1.5 w-1.5 rounded-full bg-brand-lime" />
                 <span className="font-brand text-[10px] font-bold tracking-[0.14em] text-white">
                   {t.eyebrow || "ЖУРНАЛ"}
@@ -96,22 +94,20 @@ export default async function BlogIndex({ params }) {
             </div>
           </div>
 
-          {/* плавающая карточка-ссылка на "О нас" — тот же приём, что у товара в Hero.jsx */}
           <Link
             href={`${localePrefix}/about`}
-            className="group absolute right-5 top-14 max-w-[220px] rounded-2xl bg-white/95 p-4 shadow-2xl backdrop-blur transition-colors hover:bg-white sm:right-8 sm:top-16 lg:right-12 lg:top-16"
+            className="group absolute right-5 top-14 max-w-[220px] rounded-2xl border border-white/25 bg-white/10 p-4 shadow-2xl backdrop-blur-xl transition-colors hover:bg-white/20 sm:right-8 sm:top-16 lg:right-12 lg:top-16"
           >
-            <div className="font-brand text-[11px] font-extrabold tracking-[0.1em] text-brand-blue">
+            <div className="font-brand text-[11px] font-extrabold tracking-[0.1em] text-brand-lime">
               {featured.label}
             </div>
-            <div className="mt-1 flex items-center gap-1.5 font-brand text-[13px] font-bold text-brand-ink">
+            <div className="mt-1 flex items-center gap-1.5 font-brand text-[13px] font-bold text-white">
               {featured.cta}
               <span className="transition-transform group-hover:translate-x-0.5">→</span>
             </div>
           </Link>
         </section>
 
-        {/* сетка статей */}
         <section className="px-5 py-14 lg:mx-auto lg:max-w-[1180px] lg:px-7 lg:py-20">
           {posts.length === 0 ? (
             <Placeholder>Статей пока нет</Placeholder>
@@ -126,39 +122,42 @@ export default async function BlogIndex({ params }) {
                   <Link
                     key={post.slug}
                     href={`${localePrefix}/blog/${post.slug}`}
-                    className="group flex flex-col overflow-hidden rounded-2xl border border-brand-border bg-white transition-shadow hover:shadow-lg"
+                    className="group relative block aspect-[3/4] overflow-hidden rounded-3xl bg-brand-ink"
                   >
-                    <div className="relative h-[190px] w-full overflow-hidden bg-brand-bg">
-                      {post.cover_url ? (
-                        <img
-                          src={post.cover_url}
-                          alt={title}
-                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <Placeholder>{category}</Placeholder>
-                      )}
-                    </div>
-                    <div className="flex flex-1 flex-col p-5">
-                      <div className="flex items-center gap-2.5 font-brand text-[10.5px] font-bold uppercase tracking-[0.1em] text-brand-ink/40">
-                        <span className="text-brand-blue">{category}</span>
-                        {post.read_minutes ? (
-                          <span>
-                            {post.read_minutes} {t.readMinutes}
-                          </span>
-                        ) : null}
-                      </div>
-                      <h2 className="mt-2.5 font-brand text-[17px] font-bold leading-snug text-brand-ink">
+                    {post.cover_url ? (
+                      <img
+                        src={post.cover_url}
+                        alt={title}
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <Placeholder>{category}</Placeholder>
+                    )}
+
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/10 to-transparent" />
+
+                    <span className="absolute left-4 top-4 rounded-full border border-white/25 bg-white/15 px-3 py-1.5 font-brand text-[10px] font-bold uppercase tracking-[0.1em] text-white backdrop-blur-md">
+                      {category}
+                    </span>
+
+                    <div className="absolute inset-x-0 bottom-0 p-5">
+                      {post.read_minutes ? (
+                        <div className="font-brand text-[10.5px] font-bold uppercase tracking-[0.1em] text-white/55">
+                          {post.read_minutes} {t.readMinutes}
+                        </div>
+                      ) : null}
+                      <h2 className="mt-1.5 text-balance font-brand text-[19px] font-extrabold uppercase leading-[1.08] tracking-[-0.01em] text-white">
                         {title}
                       </h2>
                       {excerpt && (
-                        <p className="mt-2 flex-1 font-brand text-[13px] font-medium leading-relaxed text-brand-ink/60">
+                        <p className="mt-2 line-clamp-2 font-brand text-[12.5px] font-medium leading-relaxed text-white/70">
                           {excerpt}
                         </p>
                       )}
-                      <span className="mt-4 font-brand text-[12.5px] font-bold text-brand-blue">
-                        {t.readMore} →
+                      <span className="mt-3.5 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-3.5 py-1.5 font-brand text-[11px] font-bold text-white backdrop-blur-md transition-colors group-hover:bg-white/25">
+                        {t.readMore}
+                        <span className="transition-transform group-hover:translate-x-0.5">→</span>
                       </span>
                     </div>
                   </Link>
