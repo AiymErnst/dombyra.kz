@@ -47,7 +47,15 @@ const BADGE_CLASSES = [
 ];
 
 const FALLBACK_SHOWCASE = [
-  { photos: ["public/content/bastauside", "Фото — Асыл, гриф крупным планом", "Фото — Асыл, корпус сбоку"], name: "«Ру»", price: "155 000 ₸", badge: "Кость" },
+  // ВАЖНО про первую строку: было "public/content/bastauside" — два
+  // бага сразу. 1) слово "public" никогда не пишется в пути (см. общий
+  // урок про папку public/). 2) у файла в репозитории вообще нет
+  // расширения (.jpg/.png) — так его загрузили на GitHub. Замените
+  // ниже "bastauside.jpg" на то расширение, которое реально должно
+  // быть у файла — и следом, важно: переименуйте сам файл в
+  // public/content/ на GitHub так, чтобы имя ТОЧНО совпадало (включая
+  // расширение) с тем, что написано здесь.
+  { photos: ["/content/bastauside.jpg", "Фото — Асыл, гриф крупным планом", "Фото — Асыл, корпус сбоку"], name: "«Ру»", price: "155 000 ₸", badge: "Кость" },
   { photos: ["Фото — Дала, общий вид", "Фото — Дала, корпус", "Фото — Дала, узор на грифе"], name: "«Бастау»", price: "65 000 ₸", badge: "42 размер" },
   { photos: ["Фото — Тұран, общий вид", "Фото — Тұран, гриф", "Фото — Тұран, в руках"], name: "«Волк»", price: "150 000 ₸", badge: "Серебро" },
   { photos: ["Фото — Кербез, общий вид", "Фото — Кербез, перламутр крупным планом", "Фото — Кербез, гриф"], name: "«Красная огненная лошадь»", price: "170 000 ₸", badge: "48 размер" },
@@ -68,6 +76,8 @@ function ShowcaseCard({ card, href, badgeClass }) {
   const photos = card.photos || [];
   const { activeIndex, hasMultiple, showDot, handleMouseMove, handleMouseLeave, handleTouchStart, handleTouchMove, handleTouchEnd, handleLinkClick } =
     usePhotoScrubber(photos);
+  const current = photos[activeIndex];
+  const isRealPhoto = typeof current === "string" && current.startsWith("/");
 
   return (
     <Link href={href} onClick={handleLinkClick} className="group block">
@@ -79,14 +89,14 @@ function ShowcaseCard({ card, href, badgeClass }) {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {photos[activeIndex] ? (
+        {isRealPhoto ? (
           <img
-            src={photos[activeIndex]}
+            src={current}
             alt={card.name}
             className="absolute inset-0 h-full w-full object-cover"
           />
          ) : (
-           <Placeholder>Фото домбры</Placeholder>
+           <Placeholder>{current || "Фото домбры"}</Placeholder>
          )}
 
         {hasMultiple && (
@@ -188,7 +198,7 @@ export default function CatalogPreview({ dict, locale }) {
           return (
             <div
               key={i}
-              className={`w-[47%] rounded-2xl border border-brand-border bg-white p-2 transition-shadow hover:shadow-lg sm:w-[172px] lg:w-[172px] lg:flex-none ${fan.rotate} ${fan.y} ${fan.z || ""} lg:-ml-3 first:lg:ml-0`}
+              className={`w-[47%] rounded-2xl border border-brand-border bg-white p-2 transition-shadow hover:shadow-lg sm:w-[172px] lg:w-auto lg:flex-1 lg:min-w-0 ${fan.rotate} ${fan.y} ${fan.z || ""} lg:-ml-3 first:lg:ml-0`}
             >
               <ShowcaseCard
                 card={{ ...card, priceLabel: `${priceFrom} ${card.price}` }}
