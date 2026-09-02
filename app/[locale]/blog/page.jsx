@@ -1,67 +1,186 @@
-// app/[locale]/blog/page.jsx
+// app/[locale]/blog/[slug]/page.jsx
 //
-// Список статей — по отзыву Айым переделала визуал под референс
-// (стеклянные UI-элементы, полупрозрачные бейджи с backdrop-blur):
-// теперь фото на карточке — на весь блок (вертикальное на мобильном),
-// текст лежит поверх фото на тёмном градиенте снизу, а не под фото
-// отдельным белым блоком, как было раньше. Категория — стеклянная
-// пилюля прямо на фото. Логика (статьи в lib/articles.js, i18n через
-// pick(), SEO/hreflang/JSON-LD) не менялась, только вёрстка карточек
-// и хедера.
+// Дизайн статьи переделан под "лонгрид" — по референсам Айым:
+// смешение шрифтов (крупный курсивный акцент в заголовке — тот же
+// font-display, что уже используется в заголовках по всему сайту —
+// плюс обычный жирный текст), выделенные ключевые моменты не просто
+// абзацем, а отдельными визуальными блоками.
+//
+// Схема блоков контента расширена тремя новыми типами (раньше были
+// только h2/p):
+// • quote — крупная цитата с автором (для пословицы)
+// • table — таблица "параметр → значение" (для возраст → размер)
+// • stats — крупное акцентное число с подписью (для "100 000 ₸",
+//   "80% / 20%" и т.п.)
+// Старые типы h2/p работают точно как раньше, ничего не сломано.
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { locales, defaultLocale, getDictionary } from "@/lib/i18n";
-import { getArticles, pick } from "@/lib/articles";
+import {
+  getArticles,
+  getArticle,
+  pick,
+  articleBlocks,
+  firstParagraph,
+  availableLocales,
+} from "@/lib/articles";
 import { Placeholder } from "@/app/components/ui";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://dombyra.kz";
 const HREFLANG = { kz: "kk-KZ", ru: "ru-KZ", en: "en", tr: "tr-TR" };
 
-const FEATURED_ABOUT_TEXT = {
-  ru: { label: "О НАС", cta: "Читать историю" },
-  kz: { label: "БІЗ ТУРАЛЫ", cta: "Тарихты оқу" },
-  en: { label: "ABOUT US", cta: "Read our story" },
-  tr: { label: "HAKKIMIZDA", cta: "Hikayemizi oku" },
+const CATALOG_CTA_TEXT = {
+  ru: "Смотреть каталог домбр",
+  kz: "Домбыра каталогын көру",
+  en: "Browse the dombra catalog",
+  tr: "Dombra kataloğuna bakın",
 };
 
 export const revalidate = 3600;
 
 export function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
+  const params = [];
+  for (const locale of locales) {
+    for (const article of getArticles()) {
+      if (articleBlocks(article, locale).length > 0) {
+        params.push({ locale, slug: article.slug });
+      }
+    }
+  }
+  return params;
 }
 
 export async function generateMetadata({ params }) {
-  const { locale } = await params;
-  const t = getDictionary(locale).pages.blog || {};
-  const url = `${SITE}/${locale}/blog`;
+  const { locale, slug } = await params;
+  const article = getArticle(slug);
+  if (!article || articleBlocks(article, locale).length === 0) return {};
+
+  const title = pick(article.title, locale);
+  const description = firstParagraph(article, locale);
+  const url = `${SITE}/${locale}/blog/${slug}`;
+  const written = availableLocales(article);
   const languages = Object.fromEntries(
-    locales.map((l) => [HREFLANG[l], `${SITE}/${l}/blog`])
+    written.map((l) => [HREFLANG[l], `${SITE}/${l}/blog/${slug}`])
   );
-  languages["x-default"] = `${SITE}/${defaultLocale}/blog`;
+  if (written.includes(defaultLocale)) {
+    languages["x-default"] = `${SITE}/${defaultLocale}/blog/${slug}`;
+  }
+
   return {
-    title: t.indexMetaTitle || t.indexTitle,
-    description: t.indexMetaDesc,
+    title: `${title} — dombyra.kz`,
+    description,
     alternates: { canonical: url, languages },
   };
 }
 
-export default async function BlogIndex({ params }) {
-  const { locale } = await params;
+// один блок контента → нужная разметка, в зависимости от типа
+function ContentBlock({ block, isFirst }) {
+  if (block.type === "h2") {
+    return (
+      <h2
+        className={`font-brand text-[21px] font-extrabold uppercase leading-[1.15] tracking-[-0.01em] text-brand-ink lg:text-[26px] ${
+          isFirst ? "mt-0" : "mt-11"
+        }`}
+      >
+        {block.text}
+      </h2>
+    );
+  }
+
+  if (block.type === "quote") {
+    return (
+      <blockquote className="relative mt-9 rounded-2xl bg-brand-ink px-6 py-8 lg:px-10 lg:py-10">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-1 -top-4 font-brand text-[70px] font-extrabold leading-none text-white/10 lg:text-[100px]"
+        >
+          «
+        </span>
+        <p className="font-display relative text-[20px] italic leading-snug text-white lg:text-[26px]">
+          {block.text}
+        </p>
+        {block.author && (
+          <footer className="relative mt-3 font-brand text-[12px] font-bold uppercase tracking-[0.08em] text-brand-lime">
+            — {block.author}
+          </footer>
+        )}
+      </blockquote>
+    );
+  }
+
+  if (block.type === "table") {
+    return (
+      <div className="mt-7 overflow-hidden rounded-2xl border border-brand-border">
+        {block.rows.map((row, i) => (
+          <div
+            key={i}
+            className={`flex items-center justify-between gap-4 px-5 py-3 ${
+              i % 2 === 1 ? "bg-brand-bg" : "bg-white"
+            }`}
+          >
+            <span className="font-brand text-[13.5px] font-medium text-brand-ink/65">
+              {row.label}
+            </span>
+            <span className="font-brand text-[13.5px] font-extrabold text-brand-ink">
+              {row.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (block.type === "stats") {
+    return (
+      <div className="mt-7 flex flex-wrap gap-3">
+        {block.items.map((item, i) => (
+          <div
+            key={i}
+            className="flex-1 rounded-2xl bg-brand-bg p-5 lg:min-w-[220px]"
+          >
+            <div className="font-brand text-[26px] font-extrabold text-brand-blue lg:text-[32px]">
+              {item.value}
+            </div>
+            <div className="mt-1 font-brand text-[12px] font-medium leading-snug text-brand-ink/60">
+              {item.label}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // p — обычный абзац
+  return (
+    <p className="mt-4 font-brand text-[15px] font-medium leading-relaxed text-brand-ink/78">
+      {block.text}
+    </p>
+  );
+}
+
+export default async function ArticlePage({ params }) {
+  const { locale, slug } = await params;
   const dict = getDictionary(locale);
   const t = dict.pages.blog || {};
-  const posts = getArticles();
-  const featured = FEATURED_ABOUT_TEXT[locale] || FEATURED_ABOUT_TEXT.ru;
+  const article = getArticle(slug);
+
+  if (!article) notFound();
+  const blocks = articleBlocks(article, locale);
+  if (blocks.length === 0) notFound();
+
+  const title = pick(article.title, locale);
+  const category =
+    (t.categories && t.categories[article.category_key]) || article.category_key;
   const localePrefix = `/${locale}`;
+  const written = availableLocales(article);
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: t.indexTitle,
-    itemListElement: posts.map((p, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      name: pick(p.title, locale),
-      url: `${SITE}/${locale}/blog/${p.slug}`,
-    })),
+    "@type": "Article",
+    headline: title,
+    description: firstParagraph(article, locale),
+    url: `${SITE}/${locale}/blog/${slug}`,
+    inLanguage: HREFLANG[locale] || locale,
   };
 
   return (
@@ -70,102 +189,78 @@ export default async function BlogIndex({ params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main>
-        <section className="relative h-[58vh] min-h-[420px] w-full overflow-hidden bg-brand-ink">
-          <Placeholder>Фото — обложка журнала</Placeholder>
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/25 to-transparent" />
+      <main className="px-5 py-10 lg:px-7 lg:py-16">
+        <div className="mx-auto max-w-[720px]">
+          <Link
+            href={`${localePrefix}/blog`}
+            className="font-brand text-[12.5px] font-bold text-brand-blue hover:text-brand-blue-dark"
+          >
+            ← {t.backToIndex || "Все статьи"}
+          </Link>
 
-          <div className="absolute inset-x-0 bottom-0 px-5 pb-10 lg:px-12 lg:pb-14">
-            <div className="lg:mx-auto lg:max-w-[1180px]">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 backdrop-blur-xl">
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-lime" />
-                <span className="font-brand text-[10px] font-bold tracking-[0.14em] text-white">
-                  {t.eyebrow || "ЖУРНАЛ"}
-                </span>
+          {/* эйбрау — "Советы для новичков" из категории */}
+          <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand-border bg-brand-bg px-3 py-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-brand-lime" />
+            <span className="font-brand text-[10px] font-bold uppercase tracking-[0.12em] text-brand-ink/60">
+              {category}
+            </span>
+            {article.read_minutes ? (
+              <span className="font-brand text-[10px] font-bold uppercase tracking-[0.12em] text-brand-ink/40">
+                · {article.read_minutes} {t.readMinutes}
               </span>
-              <h1 className="mt-4 text-balance font-brand text-[44px] font-extrabold uppercase leading-[0.92] tracking-[-0.03em] text-white sm:text-[60px] lg:text-[84px]">
-                {t.indexTitle}
-              </h1>
-              {t.indexLead && (
-                <p className="mt-4 max-w-[440px] font-brand text-[14.5px] font-medium leading-relaxed text-white/75">
-                  {t.indexLead}
-                </p>
-              )}
-            </div>
+            ) : null}
           </div>
 
-          <Link
-            href={`${localePrefix}/about`}
-            className="group absolute right-5 top-14 max-w-[220px] rounded-2xl border border-white/25 bg-white/10 p-4 shadow-2xl backdrop-blur-xl transition-colors hover:bg-white/20 sm:right-8 sm:top-16 lg:right-12 lg:top-16"
-          >
-            <div className="font-brand text-[11px] font-extrabold tracking-[0.1em] text-brand-lime">
-              {featured.label}
-            </div>
-            <div className="mt-1 flex items-center gap-1.5 font-brand text-[13px] font-bold text-white">
-              {featured.cta}
-              <span className="transition-transform group-hover:translate-x-0.5">→</span>
-            </div>
-          </Link>
-        </section>
+          <h1 className="mt-4 text-balance font-brand text-[34px] font-extrabold uppercase leading-[1.02] tracking-[-0.025em] text-brand-ink lg:text-[52px]">
+            {title}
+          </h1>
 
-        <section className="px-5 py-14 lg:mx-auto lg:max-w-[1180px] lg:px-7 lg:py-20">
-          {posts.length === 0 ? (
-            <Placeholder>Статей пока нет</Placeholder>
-          ) : (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {posts.map((post) => {
-                const category =
-                  (t.categories && t.categories[post.category_key]) || post.category_key;
-                const title = pick(post.title, locale);
-                const excerpt = pick(post.excerpt, locale);
-                return (
-                  <Link
-                    key={post.slug}
-                    href={`${localePrefix}/blog/${post.slug}`}
-                    className="group relative block aspect-[3/4] overflow-hidden rounded-3xl bg-brand-ink"
-                  >
-                    {post.cover_url ? (
-                      <img
-                        src={post.cover_url}
-                        alt={title}
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <Placeholder>{category}</Placeholder>
-                    )}
+          <div className="mt-7 aspect-[16/9] w-full overflow-hidden rounded-2xl border border-brand-border bg-brand-bg">
+            {article.cover_url ? (
+              <img
+                src={article.cover_url}
+                alt={title}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <Placeholder>{category}</Placeholder>
+            )}
+          </div>
 
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/10 to-transparent" />
+          <article className="mt-2">
+            {blocks.map((block, i) => (
+              <ContentBlock key={i} block={block} isFirst={i === 0} />
+            ))}
+          </article>
 
-                    <span className="absolute left-4 top-4 rounded-full border border-white/25 bg-white/15 px-3 py-1.5 font-brand text-[10px] font-bold uppercase tracking-[0.1em] text-white backdrop-blur-md">
-                      {category}
-                    </span>
-
-                    <div className="absolute inset-x-0 bottom-0 p-5">
-                      {post.read_minutes ? (
-                        <div className="font-brand text-[10.5px] font-bold uppercase tracking-[0.1em] text-white/55">
-                          {post.read_minutes} {t.readMinutes}
-                        </div>
-                      ) : null}
-                      <h2 className="mt-1.5 text-balance font-brand text-[19px] font-extrabold uppercase leading-[1.08] tracking-[-0.01em] text-white">
-                        {title}
-                      </h2>
-                      {excerpt && (
-                        <p className="mt-2 line-clamp-2 font-brand text-[12.5px] font-medium leading-relaxed text-white/70">
-                          {excerpt}
-                        </p>
-                      )}
-                      <span className="mt-3.5 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-3.5 py-1.5 font-brand text-[11px] font-bold text-white backdrop-blur-md transition-colors group-hover:bg-white/25">
-                        {t.readMore}
-                        <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
+          {written.length > 1 && (
+            <div className="mt-10 flex flex-wrap items-center gap-2 border-t border-brand-border pt-6">
+              <span className="font-brand text-[11px] font-bold uppercase tracking-[0.1em] text-brand-ink/40">
+                {dict.nav?.language || "ЯЗЫК"}
+              </span>
+              {written.map((l) => (
+                <Link
+                  key={l}
+                  href={`/${l}/blog/${slug}`}
+                  className={`rounded-full border px-3 py-1.5 font-brand text-[12px] font-bold uppercase ${
+                    l === locale
+                      ? "border-brand-blue bg-brand-blue text-white"
+                      : "border-brand-border text-brand-ink/70 hover:border-brand-blue hover:text-brand-blue"
+                  }`}
+                >
+                  {l}
+                </Link>
+              ))}
             </div>
           )}
-        </section>
+
+          <Link
+            href={`${localePrefix}/katalog`}
+            className="mt-10 inline-flex items-center gap-2 rounded-full bg-brand-blue px-7 py-3.5 font-brand text-[13px] font-bold text-white transition-colors hover:bg-brand-blue-dark"
+          >
+            {CATALOG_CTA_TEXT[locale] || CATALOG_CTA_TEXT.ru} →
+          </Link>
+        </div>
       </main>
     </>
   );
