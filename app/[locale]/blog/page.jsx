@@ -2,16 +2,16 @@
 //
 // Список статей — полностью переделан визуально под референсы (крупная
 // фотообложка с большим заголовком, затем сетка карточек), но данные и
-// сама логика (Supabase, i18n через pick(), SEO/hreflang/JSON-LD) —
-// те же, что были, просто теперь в новой вёрстке на Tailwind вместо
-// старых семантических классов (post-page/post-list/...).
+// сама логика (i18n через pick(), SEO/hreflang/JSON-LD) — те же, что
+// были, просто теперь в новой вёрстке на Tailwind вместо старых
+// семантических классов (post-page/post-list/...).
 //
 // По просьбе Айым: на самой обложке — плавающая карточка-ссылка на
 // страницу "О нас" (она уже готова) — как тот же приём с плавающей
 // карточкой товара в Hero.jsx на главной.
 import Link from "next/link";
 import { locales, defaultLocale, getDictionary } from "@/lib/i18n";
-import { getPosts, pick } from "@/lib/posts";
+import { getArticles, pick } from "@/lib/articles";
 import { Placeholder } from "@/app/components/ui";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://dombyra.kz";
@@ -49,7 +49,7 @@ export default async function BlogIndex({ params }) {
   const { locale } = await params;
   const dict = getDictionary(locale);
   const t = dict.pages.blog || {};
-  const posts = await getPosts();
+  const posts = getArticles();
   const featured = FEATURED_ABOUT_TEXT[locale] || FEATURED_ABOUT_TEXT.ru;
   const localePrefix = `/${locale}`;
 
@@ -60,7 +60,7 @@ export default async function BlogIndex({ params }) {
     itemListElement: posts.map((p, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      name: pick(p.title_i18n, locale),
+      name: pick(p.title, locale),
       url: `${SITE}/${locale}/blog/${p.slug}`,
     })),
   };
@@ -120,8 +120,8 @@ export default async function BlogIndex({ params }) {
               {posts.map((post) => {
                 const category =
                   (t.categories && t.categories[post.category_key]) || post.category_key;
-                const title = pick(post.title_i18n, locale);
-                const excerpt = pick(post.excerpt_i18n, locale);
+                const title = pick(post.title, locale);
+                const excerpt = pick(post.excerpt, locale);
                 return (
                   <Link
                     key={post.slug}
