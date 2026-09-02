@@ -93,7 +93,7 @@ export default function DecorationsGallery({ locale }) {
         ))}
       </div>
 
-      
+      <a
         href={`${CONTACT_WHATSAPP_URL}?text=${encodeURIComponent(t.prefillMessage)}`}
         target="_blank"
         rel="noopener noreferrer"
