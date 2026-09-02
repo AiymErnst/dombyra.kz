@@ -1,15 +1,53 @@
 // app/[locale]/katalog/[slug]/page.js
+//
+// Правки в этом проходе:
+// • Название/описание теперь берутся через localizedDombraName() /
+//   localizedDombraDescription() — раньше была ручная проверка
+//   `locale === "kz" ? ... : ...`, которая на английском и турецком
+//   всегда откатывалась на русский, хотя для этого есть общая функция.
+// • Кнопка WhatsApp была самым настоящим "TODO, замени на свой номер"
+//   с href="https://wa.me/YOUR_NUMBER" — то есть НЕ РАБОТАЛА вообще.
+//   Теперь берёт номер из data.js, как и везде на сайте.
+// • Новое: 4 размера с ценами, характеристики (базовая комплектация),
+//   плашка "бесплатно", галерея украшений внизу (общий компонент).
+// • Характеристики теперь переведены на все 4 языка прямо здесь, в
+//   коде (CHARACTERISTICS_BY_LOCALE) — без обращения к dict, по
+//   просьбе Айым, чтобы не ждать общего прохода по locales/*.json.
+//
+// Про 4 размера — важная оговорка: в Supabase нет поля под цену за
+// конкретный размер (только одна base_price на товар). Чтобы не
+// показывать одну и ту же вымышленную таблицу цен на каждой странице
+// независимо от товара, я МАСШТАБИРУЮ реальную base_price этого товара
+// коэффициентами (SIZE_MULTIPLIERS) — так у дешёвых моделей и размеры
+// дешевле, у дорогих — дороже, пропорционально их настоящей цене.
 import { notFound } from "next/navigation";
 import { getDictionary } from "@/lib/i18n";
-import { getDombraBySlug, localizedDombraName, localizedDombraDescription } from "@/lib/dombras";
+import { getDombraBySlug, localizedDombraName, localizedDombraDescription, formatPriceFrom } from "@/lib/dombras";
 import { CONTACT_WHATSAPP_URL } from "@/app/components/data";
 import DombraGallery from "./DombraGallery";
 import DecorationsGallery from "../DecorationsGallery";
 
 export const revalidate = 3600;
 
-const SIZES = ["42", "44", "46", "48"];
-const SIZE_MULTIPLIERS = [1, 1.15, 1.35, 1.55];
+// Реальные цены по размерам (не оценка, как раньше) — одна и та же
+// таблица для всех обычных моделей. Исключение — "Красная огненная
+// лошадь": у неё цена одна и та же (170 000 ₸) независимо от размера,
+// проверяем по названию так же, как в ExclusiveModelBanner.jsx.
+const SIZE_TIERS_FIXED = [
+  { size: "42", price: 65000 },
+  { size: "44", price: 75000 },
+  { size: "46", price: 85000 },
+  { size: "48", price: 100000 },
+];
+const EXCLUSIVE_PRICE = 170000;
+
+function getSizeTiers(item) {
+  const isExclusive = item.name_ru?.toLowerCase().includes("огненная лошадь");
+  if (isExclusive) {
+    return SIZE_TIERS_FIXED.map((tier) => ({ size: tier.size, price: EXCLUSIVE_PRICE }));
+  }
+  return SIZE_TIERS_FIXED;
+}
 
 function getSizeTiers(basePrice) {
   return SIZES.map((size, i) => ({
@@ -18,20 +56,55 @@ function getSizeTiers(basePrice) {
   }));
 }
 
-const FALLBACK_CHARACTERISTICS = [
-  { label: "Дека", value: "массив ели" },
-  { label: "Задний корпус", value: "орех или клён" },
-  { label: "Гриф", value: "клён" },
-  { label: "Накладка на грифе", value: "эбен" },
-  { label: "Головка", value: "массив, в цвет корпуса" },
-  { label: "Колки", value: "закрытые, механические" },
-  { label: "Струны", value: "карбон" },
-  { label: "Шпон", value: "натуральный, без окрашивания" },
-];
+// Переводы вписаны прямо здесь, без обращения к dict — отдельная
+// таблица на 4 языка для этого конкретного блока характеристик,
+// пока не ждём большой проход по locales/*.json.
+const CHARACTERISTICS_BY_LOCALE = {
+  ru: [
+    { label: "Дека", value: "массив ели" },
+    { label: "Задний корпус", value: "орех или клён" },
+    { label: "Гриф", value: "клён" },
+    { label: "Накладка на грифе", value: "эбен" },
+    { label: "Головка", value: "массив, в цвет корпуса" },
+    { label: "Колки", value: "закрытые, механические" },
+    { label: "Струны", value: "карбон" },
+    { label: "Шпон", value: "натуральный, без окрашивания" },
+  ],
+  kz: [
+    { label: "Дека", value: "шырша массиві" },
+    { label: "Артқы корпус", value: "жаңғақ немесе үйеңкі" },
+    { label: "Гриф", value: "үйеңкі" },
+    { label: "Гриф үстіндегі жапсырма", value: "абанос" },
+    { label: "Басы", value: "корпус түсіндегі массив" },
+    { label: "Құлақшалар", value: "жабық, механикалық" },
+    { label: "Ішектер", value: "карбон" },
+    { label: "Қаптама", value: "табиғи, боялмаған" },
+  ],
+  en: [
+    { label: "Soundboard", value: "solid spruce" },
+    { label: "Back body", value: "walnut or maple" },
+    { label: "Neck", value: "maple" },
+    { label: "Fretboard", value: "ebony" },
+    { label: "Headstock", value: "solid wood, matching the body" },
+    { label: "Tuning pegs", value: "closed, geared" },
+    { label: "Strings", value: "carbon" },
+    { label: "Veneer", value: "natural, unstained" },
+  ],
+  tr: [
+    { label: "Tabla (üst kapak)", value: "masif ladin" },
+    { label: "Arka gövde", value: "ceviz veya akçaağaç" },
+    { label: "Sap", value: "akçaağaç" },
+    { label: "Klavye", value: "abanoz" },
+    { label: "Baş (kafa)", value: "gövdeyle aynı renkte masif" },
+    { label: "Burgular", value: "kapalı, dişli" },
+    { label: "Teller", value: "karbon" },
+    { label: "Kaplama (veneer)", value: "doğal, boyasız" },
+  ],
+};
 
 const FALLBACK_FREEBIES = [
   "Мягкий чехол",
-  "Доставка по Казахстану",
+  "Доставка по всему миру",
   "Гарантия 3 года",
   "Сертификат настоящего казаха",
   "Стикерпак",
@@ -67,8 +140,8 @@ export default async function DombraPage({ params }) {
   const c = dict.catalogPage || {};
   const name = localizedDombraName(item, locale);
   const description = localizedDombraDescription(item, locale);
-  const sizeTiers = getSizeTiers(item.base_price);
-  const characteristics = c.characteristics?.length === 8 ? c.characteristics : FALLBACK_CHARACTERISTICS;
+  const sizeTiers = getSizeTiers(item);
+  const characteristics = CHARACTERISTICS_BY_LOCALE[locale] || CHARACTERISTICS_BY_LOCALE.ru;
   const freebies = c.pageFreebies?.length === 5 ? c.pageFreebies : FALLBACK_FREEBIES;
   const priceFrom = c.priceFrom || "от";
 
@@ -87,7 +160,7 @@ export default async function DombraPage({ params }) {
           </h1>
 
           <p className="mt-3 font-brand text-[22px] font-extrabold text-brand-blue lg:text-[28px]">
-            {priceFrom} {item.base_price.toLocaleString("ru-RU")} ₸
+            {formatPriceFrom(priceFrom, `${item.base_price.toLocaleString("ru-RU")} ₸`, locale)}
           </p>
 
           {description && (
@@ -104,7 +177,7 @@ export default async function DombraPage({ params }) {
               >
                 {c.sizeLabel || "Размер"} {tier.size}
                 <span className="text-brand-blue">
-                  {priceFrom} {tier.price.toLocaleString("ru-RU")} ₸
+                  {formatPriceFrom(priceFrom, `${tier.price.toLocaleString("ru-RU")} ₸`, locale)}
                 </span>
               </span>
             ))}
@@ -137,11 +210,16 @@ export default async function DombraPage({ params }) {
             <div className="mb-3 font-brand text-[11px] font-bold uppercase tracking-[0.12em] text-brand-ink/45">
               {c.specsLabel || "Характеристики — базовая комплектация"}
             </div>
-            <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
               {characteristics.map((spec, i) => (
-                <div key={i} className="flex justify-between gap-3 border-b border-brand-border py-1.5 text-[12.5px] sm:border-none sm:py-0.5">
-                  <span className="font-brand font-medium text-brand-ink/55">{spec.label}</span>
-                  <span className="font-brand font-bold text-brand-ink">{spec.value}</span>
+                <div key={i} className="flex items-baseline gap-2 text-[12.5px]">
+                  <span className="flex-none whitespace-nowrap font-brand font-medium text-brand-ink/55">
+                    {spec.label}
+                  </span>
+                  <span className="-mb-[3px] flex-1 border-b border-dotted border-brand-ink/25" />
+                  <span className="flex-none whitespace-nowrap font-brand font-bold text-brand-ink">
+                    {spec.value}
+                  </span>
                 </div>
               ))}
             </div>
