@@ -160,7 +160,7 @@ export default async function DombraPage({ params }) {
             ))}
           </div>
 
-          
+          <a
             href={`${CONTACT_WHATSAPP_URL}?text=${whatsappMessage}`}
             target="_blank"
             rel="noopener noreferrer"
