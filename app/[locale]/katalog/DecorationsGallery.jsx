@@ -42,7 +42,7 @@ export default function DecorationsGallery({ dict }) {
         )}
       </div>
 
-      
+      <a
         href={`${CONTACT_WHATSAPP_URL}?text=${encodeURIComponent(
           decorations.prefillMessage || "Здравствуйте! Хочу узнать про украшения для домбры."
         )}`}
