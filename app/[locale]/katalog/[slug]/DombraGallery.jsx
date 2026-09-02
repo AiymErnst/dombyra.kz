@@ -4,13 +4,16 @@ import { useState } from "react";
 import Image from "next/image";
 import { Placeholder } from "@/app/components/ui";
 
+// app/[locale]/katalog/[slug]/DombraGallery.jsx
+// Добавила скругление (rounded-2xl на главном фото, rounded-xl на
+// миниатюрах) — раньше углы были прямыми.
 export default function DombraGallery({ photos, name, dict }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const c = dict?.catalogPage || {};
 
   if (!photos || photos.length === 0) {
     return (
-      <div className="aspect-[3/4]">
+      <div className="aspect-[3/4] overflow-hidden rounded-2xl border border-brand-border">
         <Placeholder>{c.noPhoto || "Фото домбры"}</Placeholder>
       </div>
     );
@@ -18,7 +21,7 @@ export default function DombraGallery({ photos, name, dict }) {
 
   return (
     <div>
-      <div className="relative aspect-[3/4] overflow-hidden border border-brand-border bg-brand-bg">
+      <div className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-brand-border bg-brand-bg">
         <Image
           src={photos[activeIndex]}
           alt={`${name} — ${activeIndex + 1}`}
@@ -36,7 +39,7 @@ export default function DombraGallery({ photos, name, dict }) {
               key={url + i}
               type="button"
               onClick={() => setActiveIndex(i)}
-              className={`relative h-20 w-20 shrink-0 overflow-hidden border-2 transition-colors ${
+              className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-colors ${
                 i === activeIndex
                   ? "border-brand-blue"
                   : "border-transparent opacity-60 hover:opacity-100"
