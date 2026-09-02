@@ -72,7 +72,7 @@ export default function Hero({ sentinelRef, dict, locale }) {
           </div>
         </div>
 
-        <div className="absolute right-5 top-14 max-w-[280px] rounded-2xl bg-white/95 p-4 shadow-2xl backdrop-blur sm:right-8 sm:top-16 lg:right-12 lg:top-36">
+        <div className="absolute right-5 top-11 max-w-[280px] rounded-2xl bg-white/95 p-4 shadow-2xl backdrop-blur sm:right-8 sm:top-16 lg:right-12 lg:top-42">
           <div className="font-brand text-[13px] font-extrabold tracking-[0.06em] text-brand-blue">
             {hero.productName}
           </div>
