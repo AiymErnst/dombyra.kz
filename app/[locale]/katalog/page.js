@@ -132,7 +132,7 @@ export default async function KatalogPage({ params }) {
         />
       </div>
 
-      <DecorationsGallery dict={dict} />
+      <DecorationsGallery locale={locale} />
 
       <CatalogArticleLinks dict={dict} locale={locale} />
     </main>
