@@ -71,7 +71,11 @@ export async function generateMetadata({ params }) {
 }
 
 // разбивает плоский список блоков на "секции" по h2 — у intro (текст
-// до первого h2) heading будет null
+// до первого h2) heading будет null. Три типа блоков (partShowcase,
+// priceBreakdown, comparisonCards) — самодостаточные, целиком
+// становятся отдельной секцией со своим рендером (см. CustomSection).
+const CUSTOM_TYPES = ["partShowcase", "priceBreakdown", "comparisonCards"];
+
 function groupIntoSections(blocks) {
   const sections = [];
   let current = { number: null, heading: null, image: null, rest: [] };
@@ -83,7 +87,11 @@ function groupIntoSections(blocks) {
   }
 
   for (const block of blocks) {
-    if (block.type === "h2") {
+    if (CUSTOM_TYPES.includes(block.type)) {
+      push();
+      sections.push({ custom: block });
+      current = { number: null, heading: null, image: null, rest: [] };
+    } else if (block.type === "h2") {
       push();
       const match = block.text.match(/^(\d+)\.\s*(.+)/);
       current = {
@@ -252,6 +260,297 @@ function Section({ section, index }) {
   );
 }
 
+// ── partShowcase: фото части домбры + шкала пород "дешевле → дороже" ──
+// { type: "partShowcase", partLabel, title, titleAccent, description,
+//   photoCaption, ladder: [{ name, note?, swatchCaption, photoCaption }],
+//   cheapLabel, expensiveLabel, extraBox?: { title, groups: [{label, options}] } }
+function PartShowcaseSection({ block, dark }) {
+  return (
+    <section className={dark ? "bg-brand-ink" : "bg-white"}>
+      <div className="relative aspect-[21/9] w-full overflow-hidden bg-brand-bg sm:aspect-[3/1]">
+        <Placeholder>{block.photoCaption || block.partLabel}</Placeholder>
+        {block.partLabel && (
+          <span className="absolute left-5 top-5 rounded-full bg-white/95 px-3.5 py-1.5 font-brand text-[11px] font-bold text-brand-ink shadow-md">
+            {block.partLabel}
+          </span>
+        )}
+      </div>
+
+      <div className="px-5 py-14 lg:px-7 lg:py-20">
+        <div className="mx-auto max-w-[880px]">
+          <h2 className={`font-brand text-[26px] font-extrabold uppercase tracking-[-0.015em] lg:text-[36px] ${dark ? "text-white" : "text-brand-ink"}`}>
+            {block.title}{" "}
+            {block.titleAccent && <span className="text-brand-blue">{block.titleAccent}</span>}
+          </h2>
+          {block.description && (
+            <p className={`mt-3 max-w-[600px] font-brand text-[14px] font-medium leading-relaxed ${dark ? "text-white/70" : "text-brand-ink/65"}`}>
+              {block.description}
+            </p>
+          )}
+
+          {block.ladder && (
+            <div className="mt-9 flex gap-5">
+              <div className="flex flex-none flex-col items-center">
+                <span className={`font-brand text-[9px] font-bold uppercase tracking-[0.1em] ${dark ? "text-white/40" : "text-brand-ink/40"}`}>
+                  {block.cheapLabel || "дешевле"}
+                </span>
+                <div
+                  className="my-2 w-[2px] flex-1 rounded-full"
+                  style={{ background: "linear-gradient(to bottom, #93c5fd, #1e3a8a)" }}
+                />
+                <span className={`font-brand text-[9px] font-bold uppercase tracking-[0.1em] ${dark ? "text-white/40" : "text-brand-ink/40"}`}>
+                  {block.expensiveLabel || "дороже"}
+                </span>
+              </div>
+
+              <div className="flex-1 divide-y divide-brand-border/60">
+                {block.ladder.map((item, i) => (
+                  <div key={i} className="flex flex-wrap items-center gap-4 py-4 first:pt-0">
+                    <div className="w-[140px] flex-none">
+                      <div className={`font-brand text-[13.5px] font-bold ${dark ? "text-white" : "text-brand-ink"}`}>
+                        {item.name}
+                      </div>
+                      {item.note && (
+                        <div className={`mt-1 font-brand text-[11.5px] font-medium leading-snug ${dark ? "text-white/55" : "text-brand-ink/55"}`}>
+                          {item.note}
+                        </div>
+                      )}
+                    </div>
+                    <div className="h-14 w-20 flex-none overflow-hidden rounded-lg bg-brand-bg">
+                      <Placeholder>{item.swatchCaption || "текстура"}</Placeholder>
+                    </div>
+                    {item.photoCaption !== false && (
+                      <div className="h-14 w-20 flex-none overflow-hidden rounded-lg bg-brand-bg">
+                        <Placeholder>{item.photoCaption || "домбра"}</Placeholder>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {block.extraBox && (
+            <div className={`mt-8 flex flex-wrap items-center gap-6 rounded-2xl p-6 ${dark ? "bg-white/10" : "bg-brand-ink"}`}>
+              {block.extraBox.groups.map((g, i) => (
+                <div key={i}>
+                  <div className="font-brand text-[9px] font-bold uppercase tracking-[0.1em] text-white/40">
+                    {g.label}
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap gap-2">
+                    {g.options.map((opt, j) => (
+                      <span key={j} className="rounded-full bg-white/10 px-3 py-1 font-brand text-[12px] font-bold text-white">
+                        {opt}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {block.extraBox.title && (
+                <div className="font-brand text-[13px] font-bold text-white">{block.extraBox.title}</div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── priceBreakdown: два акцентных числа + формула + шкала пород ──
+function PriceBreakdownSection({ block, dark }) {
+  return (
+    <section className={dark ? "bg-brand-ink" : "bg-white"}>
+      <div className="px-5 py-14 lg:px-7 lg:py-20">
+        <div className="mx-auto max-w-[880px]">
+          <h2 className={`font-brand text-[26px] font-extrabold uppercase leading-[1.05] tracking-[-0.015em] lg:text-[36px] ${dark ? "text-white" : "text-brand-ink"}`}>
+            {block.title}{" "}
+            {block.titleAccent && <span className="text-brand-blue">{block.titleAccent}</span>}
+          </h2>
+          {block.description && (
+            <p className={`mt-3 max-w-[640px] font-brand text-[14px] font-medium leading-relaxed ${dark ? "text-white/70" : "text-brand-ink/65"}`}>
+              {block.description}
+            </p>
+          )}
+
+          <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {[block.statPercent, block.statFloor].filter(Boolean).map((s, i) => (
+              <div key={i} className={`rounded-2xl p-6 ${dark ? "bg-white/10" : "bg-brand-bg"}`}>
+                <div className={`font-brand text-[38px] font-extrabold leading-none lg:text-[44px] ${dark ? "text-brand-lime" : "text-brand-blue"}`}>
+                  {s.value}
+                </div>
+                <div className={`mt-2 font-brand text-[13px] font-bold leading-snug ${dark ? "text-white" : "text-brand-ink"}`}>
+                  {s.label}
+                </div>
+                {s.note && (
+                  <div className={`mt-1.5 font-brand text-[12px] font-medium leading-snug ${dark ? "text-white/55" : "text-brand-ink/55"}`}>
+                    {s.note}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {block.photoCaption && (
+            <div className="mt-6 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-brand-bg">
+              <Placeholder>{block.photoCaption}</Placeholder>
+            </div>
+          )}
+
+          {block.callouts && (
+            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {block.callouts.map((c, i) => (
+                <div key={i} className={`rounded-xl border p-4 ${dark ? "border-white/15" : "border-brand-border"}`}>
+                  <div className={`font-brand text-[12.5px] font-bold ${dark ? "text-white" : "text-brand-ink"}`}>
+                    {c.label}
+                  </div>
+                  <div className={`mt-1 font-brand text-[12px] font-medium leading-snug ${dark ? "text-white/55" : "text-brand-ink/55"}`}>
+                    {c.note}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {block.formula && (
+            <div className="mt-8 flex flex-wrap items-center gap-2">
+              {block.formula.map((label, i) => (
+                <span key={i} className="flex items-center gap-2">
+                  {i > 0 && (
+                    <span className={`font-brand text-[16px] font-bold ${dark ? "text-white/40" : "text-brand-ink/40"}`}>
+                      {i === block.formula.length - 1 ? "=" : "+"}
+                    </span>
+                  )}
+                  <span
+                    className={`rounded-full px-4 py-2 font-brand text-[12px] font-bold ${
+                      i === block.formula.length - 1
+                        ? "bg-brand-blue text-white"
+                        : dark
+                        ? "bg-white/10 text-white"
+                        : "bg-brand-bg text-brand-ink"
+                    }`}
+                  >
+                    {label}
+                  </span>
+                </span>
+              ))}
+            </div>
+          )}
+
+          {block.varietyScale && (
+            <div className="mt-8">
+              <div className="flex h-2 overflow-hidden rounded-full">
+                <div className="flex-1 bg-brand-lime" />
+                <div className="flex-1 bg-brand-blue" />
+                <div className="flex-1" style={{ background: "#1e3a8a" }} />
+                <div className="flex-1 bg-brand-ink" />
+              </div>
+              <div className="mt-2 flex justify-between font-brand text-[10.5px] font-bold uppercase tracking-[0.05em]">
+                {block.varietyScale.labels.map((l, i) => (
+                  <span key={i} className={dark ? "text-white/50" : "text-brand-ink/50"}>{l}</span>
+                ))}
+              </div>
+              {block.varietyScale.note && (
+                <p className={`mt-2 font-brand text-[12px] font-medium ${dark ? "text-white/45" : "text-brand-ink/45"}`}>
+                  {block.varietyScale.note}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── comparisonCards: 3 варианта комплектации бок о бок ──
+function ComparisonCardsSection({ block, dark }) {
+  return (
+    <section className={dark ? "bg-brand-ink" : "bg-white"}>
+      <div className="px-5 py-14 lg:px-7 lg:py-20">
+        <div className="mx-auto max-w-[880px]">
+          <h2 className={`font-brand text-[26px] font-extrabold uppercase leading-[1.05] tracking-[-0.015em] lg:text-[36px] ${dark ? "text-white" : "text-brand-ink"}`}>
+            {block.title}{" "}
+            {block.titleAccent && <span className="text-brand-blue">{block.titleAccent}</span>}
+          </h2>
+          {block.modelLabel && (
+            <span className={`mt-3 inline-block rounded-full px-3 py-1.5 font-brand text-[11px] font-bold ${dark ? "bg-white/10 text-white" : "bg-brand-bg text-brand-ink"}`}>
+              {block.modelLabel}
+            </span>
+          )}
+
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {block.cards.map((card, i) => (
+              <div
+                key={i}
+                className={`rounded-2xl border p-4 ${
+                  card.premium
+                    ? "border-brand-blue bg-brand-blue/5"
+                    : dark
+                    ? "border-white/15"
+                    : "border-brand-border"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className={`rounded-full px-3 py-1 font-brand text-[12px] font-extrabold ${dark ? "bg-white/10 text-white" : "bg-brand-bg text-brand-ink"}`}>
+                    {card.price}
+                  </span>
+                  {card.premium && (
+                    <span className="rounded-full bg-brand-blue px-2 py-1 font-brand text-[9px] font-bold uppercase text-white">
+                      Premium
+                    </span>
+                  )}
+                </div>
+                <div className="mt-3 aspect-[3/4] w-full overflow-hidden rounded-xl bg-brand-bg">
+                  <Placeholder>{card.photoCaption || card.tier}</Placeholder>
+                </div>
+                <div className={`mt-3 font-brand text-[13.5px] font-extrabold ${dark ? "text-white" : "text-brand-ink"}`}>
+                  {card.tier}
+                </div>
+                <div className="mt-2 space-y-1.5">
+                  {card.specs.map((s, j) => (
+                    <div key={j} className="flex items-start gap-1.5">
+                      <span className={`mt-0.5 font-brand text-[11px] font-bold ${s.included ? "text-brand-blue" : dark ? "text-white/25" : "text-brand-ink/25"}`}>
+                        {s.included ? "✓" : "—"}
+                      </span>
+                      <span className={`font-brand text-[11.5px] font-medium leading-snug ${dark ? "text-white/65" : "text-brand-ink/65"}`}>
+                        {s.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {block.note && (
+            <div className={`mt-6 rounded-2xl p-5 ${dark ? "bg-white/10" : "bg-brand-bg"}`}>
+              <p className={`font-brand text-[13.5px] font-bold ${dark ? "text-white" : "text-brand-ink"}`}>{block.note}</p>
+              {block.tags && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {block.tags.map((tag, i) => (
+                    <span key={i} className={`rounded-full border px-3 py-1.5 font-brand text-[11.5px] font-bold ${dark ? "border-white/20 text-white/80" : "border-brand-border text-brand-ink/70"}`}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CustomSection({ block, index }) {
+  const dark = index % 2 === 1;
+  if (block.type === "partShowcase") return <PartShowcaseSection block={block} dark={dark} />;
+  if (block.type === "priceBreakdown") return <PriceBreakdownSection block={block} dark={dark} />;
+  if (block.type === "comparisonCards") return <ComparisonCardsSection block={block} dark={dark} />;
+  return null;
+}
+
 export default async function ArticlePage({ params }) {
   const { locale, slug } = await params;
   const dict = getDictionary(locale);
@@ -302,9 +601,13 @@ export default async function ArticlePage({ params }) {
           </div>
         </div>
 
-        {sections.map((section, i) => (
-          <Section key={i} section={section} index={i} />
-        ))}
+        {sections.map((section, i) =>
+          section.custom ? (
+            <CustomSection key={i} block={section.custom} index={i} />
+          ) : (
+            <Section key={i} section={section} index={i} />
+          )
+        )}
 
         <div className="px-5 py-14 lg:px-7 lg:py-20">
           <div className="mx-auto max-w-[880px]">
