@@ -280,7 +280,7 @@ function PartShowcaseSection({ block, dark }) {
         <div className="mx-auto max-w-[880px]">
           <h2 className={`font-brand text-[26px] font-extrabold uppercase tracking-[-0.015em] lg:text-[36px] ${dark ? "text-white" : "text-brand-ink"}`}>
             {block.title}{" "}
-            {block.titleAccent && <span className="text-brand-blue">{block.titleAccent}</span>}
+            {block.titleAccent && <span className={dark ? "text-brand-lime" : "text-brand-blue"}>{block.titleAccent}</span>}
           </h2>
           {block.description && (
             <p className={`mt-3 max-w-[600px] font-brand text-[14px] font-medium leading-relaxed ${dark ? "text-white/70" : "text-brand-ink/65"}`}>
@@ -289,7 +289,7 @@ function PartShowcaseSection({ block, dark }) {
           )}
 
           {block.ladder && (
-            <div className="mt-9 flex gap-5">
+            <div className={`mt-9 flex gap-5 rounded-2xl p-6 ${dark ? "bg-white/5" : "bg-brand-bg"}`}>
               <div className="flex flex-none flex-col items-center">
                 <span className={`font-brand text-[9px] font-bold uppercase tracking-[0.1em] ${dark ? "text-white/40" : "text-brand-ink/40"}`}>
                   {block.cheapLabel || "дешевле"}
@@ -365,12 +365,20 @@ function PriceBreakdownSection({ block, dark }) {
         <div className="mx-auto max-w-[880px]">
           <h2 className={`font-brand text-[26px] font-extrabold uppercase leading-[1.05] tracking-[-0.015em] lg:text-[36px] ${dark ? "text-white" : "text-brand-ink"}`}>
             {block.title}{" "}
-            {block.titleAccent && <span className="text-brand-blue">{block.titleAccent}</span>}
+            {block.titleAccent && <span className={dark ? "text-brand-lime" : "text-brand-blue"}>{block.titleAccent}</span>}
           </h2>
           {block.description && (
             <p className={`mt-3 max-w-[640px] font-brand text-[14px] font-medium leading-relaxed ${dark ? "text-white/70" : "text-brand-ink/65"}`}>
               {block.description}
             </p>
+          )}
+
+          {block.thesis && (
+            <div className={`mt-5 max-w-[640px] rounded-2xl border-l-4 border-brand-lime px-5 py-4 ${dark ? "bg-white/10" : "bg-brand-bg"}`}>
+              <p className={`font-brand text-[15px] font-extrabold leading-snug ${dark ? "text-white" : "text-brand-ink"}`}>
+                {block.thesis}
+              </p>
+            </div>
           )}
 
           <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -471,7 +479,7 @@ function ComparisonCardsSection({ block, dark }) {
         <div className="mx-auto max-w-[880px]">
           <h2 className={`font-brand text-[26px] font-extrabold uppercase leading-[1.05] tracking-[-0.015em] lg:text-[36px] ${dark ? "text-white" : "text-brand-ink"}`}>
             {block.title}{" "}
-            {block.titleAccent && <span className="text-brand-blue">{block.titleAccent}</span>}
+            {block.titleAccent && <span className={dark ? "text-brand-lime" : "text-brand-blue"}>{block.titleAccent}</span>}
           </h2>
           {block.modelLabel && (
             <span className={`mt-3 inline-block rounded-full px-3 py-1.5 font-brand text-[11px] font-bold ${dark ? "bg-white/10 text-white" : "bg-brand-bg text-brand-ink"}`}>
@@ -479,11 +487,11 @@ function ComparisonCardsSection({ block, dark }) {
             </span>
           )}
 
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-4">
             {block.cards.map((card, i) => (
               <div
                 key={i}
-                className={`rounded-2xl border p-4 ${
+                className={`rounded-xl border p-2 sm:rounded-2xl sm:p-4 ${
                   card.premium
                     ? "border-brand-blue bg-brand-blue/5"
                     : dark
@@ -491,29 +499,29 @@ function ComparisonCardsSection({ block, dark }) {
                     : "border-brand-border"
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className={`rounded-full px-3 py-1 font-brand text-[12px] font-extrabold ${dark ? "bg-white/10 text-white" : "bg-brand-bg text-brand-ink"}`}>
+                <div className="flex flex-wrap items-center gap-1">
+                  <span className={`rounded-full px-2 py-0.5 font-brand text-[9px] font-extrabold sm:px-3 sm:py-1 sm:text-[12px] ${dark ? "bg-white/10 text-white" : "bg-brand-bg text-brand-ink"}`}>
                     {card.price}
                   </span>
                   {card.premium && (
-                    <span className="rounded-full bg-brand-blue px-2 py-1 font-brand text-[9px] font-bold uppercase text-white">
+                    <span className="rounded-full bg-brand-blue px-1.5 py-0.5 font-brand text-[7px] font-bold uppercase text-white sm:px-2 sm:text-[9px]">
                       Premium
                     </span>
                   )}
                 </div>
-                <div className="mt-3 aspect-[3/4] w-full overflow-hidden rounded-xl bg-brand-bg">
+                <div className="mt-2 aspect-[3/4] w-full overflow-hidden rounded-lg bg-brand-bg sm:mt-3 sm:rounded-xl">
                   <Placeholder>{card.photoCaption || card.tier}</Placeholder>
                 </div>
-                <div className={`mt-3 font-brand text-[13.5px] font-extrabold ${dark ? "text-white" : "text-brand-ink"}`}>
+                <div className={`mt-2 font-brand text-[11px] font-extrabold sm:mt-3 sm:text-[13.5px] ${dark ? "text-white" : "text-brand-ink"}`}>
                   {card.tier}
                 </div>
-                <div className="mt-2 space-y-1.5">
+                <div className="mt-1.5 space-y-1 sm:mt-2 sm:space-y-1.5">
                   {card.specs.map((s, j) => (
-                    <div key={j} className="flex items-start gap-1.5">
-                      <span className={`mt-0.5 font-brand text-[11px] font-bold ${s.included ? "text-brand-blue" : dark ? "text-white/25" : "text-brand-ink/25"}`}>
+                    <div key={j} className="flex items-start gap-1">
+                      <span className={`mt-0.5 font-brand text-[9px] font-bold sm:text-[11px] ${s.included ? "text-brand-blue" : dark ? "text-white/25" : "text-brand-ink/25"}`}>
                         {s.included ? "✓" : "—"}
                       </span>
-                      <span className={`font-brand text-[11.5px] font-medium leading-snug ${dark ? "text-white/65" : "text-brand-ink/65"}`}>
+                      <span className={`font-brand text-[9px] font-medium leading-snug sm:text-[11.5px] ${dark ? "text-white/65" : "text-brand-ink/65"}`}>
                         {s.label}
                       </span>
                     </div>
@@ -522,6 +530,9 @@ function ComparisonCardsSection({ block, dark }) {
               </div>
             ))}
           </div>
+          <p className={`mt-2 font-brand text-[10px] font-medium italic sm:hidden ${dark ? "text-white/35" : "text-brand-ink/35"}`}>
+            Разверните телефон горизонтально, если текст в карточках выглядит тесно
+          </p>
 
           {block.note && (
             <div className={`mt-6 rounded-2xl p-5 ${dark ? "bg-white/10" : "bg-brand-bg"}`}>
