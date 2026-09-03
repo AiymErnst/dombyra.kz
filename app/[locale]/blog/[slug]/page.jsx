@@ -29,6 +29,7 @@ import {
   firstParagraph,
 } from "@/lib/articles";
 import { Placeholder } from "@/app/components/ui";
+import ComparisonCardPhoto from "./ComparisonCardPhoto";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://dombyra.kz";
 const HREFLANG = { kz: "kk-KZ", ru: "ru-KZ", en: "en", tr: "tr-TR" };
@@ -316,11 +317,11 @@ function PartShowcaseSection({ block, dark }) {
                         </div>
                       )}
                     </div>
-                    <div className="h-14 w-20 flex-none overflow-hidden rounded-lg bg-brand-bg">
+                    <div className="h-14 w-20 flex-none overflow-hidden rounded-lg bg-brand-bg lg:h-24 lg:w-32">
                       <Placeholder>{item.swatchCaption || "текстура"}</Placeholder>
                     </div>
                     {item.photoCaption !== false && (
-                      <div className="h-14 w-20 flex-none overflow-hidden rounded-lg bg-brand-bg">
+                      <div className="h-14 w-20 flex-none overflow-hidden rounded-lg bg-brand-bg lg:h-24 lg:w-32">
                         <Placeholder>{item.photoCaption || "домбра"}</Placeholder>
                       </div>
                     )}
@@ -491,26 +492,13 @@ function ComparisonCardsSection({ block, dark }) {
             {block.cards.map((card, i) => (
               <div
                 key={i}
-                className={`rounded-xl border p-2 sm:rounded-2xl sm:p-4 ${
-                  card.premium
-                    ? "border-brand-blue bg-brand-blue/5"
-                    : dark
-                    ? "border-white/15"
-                    : "border-brand-border"
-                }`}
+                className={`rounded-xl border p-2 sm:rounded-2xl sm:p-4 ${dark ? "border-white/15" : "border-brand-border"}`}
               >
-                <div className="flex flex-wrap items-center gap-1">
-                  <span className={`rounded-full px-2 py-0.5 font-brand text-[9px] font-extrabold sm:px-3 sm:py-1 sm:text-[12px] ${dark ? "bg-white/10 text-white" : "bg-brand-bg text-brand-ink"}`}>
-                    {card.price}
-                  </span>
-                  {card.premium && (
-                    <span className="rounded-full bg-brand-blue px-1.5 py-0.5 font-brand text-[7px] font-bold uppercase text-white sm:px-2 sm:text-[9px]">
-                      Premium
-                    </span>
-                  )}
-                </div>
-                <div className="mt-2 aspect-[3/4] w-full overflow-hidden rounded-lg bg-brand-bg sm:mt-3 sm:rounded-xl">
-                  <Placeholder>{card.photoCaption || card.tier}</Placeholder>
+                <span className={`inline-block rounded-full px-2 py-0.5 font-brand text-[9px] font-extrabold sm:px-3 sm:py-1 sm:text-[12px] ${dark ? "bg-white/10 text-white" : "bg-brand-bg text-brand-ink"}`}>
+                  {card.price}
+                </span>
+                <div className="mt-2 sm:mt-3">
+                  <ComparisonCardPhoto photos={card.photos} fallbackLabel={card.photoCaption || card.tier} />
                 </div>
                 <div className={`mt-2 font-brand text-[11px] font-extrabold sm:mt-3 sm:text-[13.5px] ${dark ? "text-white" : "text-brand-ink"}`}>
                   {card.tier}
