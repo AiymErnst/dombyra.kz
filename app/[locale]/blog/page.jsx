@@ -12,6 +12,7 @@ import Link from "next/link";
 import { locales, defaultLocale, getDictionary } from "@/lib/i18n";
 import { getArticles, pick } from "@/lib/articles";
 import { Placeholder } from "@/app/components/ui";
+import Image from "next/image";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://dombyra.kz";
 const HREFLANG = { kz: "kk-KZ", ru: "ru-KZ", en: "en", tr: "tr-TR" };
@@ -72,7 +73,7 @@ export default async function BlogIndex({ params }) {
       />
       <main>
         <section className="relative h-[58vh] min-h-[420px] w-full overflow-hidden bg-brand-ink">
-          <Placeholder>Фото — обложка журнала</Placeholder>
+          <Image src="/content/IMG_7745.HEIC" alt="Обложка журнала" fill className="object-cover" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/25 to-transparent" />
 
           <div className="absolute inset-x-0 bottom-0 px-5 pb-10 lg:px-12 lg:pb-14">
