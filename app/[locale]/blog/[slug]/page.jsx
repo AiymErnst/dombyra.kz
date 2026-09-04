@@ -242,7 +242,7 @@ function Section({ section, index }) {
         </div>
       )}
 
-      <div className="px-5 py-14 lg:px-7 lg:py-20">
+      <div className={`px-5 pb-14 lg:px-7 lg:pb-20 ${index === 0 ? "pt-3 lg:pt-4" : "pt-14 lg:pt-20"}`}>
         <div className="mx-auto max-w-[880px]">
           {section.heading && (
             <h2 className={`flex items-start gap-3 font-brand uppercase leading-[1.1] tracking-[-0.01em] ${dark ? "text-white" : "text-brand-ink"}`}>
