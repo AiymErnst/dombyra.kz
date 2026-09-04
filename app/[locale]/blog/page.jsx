@@ -73,7 +73,7 @@ export default async function BlogIndex({ params }) {
       />
       <main>
         <section className="relative h-[58vh] min-h-[420px] w-full overflow-hidden bg-brand-ink">
-          <Image src="/content/IMG_7778.PNG" alt="Обложка журнала" fill className="object-cover" />
+          <Image src="/content/IMG_7778.JPG" alt="Обложка журнала" fill className="object-cover" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/25 to-transparent" />
 
           <div className="absolute inset-x-0 bottom-0 px-5 pb-10 lg:px-12 lg:pb-14">
