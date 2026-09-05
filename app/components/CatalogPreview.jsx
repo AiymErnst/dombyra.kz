@@ -55,7 +55,7 @@ const FALLBACK_SHOWCASE = [
   // быть у файла — и следом, важно: переименуйте сам файл в
   // public/content/ на GitHub так, чтобы имя ТОЧНО совпадало (включая
   // расширение) с тем, что написано здесь.
-  { photos: ["/content/bastauside", "Фото — Асыл, гриф крупным планом", "Фото — Асыл, корпус сбоку"], name: "«Ру»", price: "155 000 ₸", badge: "Кость" },
+  { photos: ["/content/Ру танба/IMG_0082.JPEG", "/content/Ру танба/ru_alasha.webp", "/content/Ру танба/ru_arlan.webp"], name: "«Ру»", price: "155 000 ₸", badge: "Кость" },
   { photos: ["/content/Волна/dastur.webp", "/content/Волна/alinur.JPG", "/content/Волна/mastershop.JPG"], name: "«Бастау»", price: "65 000 ₸", badge: "42 размер" },
   { photos: ["/content/Волк/volkai.JPEG", "/content/Волк/volk_serebro.JPG", "/content/Волк/volkmastershop.JPG"], name: "«Волк»", price: "150 000 ₸", badge: "Серебро" },
   { photos: ["Фото — Кербез, общий вид", "Фото — Кербез, перламутр крупным планом", "Фото — Кербез, гриф"], name: "«Красная огненная лошадь»", price: "170 000 ₸", badge: "48 размер" },
