@@ -29,7 +29,7 @@ export default function Hero({ sentinelRef, dict, locale }) {
 
         <div className="absolute inset-x-0 bottom-0 px-5 pb-10 lg:px-12 lg:pb-16">
           <div className="lg:mx-auto lg:max-w-[1180px]">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
+            <span className="hidden items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 backdrop-blur lg:inline-flex">
               <span className="h-1.5 w-1.5 rounded-full bg-brand-lime" />
               <span className="font-brand text-[10px] font-bold tracking-[0.14em] text-white">
                 {hero.badge}
@@ -72,7 +72,7 @@ export default function Hero({ sentinelRef, dict, locale }) {
           </div>
         </div>
 
-        <div className="absolute right-5 top-11 max-w-[260px] rounded-2xl bg-white/95 p-4 shadow-2xl backdrop-blur sm:right-8 sm:top-11 lg:right-12 lg:top-48">
+        <div className="absolute right-5 top-11 hidden max-w-[260px] rounded-2xl bg-white/95 p-4 shadow-2xl backdrop-blur sm:right-8 sm:top-11 lg:right-12 lg:top-48 lg:block">
           <div className="font-brand text-[13px] font-extrabold tracking-[0.06em] text-brand-blue">
             {hero.productName}
           </div>

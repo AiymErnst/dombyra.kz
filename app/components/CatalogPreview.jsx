@@ -148,7 +148,7 @@ export default function CatalogPreview({ dict, locale }) {
 
   return (
     <section id="catalog" className="px-5 py-14 lg:mx-auto lg:max-w-[1180px] lg:px-7 lg:py-20">
-      <div className="mb-8 flex flex-wrap gap-2">
+      <div className="mb-8 hidden flex-wrap gap-2 lg:flex">
         {advantages.map((label, i) => (
           <span
             key={i}
