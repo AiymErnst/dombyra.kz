@@ -22,7 +22,7 @@ import { Placeholder, SectionEyebrow } from "./ui";
 // как запасным.
 
 const FALLBACK_TUNER_PHOTOS = [
-  { ph: "фото — струна расстроена, стрелка отклонена", caption: "Слышит частоту струны и показывает, куда крутить колок" },
+  { gif: "/GIF/tuner_web.gif", caption: "Слышит частоту струны и показывает, куда крутить колок" },
   { ph: "фото — стрелка в зелёной зоне по центру", caption: "Стрелка встала в центр — строй идеальный" },
 ];
 
@@ -140,7 +140,11 @@ export default function TrainerPromo({ dict, locale }) {
           {tunerPhotos.map((photo, i) => (
             <figure key={i} className="overflow-hidden rounded-2xl border border-brand-border bg-white p-2">
               <div className="aspect-[4/3] overflow-hidden rounded-xl bg-[#E8EDF7]">
-                <Placeholder>{photo.ph}</Placeholder>
+                {photo.gif ? (
+                  <img src={photo.gif} alt={photo.caption} className="h-full w-full object-cover" />
+                 ) : (
+                   <Placeholder>{photo.ph}</Placeholder>
+                 )}
               </div>
               <figcaption className="p-2 pt-3 font-brand text-[12.5px] font-bold leading-snug">
                 {photo.caption}
