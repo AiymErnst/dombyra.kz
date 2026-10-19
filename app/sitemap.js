@@ -2,6 +2,7 @@
 import { locales, defaultLocale } from '@/lib/i18n';
 import { getSongCatalog } from '@/lib/songs';
 import { getPosts } from '@/lib/posts';
+import { getDombras } from '@/lib/dombras';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://dombyra.kz';
 const HL = { kz: 'kk-KZ', ru: 'ru-KZ', en: 'en', tr: 'tr-TR' };
@@ -9,15 +10,24 @@ const HL = { kz: 'kk-KZ', ru: 'ru-KZ', en: 'en', tr: 'tr-TR' };
 export const revalidate = 3600;
 
 export default async function sitemap() {
-  const [songs, posts] = await Promise.all([getSongCatalog(), getPosts()]);
+  const [songs, posts, dombras] = await Promise.all([
+    getSongCatalog(),
+    getPosts(),
+    getDombras(1000, 0),
+  ]);
 
   const routes = [
     { path: '', priority: 1.0 },
+    { path: 'katalog', priority: 0.9 },
     { path: 'tuner', priority: 0.9 },
     { path: 'learn', priority: 0.8 },
     { path: 'karaoke', priority: 0.8 },
     { path: 'songs', priority: 0.8 },
     { path: 'blog', priority: 0.8 },
+    { path: 'about', priority: 0.6 },
+    ...(dombras.items || [])
+      .filter((d) => d.slug)
+      .map((d) => ({ path: `katalog/${d.slug}`, priority: 0.8 })),
     ...songs.filter((s) => s.slug).map((s) => ({ path: `songs/${s.slug}`, priority: 0.7 })),
     ...posts.map((p) => ({ path: `blog/${p.slug}`, priority: 0.7 })),
   ];
@@ -28,11 +38,12 @@ export default async function sitemap() {
       locales.map((l) => [HL[l], `${SITE}/${l}${r.path ? `/${r.path}` : ''}`])
     );
     for (const locale of locales) {
+      const p = locale === defaultLocale ? r.priority : Math.max(0.1, r.priority - 0.1);
       entries.push({
         url: `${SITE}/${locale}${r.path ? `/${r.path}` : ''}`,
         lastModified: new Date(),
         changeFrequency: 'weekly',
-        priority: locale === defaultLocale ? r.priority : Math.max(0.1, r.priority - 0.1),
+        priority: Math.round(p * 10) / 10,
         alternates: { languages },
       });
     }
