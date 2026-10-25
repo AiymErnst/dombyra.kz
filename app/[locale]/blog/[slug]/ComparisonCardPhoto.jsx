@@ -1,5 +1,5 @@
 "use client";
-import { Placeholder } from "@/app/components/ui";
+import Photo from "@/app/components/Photo";
 import { usePhotoScrubber } from "@/app/components/usePhotoScrubber";
 
 // app/[locale]/blog/[slug]/ComparisonCardPhoto.jsx
@@ -33,7 +33,14 @@ export default function ComparisonCardPhoto({ photos, fallbackLabel }) {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <Placeholder>{list[activeIndex]}</Placeholder>
+      {/* в photos: путь «/content/…» → фото, текст → заглушка. Грузится
+          только фото, которое сейчас на экране; следующее — при листании */}
+      <Photo
+        src={list[activeIndex]}
+        label={list[activeIndex]}
+        alt={fallbackLabel}
+        sizes="(min-width: 1024px) 290px, 33vw"
+      />
 
       {hasMultiple && (
         <div className="absolute inset-x-1 top-1 hidden gap-0.5 lg:flex">
