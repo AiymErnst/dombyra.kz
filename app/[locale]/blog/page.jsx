@@ -10,9 +10,10 @@
 // и хедера.
 import Link from "next/link";
 import { locales, defaultLocale, getDictionary } from "@/lib/i18n";
-import { getArticles, pick } from "@/lib/articles";
+import { getArticles, articlePath, pick } from "@/lib/articles";
 import { Placeholder } from "@/app/components/ui";
 import Image from "next/image";
+import Photo from "@/app/components/Photo";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://dombyra.kz";
 const HREFLANG = { kz: "kk-KZ", ru: "ru-KZ", en: "en", tr: "tr-TR" };
@@ -61,7 +62,7 @@ export default async function BlogIndex({ params }) {
       "@type": "ListItem",
       position: i + 1,
       name: pick(p.title, locale),
-      url: `${SITE}/${locale}/blog/${p.slug}`,
+      url: `${SITE}${articlePath(p, locale)}`,
     })),
   };
 
@@ -73,7 +74,8 @@ export default async function BlogIndex({ params }) {
       />
       <main>
         <section className="relative h-[58vh] min-h-[420px] w-full overflow-hidden bg-brand-ink">
-          <Image src="/content/IMG_7778.JPG" alt="Обложка журнала" fill className="object-cover" />
+          {/* обложка журнала — на первом экране: грузим сразу (priority) */}
+          <Image src="/content/IMG_7778.JPG" alt="Обложка журнала" fill priority sizes="100vw" className="object-cover" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/25 to-transparent" />
 
           <div className="absolute inset-x-0 bottom-0 px-5 pb-10 lg:px-12 lg:pb-14">
@@ -122,19 +124,18 @@ export default async function BlogIndex({ params }) {
                 return (
                   <Link
                     key={post.slug}
-                    href={`${localePrefix}/blog/${post.slug}`}
+                    href={articlePath(post, locale)}
                     className="group relative block aspect-[3/4] overflow-hidden rounded-3xl bg-brand-ink"
                   >
-                    {post.cover_url ? (
-                      <img
-                        src={post.cover_url}
-                        alt={title}
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <Placeholder>{category}</Placeholder>
-                    )}
+                    {/* cover_url в файле статьи: "/content/…" → фото (сжатое, ленивая
+                        загрузка), пусто → заглушка с названием категории */}
+                    <Photo
+                      src={post.cover_url}
+                      label={category}
+                      alt={title}
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
 
                     <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/10 to-transparent" />
 
