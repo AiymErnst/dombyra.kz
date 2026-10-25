@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
-import { Placeholder } from "./ui";
+import Photo from "./Photo";
+// адрес статьи на языке страницы — /kz/blog/dombyra-qalai-tandau и т.п.
+import { localizedArticleSlug } from "@/lib/articles/slugs";
 import { usePhotoScrubber } from "./usePhotoScrubber";
 
 // app/components/CatalogPreview.jsx
@@ -77,7 +79,6 @@ function ShowcaseCard({ card, href, badgeClass }) {
   const { activeIndex, hasMultiple, showDot, handleMouseMove, handleMouseLeave, handleTouchStart, handleTouchMove, handleTouchEnd, handleLinkClick } =
     usePhotoScrubber(photos);
   const current = photos[activeIndex];
-  const isRealPhoto = typeof current === "string" && current.startsWith("/");
 
   return (
     <Link href={href} onClick={handleLinkClick} className="group block">
@@ -89,15 +90,15 @@ function ShowcaseCard({ card, href, badgeClass }) {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {isRealPhoto ? (
-          <img
-            src={current}
-            alt={card.name}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-         ) : (
-           <Placeholder>{current || "Фото домбры"}</Placeholder>
-         )}
+        {/* путь «/content/…» → фото (сжатое через next/image), текст → заглушка.
+            Ширина карточки: ~47% экрана на телефоне, 172px на планшете,
+            ~200px на компьютере — по ней Vercel подбирает размер фото. */}
+        <Photo
+          src={current}
+          label={current || "Фото домбры"}
+          alt={card.name}
+          sizes="(min-width: 1024px) 200px, (min-width: 640px) 172px, 47vw"
+        />
 
         {hasMultiple && (
           <div className="absolute inset-x-2 top-2 hidden gap-1 lg:flex">
@@ -161,7 +162,7 @@ export default function CatalogPreview({ dict, locale }) {
       </div>
 
       <Link
-        href={`${localePrefix}/blog/${c.articleSlug || "kak-vybrat-dombru"}`}
+        href={`${localePrefix}/blog/${localizedArticleSlug(c.articleSlug || "kak-vybrat-dombru", locale)}`}
         className="mb-7 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl border-l-4 border-brand-lime bg-brand-bg px-5 py-3.5 transition-colors hover:bg-brand-bg/70"
       >
         <span className="font-brand text-[13px] font-medium text-brand-ink/70 lg:text-[14px]">
