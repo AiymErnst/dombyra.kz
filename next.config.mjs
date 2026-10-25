@@ -19,7 +19,11 @@ const nextConfig = {
       { source: '/guide', destination: '/ru/blog/kak-vybrat-dombru', permanent: true },
       // /ru/guide, /kz/guide… — раньше /guide сам перенаправлялся на /ru/guide
       // (там была ошибка 404), и браузеры могли запомнить это перенаправление.
-      { source: '/:locale(ru|kz|en|tr)/guide', destination: '/:locale/blog/kak-vybrat-dombru', permanent: true },
+      // У статьи на каждом языке свой адрес (lib/articles/slugs.js).
+      { source: '/ru/guide', destination: '/ru/blog/kak-vybrat-dombru', permanent: true },
+      { source: '/kz/guide', destination: '/kz/blog/dombyra-qalai-tandau', permanent: true },
+      { source: '/en/guide', destination: '/en/blog/how-to-choose-a-dombyra', permanent: true },
+      { source: '/tr/guide', destination: '/tr/blog/dombyra-nasil-secilir', permanent: true },
       // Tilda: казахская версия сайта жила по адресу /kaz.
       { source: '/kaz', destination: '/kz', permanent: true },
       { source: '/kaz/:path+', destination: '/kz/:path+', permanent: true },
