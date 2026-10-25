@@ -10,6 +10,9 @@
 
 import Link from "next/link";
 import { locales } from "@/lib/i18n";
+// у статей блога на каждом языке свой адрес (lib/articles/slugs.js) —
+// при смене языка на странице статьи ведём сразу на её перевод
+import { localizeBlogPath } from "@/lib/articles/slugs";
 
 const LABEL = { kz: "KZ", ru: "RU", en: "EN", tr: "TR" };
 
@@ -50,7 +53,7 @@ export default function LangSwitch({ locale, path = "", available, dict, size = 
         return (
           <Link
             key={l}
-            href={`/${l}${path}`}
+            href={`/${l}${localizeBlogPath(path, l)}`}
             // scroll={false}: Next.js по умолчанию прокручивает к началу
             // ИЗМЕНИВШЕГОСЯ участка страницы. На страницах тренажёра сам
             // тренажёр лежит в layout и не меняется — меняется только текст
