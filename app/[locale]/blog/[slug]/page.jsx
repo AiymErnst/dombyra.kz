@@ -18,17 +18,21 @@
 //
 // Данные (lib/articles.js) трогать не пришлось — группировка на h2
 // происходит здесь же, на лету, из того же плоского списка блоков.
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { locales, defaultLocale, getDictionary } from "@/lib/i18n";
 import {
   getArticles,
   getArticle,
+  articleSlug,
+  articlePath,
   pick,
   articleBlocks,
   firstParagraph,
 } from "@/lib/articles";
-import { Placeholder } from "@/app/components/ui";
+// Photo: путь «/content/…» → настоящее фото (сжатое, с ленивой загрузкой),
+// любой другой текст → серая заглушка, как раньше. См. app/components/Photo.jsx
+import Photo from "@/app/components/Photo";
 import ComparisonCardPhoto from "./ComparisonCardPhoto";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://dombyra.kz";
@@ -48,7 +52,8 @@ export function generateStaticParams() {
   for (const locale of locales) {
     for (const article of getArticles()) {
       if (articleBlocks(article, locale).length > 0) {
-        params.push({ locale, slug: article.slug });
+        // у каждого языка свой адрес статьи — см. lib/articles/slugs.js
+        params.push({ locale, slug: articleSlug(article, locale) });
       }
     }
   }
@@ -62,12 +67,22 @@ export async function generateMetadata({ params }) {
 
   const title = pick(article.title, locale);
   const description = firstParagraph(article, locale);
-  const url = `${SITE}/${locale}/blog/${slug}`;
+  const url = `${SITE}${articlePath(article, locale)}`;
+
+  // hreflang: говорим поисковику, что это переводы ОДНОЙ статьи — у каждого
+  // языка свой адрес, иначе Google мог бы счесть их разными статьями
+  const translated = locales.filter((l) => articleBlocks(article, l).length > 0);
+  const languages = Object.fromEntries(
+    translated.map((l) => [HREFLANG[l], `${SITE}${articlePath(article, l)}`])
+  );
+  if (translated.includes(defaultLocale)) {
+    languages["x-default"] = `${SITE}${articlePath(article, defaultLocale)}`;
+  }
 
   return {
     title: `${title} — dombyra.kz`,
     description,
-    alternates: { canonical: url },
+    alternates: { canonical: url, languages },
   };
 }
 
@@ -118,8 +133,9 @@ function RestBlock({ block, dark }) {
   if (block.type === "image") {
     return (
       <figure className="mt-8">
-        <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl border border-brand-border bg-brand-bg">
-          <Placeholder>{block.caption || "Фото"}</Placeholder>
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-brand-border bg-brand-bg">
+          {/* { type: "image", src: "/content/…", caption: "подпись" } — без src будет заглушка */}
+          <Photo src={block.src} label={block.caption || "Фото"} alt={block.caption} sizes="(min-width: 1024px) 880px, 100vw" />
         </div>
         {block.caption && (
           <figcaption className="mt-2 font-brand text-[12px] font-medium italic opacity-50">
@@ -230,8 +246,10 @@ function Section({ section, index }) {
   return (
     <section className={dark ? "bg-brand-ink" : "bg-white"}>
       {section.image && (
-        <div className="aspect-[21/9] w-full overflow-hidden bg-brand-bg sm:aspect-[3/1]">
-          <Placeholder>{section.image.caption || "Фото"}</Placeholder>
+        <div className="relative aspect-[21/9] w-full overflow-hidden bg-brand-bg sm:aspect-[3/1]">
+          {/* фото первого раздела стоит сразу под заголовком статьи — оно на
+              первом экране, поэтому грузим его сразу (priority), остальные — лениво */}
+          <Photo src={section.image.src} label={section.image.caption || "Фото"} alt={section.image.caption} sizes="100vw" priority={index === 0} />
         </div>
       )}
       {section.image?.caption && (
@@ -265,11 +283,12 @@ function Section({ section, index }) {
 // { type: "partShowcase", partLabel, title, titleAccent, description,
 //   photoCaption, ladder: [{ name, note?, swatchCaption, photoCaption }],
 //   cheapLabel, expensiveLabel, extraBox?: { title, groups: [{label, options}] } }
-function PartShowcaseSection({ block, dark }) {
+function PartShowcaseSection({ block, dark, first }) {
   return (
     <section className={dark ? "bg-brand-ink" : "bg-white"}>
       <div className="relative aspect-[21/9] w-full overflow-hidden bg-brand-bg sm:aspect-[3/1]">
-        <Placeholder>{block.photoCaption || block.partLabel}</Placeholder>
+        {/* photoCaption: путь «/content/…» → фото, текст → заглушка */}
+        <Photo src={block.photoCaption} label={block.photoCaption || block.partLabel} alt={block.partLabel || block.title} sizes="100vw" priority={first} />
         {block.partLabel && (
           <span className="absolute left-5 top-5 rounded-full bg-white/95 px-3.5 py-1.5 font-brand text-[11px] font-bold text-brand-ink shadow-md">
             {block.partLabel}
@@ -317,12 +336,12 @@ function PartShowcaseSection({ block, dark }) {
                         </div>
                       )}
                     </div>
-                    <div className="h-14 w-20 flex-none overflow-hidden rounded-lg bg-brand-bg lg:h-24 lg:w-32">
-                      <Placeholder>{item.swatchCaption || "текстура"}</Placeholder>
+                    <div className="relative h-14 w-20 flex-none overflow-hidden rounded-lg bg-brand-bg lg:h-24 lg:w-32">
+                      <Photo src={item.swatchCaption} label={item.swatchCaption || "текстура"} alt={item.name} sizes="128px" />
                     </div>
                     {item.photoCaption !== false && (
-                      <div className="h-14 w-20 flex-none overflow-hidden rounded-lg bg-brand-bg lg:h-24 lg:w-32">
-                        <Placeholder>{item.photoCaption || "домбра"}</Placeholder>
+                      <div className="relative h-14 w-20 flex-none overflow-hidden rounded-lg bg-brand-bg lg:h-24 lg:w-32">
+                        <Photo src={item.photoCaption} label={item.photoCaption || "домбра"} alt={item.name} sizes="128px" />
                       </div>
                     )}
                   </div>
@@ -401,8 +420,8 @@ function PriceBreakdownSection({ block, dark }) {
           </div>
 
           {block.photoCaption && (
-            <div className="mt-6 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-brand-bg">
-              <Placeholder>{block.photoCaption}</Placeholder>
+            <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-brand-bg">
+              <Photo src={block.photoCaption} label={block.photoCaption} alt={block.title} sizes="(min-width: 1024px) 880px, 100vw" />
             </div>
           )}
 
@@ -544,7 +563,7 @@ function ComparisonCardsSection({ block, dark }) {
 
 function CustomSection({ block, index }) {
   const dark = index % 2 === 1;
-  if (block.type === "partShowcase") return <PartShowcaseSection block={block} dark={dark} />;
+  if (block.type === "partShowcase") return <PartShowcaseSection block={block} dark={dark} first={index === 0} />;
   if (block.type === "priceBreakdown") return <PriceBreakdownSection block={block} dark={dark} />;
   if (block.type === "comparisonCards") return <ComparisonCardsSection block={block} dark={dark} />;
   return null;
@@ -560,6 +579,13 @@ export default async function ArticlePage({ params }) {
   const blocks = articleBlocks(article, locale);
   if (blocks.length === 0) notFound();
 
+  // Пришли по адресу статьи с другого языка или по старому адресу
+  // (например, /kz/blog/kak-vybrat-dombru) — постоянно перенаправляем на
+  // правильный адрес этого языка (/kz/blog/dombyra-qalai-tandau).
+  if (slug !== articleSlug(article, locale)) {
+    permanentRedirect(articlePath(article, locale));
+  }
+
   const title = pick(article.title, locale);
   const category = (t.categories && t.categories[article.category_key]) || article.category_key;
   const localePrefix = `/${locale}`;
@@ -570,7 +596,7 @@ export default async function ArticlePage({ params }) {
     "@type": "Article",
     headline: title,
     description: firstParagraph(article, locale),
-    url: `${SITE}/${locale}/blog/${slug}`,
+    url: `${SITE}${articlePath(article, locale)}`,
     inLanguage: HREFLANG[locale] || locale,
   };
 
