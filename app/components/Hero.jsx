@@ -1,4 +1,5 @@
 import { Placeholder } from "./ui";
+import Photo from "./Photo";
 
 // app/components/Hero.jsx
 //
@@ -24,7 +25,10 @@ export default function Hero({ sentinelRef, dict, locale }) {
     <>
       {/* ---------- обложка ---------- */}
       <section className="relative h-[92vh] min-h-[560px] w-full overflow-hidden bg-brand-ink">
-        <img src="content/IMG_6974.PNG" alt="Домбыра" className="absolute inset-0 h-full w-full object-cover object-top" />
+        {/* Обложка весит 6 МБ (PNG 2462×1696). Через Photo/next/image Vercel
+            отдаёт её в WebP под ширину экрана — на телефоне это ~100 КБ.
+            priority: это первый экран, грузим сразу, без ленивой загрузки. */}
+        <Photo src="/content/IMG_6974.PNG" alt="Домбыра" sizes="100vw" priority className="object-cover object-top" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/25 to-transparent" />
 
         <div className="absolute inset-x-0 bottom-0 px-5 pb-10 lg:px-12 lg:pb-16">
